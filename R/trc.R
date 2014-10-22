@@ -95,7 +95,7 @@ trc <- function(x,
     panel.lines(x, qic$cl, col = col, lty = lty)
     panel.text(x = max(x),
                y = qic$cl,
-               labels = sround(qic$cl),
+               labels = sapply(qic$cl, sround),
                cex = 0.9,
                pos = 4,
                ...)
