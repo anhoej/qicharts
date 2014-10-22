@@ -24,4 +24,4 @@ Then read the help files
 ?paretochart
 ```
 
-As tested by Timo
+As tested by Timo twice
