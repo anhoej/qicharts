@@ -72,12 +72,10 @@ trc <- function(x,
     list(xlim = range(min(x), max(extendrange(x, f = xpad))))
   }
 
-  # Smart rounding for median labels
+  # Smart rounding for median labels, to at least 2 significant digits
   sround <- function(x) {
     n <- nchar(as.character(floor(x)))
-    if (n == 1 && abs(x) < 1) return(round(x, 2))
-    if (n == 1) return(round(x, 1))
-    if (n >= 2) return(round(x, 0))
+    signif(x, max(2, n))
   }
 
   panel <- function(x, y, ...) {
