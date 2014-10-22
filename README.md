@@ -22,7 +22,7 @@ vignette('runcharts')
 ```
 Then read the help files
 ```
-?spc
+?qic
 ?trc
 ?paretochart
 ```
