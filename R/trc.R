@@ -75,9 +75,9 @@ trc <- function(x,
   # Smart rounding for median labels
   sround <- function(x) {
     n <- nchar(as.character(floor(x)))
-    if (n == 1) return(round(x, 2))
-    if (n == 2) return(round(x, 1))
-    if (n >= 3) return(round(x, 0))
+    if (n == 1 && abs(x) < 1) return(round(x, 2))
+    if (n == 1) return(round(x, 1))
+    if (n >= 2) return(round(x, 0))
   }
 
   panel <- function(x, y, ...) {
