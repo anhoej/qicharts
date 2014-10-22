@@ -48,7 +48,6 @@
 trc <- function(x,
                 xscale   = 'same',
                 yscale   = 'same',
-                dec      = 2,
                 xpad     = 0.1,
                 pch      = 19,
                 col1     = 'steelblue4',
