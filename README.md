@@ -23,3 +23,5 @@ Then read the help files
 ?trc
 ?paretochart
 ```
+
+As tested by Timo twice
