@@ -74,6 +74,14 @@ trc <- function(x,
     list(xlim = range(min(x), max(extendrange(x, f = xpad))))
   }
 
+  # Smart rounding for median labels
+  sround <- function(x) {
+    n <- nchar(as.character(floor(x)))
+    if (n == 1) return(round(x, 2))
+    if (n == 2) return(round(x, 1))
+    if (n >= 3) return(round(x, 0))
+  }
+
   panel <- function(x, y, ...) {
     qic <- qic(y, plot.chart = FALSE, ...)
     signal <- qic$runs.test
@@ -89,7 +97,7 @@ trc <- function(x,
     panel.lines(x, qic$cl, col = col, lty = lty)
     panel.text(x = max(x),
                y = qic$cl,
-               labels = round(qic$cl, dec),
+               labels = sround(qic$cl),
                cex = 0.9,
                pos = 4,
                ...)
