@@ -1,7 +1,7 @@
 Package: qicharts
 Version: 0.1.1
-Date: 2014-10-07
-Title: Quality improvement charts
+Date: 2014-11-02
+Title: Quality Improvement Charts
 Authors@R: c(person("Jacob", "Anhoej",
     email = "jacob@anhoej.net",
     role = c("aut", "cre")),
@@ -20,8 +20,8 @@ Depends:
 Imports:
     lattice,
     latticeExtra
-License: GPL-3
-LazyData: true
 Suggests:
     knitr
 VignetteBuilder: knitr
+License: GPL-3
+LazyData: true
