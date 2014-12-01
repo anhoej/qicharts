@@ -301,7 +301,7 @@ qic <- function(y,
 
   # Prevent negative y axis if negy argument is FALSE
   if(!negy & min(qic$y, na.rm = TRUE) >= 0)
-    qic$lcl[qic$lcl < 0] <- 0
+    qic$lcl[qic$lcl < 0] <- NA
 
   # Multiply y axis by multiply argument
   qic$y   <- as.vector(qic$y) * multiply
@@ -521,7 +521,7 @@ qic.t <- function(d, freeze, cl, exclude, ...) {
   cl = qic$cl^3.6
   ucl = qic$ucl^3.6
   lcl = qic$lcl^3.6
-  lcl[lcl < 0 | is.nan(lcl)] <- 0
+  lcl[lcl < 0 | is.nan(lcl)] <- NA
 
   return(list(y = y,
               cl = cl,
@@ -628,9 +628,9 @@ qic.p <- function(d, freeze, cl, exclude, ...){
 
   # Calculate limits
   ucl <- cl + 3 * stdev
-  ucl[ucl > 1] <- 1
+  ucl[ucl > 1] <- NA
   lcl <- cl - 3 * stdev
-  lcl[lcl < 0] <- 0
+  lcl[lcl < 0] <- NA
 
   # Return object to calling function
   return(list(y = y,
@@ -704,7 +704,7 @@ qic.u <- function(d, freeze, cl, exclude, ...){
   # Calculate limits
   ucl <- cl + 3 * stdev
   lcl <- cl - 3 * stdev
-  lcl[lcl < 0] <- 0
+  lcl[lcl < 0] <- NA
 
   # Return object to calling function
   return(list(y = y,
@@ -741,7 +741,7 @@ qic.g <- function(d, freeze, cl, exclude, ...){
   # Calculate limits
   ucl <- cl + 3 * stdev
   lcl <- cl - 3 * stdev
-  lcl[lcl < 0] <- 0
+  lcl[lcl < 0] <- NA
 
   #   Set center line to theoretical median, Provost (2011) p. 228
   cl <- 0.693 * cl
