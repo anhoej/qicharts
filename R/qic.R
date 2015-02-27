@@ -369,15 +369,15 @@ qic <- function(y,
   # Plot qic chart
   if(plot.chart)
     plot.qic(qic = qic,
-            dots.only = dots.only,
-            decimals  = decimals,
-            runvals   = runvals,
-            linevals  = linevals,
-            ylim      = ylim,
-            pre.text  = pre.text,
-            post.text = post.text,
-            cex = cex,
-            ...)
+             dots.only = dots.only,
+             decimals  = decimals,
+             runvals   = runvals,
+             linevals  = linevals,
+             ylim      = ylim,
+             pre.text  = pre.text,
+             post.text = post.text,
+             cex = cex,
+             ...)
 
   # Return qic object
   if(prnt) {
@@ -810,20 +810,20 @@ c4 <- function(n) {
 }
 
 plot.qic <- function(qic,
-                    dots.only,
-                    decimals,
-                    runvals,
-                    linevals,
-                    ylim,
-                    pre.text,
-                    post.text,
-                    col1 = 'steelblue4',
-                    col2 = 'tomato',
-                    col3 = 'palegreen4',
-                    mar = c(4.5, 4.5, 3.5, 0.5),
-                    cex,
-                    lwd = cex * 3,
-                    ...) {
+                     dots.only,
+                     decimals,
+                     runvals,
+                     linevals,
+                     ylim,
+                     pre.text,
+                     post.text,
+                     col1 = 'steelblue4',
+                     col2 = 'tomato',
+                     col3 = 'palegreen4',
+                     mar = c(4.5, 4.5, 3.5, 0.5),
+                     cex,
+                     lwd = cex * 3,
+                     ...) {
   n.obs           <- qic$n.obs
   y               <- qic$y
   x               <- 1:n.obs
@@ -873,7 +873,8 @@ plot.qic <- function(qic,
        cex.lab = cex,
        ...)
   # add x axis and title to plot
-  axis(1, at = 1:n.obs, labels = labels, cex.axis = cex, ...)
+  xat <- axTicks(1, axp = c(range(x), 3))
+  axis(1, at = xat, labels = labels[xat], cex.axis = cex, ...)
   title(main = main, adj = 0, line = 2.3, cex.main = cex)
 
   # Color and dash center line if non random variation is present

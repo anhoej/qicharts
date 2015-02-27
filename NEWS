@@ -1,3 +1,7 @@
+qicharts 0.1.3
+=================
+* Made x axis prettier
+
 qicharts 0.1.2
 =================
 * Set control limits outside possible range to NA in T, P, U, and G charts.
