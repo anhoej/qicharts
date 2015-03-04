@@ -1,7 +1,9 @@
 qicharts 0.1.3
 =================
-* Improved graph design based on the priciples of Stephen Few (perceptualedge.com)
+* Improved graph design based on the priciples of Stephen Few (perceptualedge.com).
 * Added argument to produce I control charts in trc function.
+* Added argument 'primed' to the qic function, correcting narrow control limits when using P or U charts on data involving very large sample sizes.
+* Smart rounding is used by default for median labels in trc charts. The 'dec' argument still provides manual control if needed.
 
 qicharts 0.1.2
 =================
