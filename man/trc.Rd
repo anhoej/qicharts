@@ -4,7 +4,7 @@
 \alias{trc}
 \title{Trellis run charts for multivariate data}
 \usage{
-trc(x, chart = c("run", "i"), xscale = "same", yscale = "same", dec = 2,
+trc(x, chart = c("run", "i"), xscale = "same", yscale = "same",
   xpad = 0.1, pch = 20, ...)
 }
 \arguments{
@@ -17,8 +17,6 @@ g1 + g2 + ..., indicating that plots of y (on the y-axis) versus x
 \item{xscale}{Scaling of x-axes: 'same' or 'free'}
 
 \item{yscale}{Scaling of y-axes: 'same' or 'free'}
-
-\item{dec}{Number of decimals of median value}
 
 \item{xpad}{Number specifying the fraction by which to extend the x-axis in
 order to make space for the median label.}

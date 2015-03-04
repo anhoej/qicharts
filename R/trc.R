@@ -11,7 +11,6 @@
 #' @param chart Type of chart: 'run' or 'i'
 #' @param xscale Scaling of x-axes: 'same' or 'free'
 #' @param yscale Scaling of y-axes: 'same' or 'free'
-#' @param dec Number of decimals of median value
 #' @param pch Plotting character
 #' @param xpad Number specifying the fraction by which to extend the x-axis in
 #'   order to make space for the median label.
@@ -50,7 +49,6 @@ trc <- function(x,
                 chart  = c('run', 'i'),
                 xscale = 'same',
                 yscale = 'same',
-                dec    = 2,
                 xpad   = 0.1,
                 pch    = 20,
                 ...) {
@@ -79,6 +77,12 @@ trc <- function(x,
          ylim = range(qic$y, qic$lcl, qic$ucl, na.rm = T))
   }
 
+  # Smart rounding for median labels, to at least 2 significant digits
+  sround <- function(x) {
+    n <- nchar(as.character(floor(x)))
+    signif(x, max(2, n))
+  }
+
   # Setup plot
   panel <- function(x, y, ...) {
     qic <- qic(y, chart = chart, plot.chart = FALSE, ...)
@@ -97,7 +101,7 @@ trc <- function(x,
     panel.lines(x, qic$lcl, col = col3, lwd = 0.5)
     panel.points(x, y, type = 'o', pch = pch, col = col1, lwd = 2, cex = 0.5)
     panel.text(x = max(x), y = qic$cl,
-               labels = round(qic$cl, dec),
+               labels = sapply(qic$cl, sround),
                cex = 0.7,
                col = col3,
                pos = 4)
