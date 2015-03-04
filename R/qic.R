@@ -47,7 +47,11 @@
 #' @param linevals Logical value, if TRUE, prints values for center and control
 #'   lines on plot.
 #' @param plot.chart Logical value, if TRUE, prints plot.
-#' @param prnt Logical value, if TRUE prints return value
+#' @param prnt Logical value, if TRUE, prints return value
+#' @param primed Logical value, if TRUE, control limits incorporate
+#'   between-subgroup variation as proposed by Laney (2002). This is recommended
+#'   for data involving very large sample sizes \code{n}. Only relevant for P
+#'   and U charts.
 #' @param ... Further arguments to plot function.
 #'
 #' @details If \code{chart} is not specified, \code{qic} plots a \strong{run
@@ -79,15 +83,17 @@
 #' @return A list of values and parameters of the qic plot.
 #'
 #' @references Runs analysis: \itemize{ \item Mark F. Schilling (2012). The
-#'   Surprising Predictability of Long Runs. Math. Mag. 85, 141-149 \item
+#'   Surprising Predictability of Long Runs. Math. Mag. 85, 141-149. \item
 #'   Zhenmin Chen (2010). A note on the runs test. Model Assisted Statistics and
 #'   Applications 5, 73-77. } Calculation of control limits: \itemize{ \item
 #'   Douglas C. Montgomery (2009). Introduction to Statistical Process Control,
-#'   Sixth Edition, John Wiley & Sons \item James C. Benneyan (2001).
+#'   Sixth Edition, John Wiley & Sons. \item James C. Benneyan (2001).
 #'   Number-Between g-Type Statistical Quality Control Charts for Monitoring
-#'   Adverse Events. Health Care Management Science 4, 305-318 \item Lloyd P.
+#'   Adverse Events. Health Care Management Science 4, 305-318. \item Lloyd P.
 #'   Provost, Sandra K. Murray (2011). The Health Care Data Guide: Learning from
-#'   Data for Improvement. San Fransisco: John Wiley & Sons Inc. }
+#'   Data for Improvement. San Fransisco: John Wiley & Sons Inc. \item David B.
+#'   Laney (2002). Improved control charts for attributes. Quality Engineering,
+#'   14(4), 531-537.}
 #'
 #' @examples
 #' set.seed(1)
@@ -179,6 +185,7 @@ qic <- function(y,
                 linevals   = TRUE,
                 plot.chart = TRUE,
                 prnt       = FALSE,
+                primed     = FALSE,
                 ...) {
 
   # Select chart type
@@ -292,7 +299,8 @@ qic <- function(y,
     y <- do.call(fn, list(d = d[p,],
                           cl = cl,
                           freeze = freeze,
-                          exclude = ex))
+                          exclude = ex,
+                          primed = primed))
     qic$y   <- c(qic$y, y$y)
     qic$cl  <- c(qic$cl, y$cl)
     qic$lcl <- c(qic$lcl, y$lcl)
@@ -601,7 +609,7 @@ qic.s <- function(d, freeze = NULL, cl, exclude, ...){
               ucl = ucl))
 }
 
-qic.p <- function(d, freeze, cl, exclude, ...){
+qic.p <- function(d, freeze, cl, exclude, primed, ...){
 
   # Calcutate indicator to plot
   n <- d$y.sum
@@ -625,6 +633,14 @@ qic.p <- function(d, freeze, cl, exclude, ...){
 
   # Calculate standard deviation, , Montgomery 7.8
   stdev <- sqrt(cl * (1 - cl) / N)
+
+  # Calculate standard deviation for Laney's p-primed chart, incorporating
+  # between-subgroup variation.
+  if(primed) {
+    z_i <- (y[base] - cl[base]) / stdev[base]
+    sigma_z <- mean(abs(diff(z_i))) / 1.128
+    stdev <- stdev * sigma_z
+  }
 
   # Calculate limits
   ucl <- cl + 3 * stdev

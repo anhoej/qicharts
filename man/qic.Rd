@@ -11,7 +11,7 @@ qic(y, n, x, data, chart = c("run", "i", "mr", "xbar", "s", "t", "p", "c",
   x.format = "\%Y-\%m-\%d", cex = 0.8, main, xlab = "Subgroup",
   ylab = "Indicator", pre.text = "Before data", post.text = "After data",
   runvals = FALSE, linevals = TRUE, plot.chart = TRUE, prnt = FALSE,
-  ...)
+  primed = FALSE, ...)
 }
 \arguments{
 \item{y}{Numeric vector of counts or measures to plot. Mandatory.}
@@ -84,7 +84,12 @@ lines on plot.}
 
 \item{plot.chart}{Logical value, if TRUE, prints plot.}
 
-\item{prnt}{Logical value, if TRUE prints return value}
+\item{prnt}{Logical value, if TRUE, prints return value}
+
+\item{primed}{Logical value, if TRUE, control limits incorporate
+between-subgroup variation as proposed by Laney (2002). This is recommended
+for data involving very large sample sizes \code{n}. Only relevant for P
+and U charts.}
 
 \item{...}{Further arguments to plot function.}
 }
@@ -176,14 +181,16 @@ qic(y, n, x = week, data = d, chart = 'p',
 }
 \references{
 Runs analysis: \itemize{ \item Mark F. Schilling (2012). The
-  Surprising Predictability of Long Runs. Math. Mag. 85, 141-149 \item
+  Surprising Predictability of Long Runs. Math. Mag. 85, 141-149. \item
   Zhenmin Chen (2010). A note on the runs test. Model Assisted Statistics and
   Applications 5, 73-77. } Calculation of control limits: \itemize{ \item
   Douglas C. Montgomery (2009). Introduction to Statistical Process Control,
-  Sixth Edition, John Wiley & Sons \item James C. Benneyan (2001).
+  Sixth Edition, John Wiley & Sons. \item James C. Benneyan (2001).
   Number-Between g-Type Statistical Quality Control Charts for Monitoring
-  Adverse Events. Health Care Management Science 4, 305-318 \item Lloyd P.
+  Adverse Events. Health Care Management Science 4, 305-318. \item Lloyd P.
   Provost, Sandra K. Murray (2011). The Health Care Data Guide: Learning from
-  Data for Improvement. San Fransisco: John Wiley & Sons Inc. }
+  Data for Improvement. San Fransisco: John Wiley & Sons Inc. \item David B.
+  Laney (2002). Improved control charts for attributes. Quality Engineering,
+  14(4), 531-537.}
 }
 
