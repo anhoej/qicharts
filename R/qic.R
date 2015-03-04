@@ -690,7 +690,7 @@ qic.c <- function(d, freeze, cl, exclude, ...){
               ucl = ucl))
 }
 
-qic.u <- function(d, freeze, cl, exclude, ...){
+qic.u <- function(d, freeze, cl, exclude, primed, ...){
 
   # Calcutate indicator to plot
   n <- d$y.sum
@@ -716,6 +716,14 @@ qic.u <- function(d, freeze, cl, exclude, ...){
 
   # Calculate standard deviation, Montgomery 7.19
   stdev <- sqrt(cl / N)
+
+  # Calculate standard deviation for Laney's p-primed chart, incorporating
+  # between-subgroup variation.
+  if(primed) {
+    z_i <- (y[base] - cl[base]) / stdev[base]
+    sigma_z <- mean(abs(diff(z_i))) / 1.128
+    stdev <- stdev * sigma_z
+  }
 
   # Calculate limits
   ucl <- cl + 3 * stdev
