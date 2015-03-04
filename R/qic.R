@@ -169,13 +169,13 @@ qic <- function(y,
                 decimals   = 1,
                 multiply   = 1,
                 x.format   = '%Y-%m-%d',
-                cex        = 0.9,
+                cex        = 0.8,
                 main,
                 xlab       = 'Subgroup',
                 ylab       = 'Indicator',
                 pre.text   = 'Before data',
                 post.text  = 'After data',
-                runvals    = TRUE,
+                runvals    = FALSE,
                 linevals   = TRUE,
                 plot.chart = TRUE,
                 prnt       = FALSE,
@@ -817,13 +817,12 @@ plot.qic <- function(qic,
                      ylim,
                      pre.text,
                      post.text,
-                     col1 = 'steelblue4',
-                     col2 = 'tomato',
-                     col3 = 'palegreen4',
-                     mar = c(4.5, 4.5, 3.5, 0.5),
                      cex,
-                     lwd = cex * 3,
                      ...) {
+  col1            <- rgb(093, 165, 218, maxColorValue = 255)
+  col2            <- rgb(223, 092, 036, maxColorValue = 255)
+  col3            <- rgb(140, 140, 140, maxColorValue = 255)
+  lwd             <- cex * 3
   n.obs           <- qic$n.obs
   y               <- qic$y
   x               <- 1:n.obs
@@ -840,7 +839,8 @@ plot.qic <- function(qic,
   main            <- qic$main
   xlab            <- qic$xlab
   ylab            <- qic$ylab
-  type            <- ifelse(dots.only, 'p', 'b')
+  type            <- ifelse(dots.only, 'p', 'o')
+  pch             <- ifelse(dots.only, 19, 20)
   notes           <- qic$notes
   n.usefull       <- qic$n.usefull
   longest.run     <- qic$longest.run
@@ -851,13 +851,17 @@ plot.qic <- function(qic,
   ylim            <- range(ylim, y, ucl, lcl, cl, target, na.rm = T)
 
   # Setup plot margins
-  if(linevals)
-    mar           <- mar + c(0, 0, 0, +1.8)
+  mar             <- par('mar') + c(-0.3, 0, 0, 0)
+  #   if(!linevals)
+  #     mar           <- mar + c(0, 0, 0, -2)
+  #   if(main == '')
+  #     mar           <- mar + c(0, 0, -1.8, 0)
+  #   if(xlab == '')
+  #     mar           <- mar + c(-1, 0, 0, 0)
+  #   if(ylab == '')
+  #     mar           <- mar + c(0, -1, 0, 0)
   if(runvals & !dots.only)
     mar           <- mar + c(1.5, 0, 0, 0)
-  if(main == '')
-    mar           <- mar + c(0, 0, -1.8, 0)
-
   op              <- par(mar = mar)
 
   # setup empty plot area
@@ -865,17 +869,39 @@ plot.qic <- function(qic,
        y    = y,
        type = 'n',
        xaxt = 'n',
+       yaxt = 'n',
        bty  = 'n',
        ylim = ylim,
-       xlab = xlab,
-       ylab = ylab,
-       cex.axis = cex,
-       cex.lab = cex,
+       xlab = '',
+       ylab = '',
        ...)
+
   # add x axis and title to plot
-  xat <- axTicks(1, axp = c(range(x), 3))
-  axis(1, at = xat, labels = labels[xat], cex.axis = cex, ...)
-  title(main = main, adj = 0, line = 2.3, cex.main = cex)
+  axis(1,
+       at = 1:n.obs,
+       labels = labels,
+       tcl = -0.2,
+       lwd.ticks = lwd * 0.25,
+       lwd = 0,
+       cex.axis = cex,
+       col = col3,
+       ...)
+  axis(2,
+       cex.axis = cex,
+       tcl = -0.2,
+       col = col3,
+       lwd.ticks = lwd * 0.25,
+       lwd = 0,
+       las = 2, ...)
+  box(bty = 'l',
+      lwd = lwd * 0.25,
+      col = col3)
+  title(main = main,
+        adj = 0,
+        line = 2.7,
+        cex.main = cex * 1.1,
+        font.main = 1)
+  title(xlab = xlab, ylab = ylab, cex.lab = cex)
 
   # Color and dash center line if non random variation is present
   lty <- 1
@@ -887,11 +913,10 @@ plot.qic <- function(qic,
 
   # Add lines to plot
   for(p in parts) {
-    lines(p, cl[p], col = col, lty = lty, lwd = lwd / 3)
-    lines(p, ucl[p], lty = 1, col = col3, lwd = lwd / 3)
-    lines(p, lcl[p], lty = 1, col = col3, lwd = lwd / 3)
-    lines(p, y[p], type = type, col = col1, lwd = lwd * cex, pch = 19,
-          cex = cex)
+    lines(p, cl[p], col = col, lty = lty, lwd = lwd / 6)
+    lines(p, ucl[p], lty = 1, col = col3, lwd = lwd / 6)
+    lines(p, lcl[p], lty = 1, col = col3, lwd = lwd / 6)
+    lines(p, y[p], type = type, col = col1, lwd = lwd, pch = pch, cex = cex)
   }
   # add target line
   if(!is.null(target))
@@ -914,11 +939,11 @@ plot.qic <- function(qic,
   }
 
   # color data points outside sigma limits
-  points(signals, y[signals], col = col2, pch = 19, cex = cex * 1.4)
+  points(signals, y[signals], col = col2, pch = pch, cex = cex * 1.2)
 
   # mark excluded data points
-  points(exclude, y[exclude], col = 'white', pch = 19, cex = cex * 1.4)
-  points(exclude, y[exclude], col = 'black', pch = 4, cex = cex)
+  points(exclude, y[exclude], bg = 0, col = col3, pch = 21, cex = cex * 1.2)
+  #   points(exclude, y[exclude], col = 'black', pch = 4, cex = cex * 0.7)
 
   # add values for center and limits to the plot
   if(linevals) {
@@ -959,14 +984,14 @@ plot.qic <- function(qic,
           side = 1,
           line = 4.5,
           adj = 0.5,
-          col = 1 + (longest.run > longest.run.max))
+          col = ifelse(longest.run > longest.run.max, col2, 1))
     mtext(paste0('Crossings (min) = ', n.crossings,
                  ' (', n.crossings.min, ')'),
           cex = cex * 0.9,
           side = 1,
           adj = 1,
           line = 4.5,
-          col = 1 + (n.crossings < n.crossings.min))
+          col = ifelse(n.crossings < n.crossings.min, col2, 1))
   }
 
   # Add notes to plot
@@ -978,12 +1003,12 @@ plot.qic <- function(qic,
           side = 3,
           at = x,
           adj = 0.5,
-          cex = cex * 0.8)
+          cex = cex * 0.9)
     segments(x.ann,
              max(ylim, na.rm = TRUE) * 1.05,
              y1 = y.ann,
              lty = 2,
-             lwd = lwd * 0.3)
+             lwd = lwd * 0.2)
   }
   par(op)
 }

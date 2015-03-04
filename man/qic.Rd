@@ -8,9 +8,10 @@ qic(y, n, x, data, chart = c("run", "i", "mr", "xbar", "s", "t", "p", "c",
   "u", "g"), notes = NULL, cl = NULL, ylim = NULL, target = NULL,
   freeze = NULL, breaks = NULL, exclude = NULL, negy = TRUE,
   dots.only = FALSE, decimals = 1, multiply = 1,
-  x.format = "\%Y-\%m-\%d", cex = 0.9, main, xlab = "Subgroup",
+  x.format = "\%Y-\%m-\%d", cex = 0.8, main, xlab = "Subgroup",
   ylab = "Indicator", pre.text = "Before data", post.text = "After data",
-  runvals = TRUE, linevals = TRUE, plot.chart = TRUE, prnt = FALSE, ...)
+  runvals = FALSE, linevals = TRUE, plot.chart = TRUE, prnt = FALSE,
+  ...)
 }
 \arguments{
 \item{y}{Numeric vector of counts or measures to plot. Mandatory.}

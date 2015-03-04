@@ -1,6 +1,7 @@
 qicharts 0.1.3
 =================
-* Made x axis prettier
+* Improved graph design based on the priciples of Stephen Few (perceptualedge.com)
+* Added argument to produce I control charts in trc function.
 
 qicharts 0.1.2
 =================

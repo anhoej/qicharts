@@ -4,14 +4,15 @@
 \alias{trc}
 \title{Trellis run charts for multivariate data}
 \usage{
-trc(x, xscale = "same", yscale = "same", dec = 2, xpad = 0.1,
-  pch = 19, col1 = "steelblue4", col2 = "tomato", col3 = "palegreen4",
-  stripcol = "grey96", ...)
+trc(x, chart = c("run", "i"), xscale = "same", yscale = "same", dec = 2,
+  xpad = 0.1, pch = 20, ...)
 }
 \arguments{
 \item{x}{Formula object to plot. The formula is of the form y ~ x |
 g1 + g2 + ..., indicating that plots of y (on the y-axis) versus x
 (on the x-axis) should be produced conditional on the variables g1, g2}
+
+\item{chart}{Type of chart: 'run' or 'i'}
 
 \item{xscale}{Scaling of x-axes: 'same' or 'free'}
 
@@ -24,21 +25,13 @@ order to make space for the median label.}
 
 \item{pch}{Plotting character}
 
-\item{col1}{Colour of curve}
-
-\item{col2}{Colour of center line if non-random variation is present}
-
-\item{col3}{Colour of center line if only random variation is present}
-
-\item{stripcol}{Colour of strip background}
-
 \item{...}{Further arguments to xyplot}
 }
 \value{
 Returns an object of class "trellis".
 }
 \description{
-Run charts for multivariate data in grid (trellis) layout.
+Run charts for multivariate data in trellis (grid) layout.
 }
 \details{
 This function is a wrapper for \code{\link{xyplot}} from the
@@ -65,6 +58,9 @@ trc(y ~ x | g1 + g2, data = d2, main = 'Trellis run chart')
 # Introduce a shift in process performance
 d2$y[132:144] <- d2$y[132:144] * 3
 trc(y ~ x | g1 + g2, data = d2, main = 'Trellis run chart')
+
+# Make I chart
+trc(y ~ x | g1 + g2, data = d2, main = 'Trellis run chart', chart = 'i')
 }
 \seealso{
 \code{\link{xyplot}}

@@ -32,15 +32,16 @@ paretochart <- function (x,
   ylim     <- range(0, cumsum.x)
   mai.add  <- c(w - par('mai')[1], 0, -0.4, 0)
   cex      <- par('cex') * cex
+  col      <- rgb(093, 165, 218, maxColorValue = 255)
 
   if (missing(main)) {
     main <- paste('Pareto Chart for', varname)
   }
 
   if(xlab == '') {
-    oma <- c(0.5, 0.3, 0, 0.4)
+    oma <- c(0.5, 0.3, 0, 1.2)
   } else {
-    oma <- c(1.5, 0.3, 0, 0.4)
+    oma <- c(1.5, 0.3, 0, 1.2)
   }
 
   opar <- par(mai = par('mai') + mai.add, oma = oma)
@@ -49,17 +50,32 @@ paretochart <- function (x,
                 space    = 0.1,
                 ylim     = ylim,
                 ylab     = ylab,
-                col      = 'steelblue4',
+                col      = col,
+                border   = col,
+                yaxt     = 'n',
                 las      = 3,
                 cex      = cex,
                 cex.axis = cex,
                 cex.lab  = cex,
                 ...)
-  box()
-  title(main = main, adj = 0, line = 1, cex.main = cex)
-  abline(h = q, col = 'lightgrey', lty = 3)
-  lines(pc, cumsum.x, type = 'b', pch = 20)
-  axis(4, at = q, labels = paste0(cumperc, '%'), cex.axis = cex, ...)
+  box(lwd = 0.5, col = 'grey86')
+  title(main = main, adj = 0, line = 1, cex.main = cex, font.main = 1)
+  abline(h = q, col = 'grey86', lty = 3)
+  lines(pc, cumsum.x, type = 'b', pch = 20, col = 'grey40', lwd = 2)
+  axis(2,
+       cex.axis = cex,
+       lwd = 0.5,
+       col = 'grey86',
+       las = 1,
+       tck = -0.01, ...)
+  axis(4,
+       at = q,
+       labels = paste0(cumperc, '%'),
+       cex.axis = cex,
+       lwd = 0.5,
+       col = 'grey86',
+       las = 1,
+       tck = -0.01, ...)
   mtext(xlab, 1, line = 0, cex = cex, outer = TRUE)
   par(opar)
 
