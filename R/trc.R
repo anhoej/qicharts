@@ -59,20 +59,22 @@ trc <- function(x,
   col1     <- rgb(093, 165, 218, maxColorValue = 255)
   col2     <- rgb(251, 178, 088, maxColorValue = 255)
   col3     <- rgb(140, 140, 140, maxColorValue = 255)
-  stripcol <- 'grey96'
-  stripbor <- 'grey93'
+  axiscol  <- 'grey50'
+  stripcol <- 'grey86'
+  stripbor <- 'grey80'
+  #   stripcol <- 'grey96'
+  #   stripbor <- 'grey93'
+
   chart    <- match.arg(chart)
   strip    <- strip.custom(bg = stripcol)
-  par      <- list(axis.line = list(col = 0, lwd = 0.5),
+  par      <- list(axis.line = list(col = 0),
                    strip.border = list(col = stripbor),
                    par.main.text = list(cex = 1))
-  scales   <- list(y = list(relation = yscale,
-                            alternating = 1,
-                            tck = c(0.5, 0)),
-                   x = list(relation = xscale,
-                            alternating = 1,
-                            tck = c(0.5, 0)),
-                   col = 1)
+  scales   <- list(y = list(relation = yscale, col = 1),
+                   x = list(relation = xscale, col = 1),
+                   col = axiscol,
+                   alternating = 1,
+                   tck = c(0.5, 0))
 
   # Scale axes
   prepanel <- function(x, y, ...) {
@@ -106,11 +108,11 @@ trc <- function(x,
     panel.lines(x, qic$cl, col = col, lty = lty, lwd = 1)
     panel.lines(x, qic$ucl, col = col3, lwd = 0.5)
     panel.lines(x, qic$lcl, col = col3, lwd = 0.5)
-    panel.points(x, y, type = 'o', pch = pch, col = col1, lwd = 2, cex = 0.5)
+    panel.points(x, y, type = 'o', pch = pch, col = col1, lwd = 3, cex = 0.6)
     panel.text(x = max(x), y = qic$cl,
                labels = rounded_labels,
                cex = 0.7,
-               col = col3,
+               col = axiscol,
                pos = 4)
     panel.xyplot(x, y, ...)
     panel.points(x[qic$signal], y[qic$signal],
@@ -120,8 +122,8 @@ trc <- function(x,
     lims <- current.panel.limits()
     panel.abline(h = lims$ylim[1],
                  v = lims$xlim[1],
-                 col = col3,
-                 lwd = 0.5)
+                 col = axiscol,
+                 lwd = 0.6)
   }
 
   # Create plot

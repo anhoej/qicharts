@@ -845,8 +845,9 @@ plot.qic <- function(qic,
                      ...) {
   col1            <- rgb(093, 165, 218, maxColorValue = 255)
   col2            <- rgb(223, 092, 036, maxColorValue = 255)
-  col3            <- rgb(140, 140, 140, maxColorValue = 255)
-  lwd             <- cex * 3
+#   col3            <- rgb(140, 140, 140, maxColorValue = 255)
+  col3            <- 'grey50'
+  lwd             <- cex
   n.obs           <- qic$n.obs
   y               <- qic$y
   x               <- 1:n.obs
@@ -905,20 +906,21 @@ plot.qic <- function(qic,
        at = 1:n.obs,
        labels = labels,
        tcl = -0.2,
-       lwd.ticks = lwd * 0.25,
        lwd = 0,
+       lwd.ticks = lwd,
        cex.axis = cex,
        col = col3,
        ...)
   axis(2,
-       cex.axis = cex,
        tcl = -0.2,
-       col = col3,
-       lwd.ticks = lwd * 0.25,
        lwd = 0,
-       las = 2, ...)
+       lwd.ticks = lwd,
+       cex.axis = cex,
+       col = col3,
+       las = 2,
+       ...)
   box(bty = 'l',
-      lwd = lwd * 0.25,
+      lwd = lwd,
       col = col3)
   title(main = main,
         adj = 0,
@@ -937,10 +939,10 @@ plot.qic <- function(qic,
 
   # Add lines to plot
   for(p in parts) {
-    lines(p, cl[p], col = col, lty = lty, lwd = lwd / 6)
-    lines(p, ucl[p], lty = 1, col = col3, lwd = lwd / 6)
-    lines(p, lcl[p], lty = 1, col = col3, lwd = lwd / 6)
-    lines(p, y[p], type = type, col = col1, lwd = lwd, pch = pch, cex = cex)
+    lines(p, cl[p], col = col, lty = lty, lwd = lwd * 1.5)
+    lines(p, ucl[p], lty = 1, col = col3, lwd = lwd)
+    lines(p, lcl[p], lty = 1, col = col3, lwd = lwd)
+    lines(p, y[p], type = type, col = col1, lwd = lwd * 4, pch = pch, cex = cex)
   }
   # add target line
   if(!is.null(target))
@@ -950,8 +952,9 @@ plot.qic <- function(qic,
   # annotate before and after data if freeze argument is given
   if(!is.null(freeze)) {
     abline(v = freeze + 0.5,
+           col = col3,
            lty = 3,
-           lwd = lwd / 3)
+           lwd = lwd)
     mtext(pre.text,
           at = freeze / 2,
           cex = cex * 0.9,
@@ -1031,8 +1034,8 @@ plot.qic <- function(qic,
     segments(x.ann,
              max(ylim, na.rm = TRUE) * 1.05,
              y1 = y.ann,
-             lty = 2,
-             lwd = lwd * 0.2)
+             lty = 3,
+             lwd = lwd)
   }
   par(op)
 }
