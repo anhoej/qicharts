@@ -681,7 +681,7 @@ qic.c <- function(d, freeze, cl, exclude, ...){
   # Calculate limits
   ucl <- cl + 3 * stdev
   lcl <- cl - 3 * stdev
-  lcl[lcl < 0] <- 0
+  lcl[lcl < 0] <- NA
 
   # Return object to calling function
   return(list(y = y,
@@ -942,12 +942,13 @@ plot.qic <- function(qic,
     lines(p, cl[p], col = col, lty = lty, lwd = lwd * 1.5)
     lines(p, ucl[p], lty = 1, col = col3, lwd = lwd)
     lines(p, lcl[p], lty = 1, col = col3, lwd = lwd)
-    lines(p, y[p], type = type, col = col1, lwd = lwd * 4, pch = pch, cex = cex)
+    lines(p, y[p], type = type, col = col1, lwd = lwd * 4,
+          pch = pch, cex = cex)
   }
   # add target line
   if(!is.null(target))
     lines(1:n.obs, rep(target, n.obs), lty = 3, col = col3,
-          lwd = lwd / 3)
+          lwd = lwd)
 
   # annotate before and after data if freeze argument is given
   if(!is.null(freeze)) {
