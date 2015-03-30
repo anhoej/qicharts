@@ -57,7 +57,7 @@ trc <- function(x,
                 pch    = 20,
                 ...) {
   col1     <- rgb(093, 165, 218, maxColorValue = 255)
-  col2     <- rgb(251, 178, 088, maxColorValue = 255)
+  col2     <- rgb(223, 092, 036, maxColorValue = 255)
   col3     <- rgb(140, 140, 140, maxColorValue = 255)
   axiscol  <- 'grey50'
   stripcol <- 'grey86'
@@ -106,13 +106,13 @@ trc <- function(x,
     if (!is.null(dec)) rounded_labels <- round(qic$cl, dec)
 
     panel.lines(x, qic$cl, col = col, lty = lty, lwd = 1)
-    panel.lines(x, qic$ucl, col = col3, lwd = 0.5)
-    panel.lines(x, qic$lcl, col = col3, lwd = 0.5)
-    panel.points(x, y, type = 'o', pch = pch, col = col1, lwd = 3, cex = 0.6)
+    panel.lines(x, qic$ucl, col = col3, lwd = 1)
+    panel.lines(x, qic$lcl, col = col3, lwd = 1)
+    panel.points(x, y, type = 'o', pch = pch, col = col1, lwd = 2.5, cex = 1)
     panel.text(x = max(x), y = qic$cl,
                labels = rounded_labels,
-               cex = 0.7,
-               col = axiscol,
+               cex = 0.8,
+#                col = axiscol,
                pos = 4)
     panel.xyplot(x, y, ...)
     panel.points(x[qic$signal], y[qic$signal],

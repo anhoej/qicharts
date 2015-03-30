@@ -845,8 +845,8 @@ plot.qic <- function(qic,
                      ...) {
   col1            <- rgb(093, 165, 218, maxColorValue = 255)
   col2            <- rgb(223, 092, 036, maxColorValue = 255)
-#   col3            <- rgb(140, 140, 140, maxColorValue = 255)
-  col3            <- 'grey50'
+  col3            <- rgb(140, 140, 140, maxColorValue = 255)
+#   col3            <- 'grey50'
   lwd             <- cex
   n.obs           <- qic$n.obs
   y               <- qic$y
@@ -876,15 +876,15 @@ plot.qic <- function(qic,
   ylim            <- range(ylim, y, ucl, lcl, cl, target, na.rm = T)
 
   # Setup plot margins
-  mar             <- par('mar') + c(-0.3, 0, 0, 0)
-  #   if(!linevals)
-  #     mar           <- mar + c(0, 0, 0, -2)
-  #   if(main == '')
-  #     mar           <- mar + c(0, 0, -1.8, 0)
-  #   if(xlab == '')
-  #     mar           <- mar + c(-1, 0, 0, 0)
-  #   if(ylab == '')
-  #     mar           <- mar + c(0, -1, 0, 0)
+  mar             <- par('mar') + c(-0.5, 0, 0, 0)
+#     if(!linevals)
+#       mar           <- mar + c(0, 0, 0, -2)
+#     if(main == '')
+#       mar           <- mar + c(0, 0, -1.8, 0)
+#     if(xlab == '')
+#       mar           <- mar + c(-1, 0, 0, 0)
+#     if(ylab == '')
+#       mar           <- mar + c(0, -1, 0, 0)
   if(runvals & !dots.only)
     mar           <- mar + c(1.5, 0, 0, 0)
   op              <- par(mar = mar)
@@ -925,7 +925,7 @@ plot.qic <- function(qic,
   title(main = main,
         adj = 0,
         line = 2.7,
-        cex.main = cex * 1.1,
+        cex.main = cex * 1.25,
         font.main = 1)
   title(xlab = xlab, ylab = ylab, cex.lab = cex)
 
@@ -967,11 +967,10 @@ plot.qic <- function(qic,
   }
 
   # color data points outside sigma limits
-  points(signals, y[signals], col = col2, pch = pch, cex = cex * 1.2)
+  points(signals, y[signals], col = col2, pch = pch, cex = cex * 1.5)
 
   # mark excluded data points
   points(exclude, y[exclude], bg = 0, col = col3, pch = 21, cex = cex * 1.2)
-  #   points(exclude, y[exclude], col = 'black', pch = 4, cex = cex * 0.7)
 
   # add values for center and limits to the plot
   if(linevals) {
