@@ -108,7 +108,7 @@ trc <- function(x,
     panel.lines(x, qic$cl, col = col, lty = lty, lwd = 1)
     panel.lines(x, qic$ucl, col = col3, lwd = 1)
     panel.lines(x, qic$lcl, col = col3, lwd = 1)
-    panel.points(x, y, type = 'o', pch = pch, col = col1, lwd = 2.5, cex = 1)
+    panel.points(x, y, type = 'o', pch = pch, col = col1, lwd = 2.5, cex = 0.5)
     panel.text(x = max(x), y = qic$cl,
                labels = rounded_labels,
                cex = 0.8,
