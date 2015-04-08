@@ -52,6 +52,10 @@
 #'   between-subgroup variation as proposed by Laney (2002). This is recommended
 #'   for data involving very large sample sizes \code{n}. Only relevant for P
 #'   and U charts.
+#' @param standardised Logical value, if TRUE, creates a standardised control
+#'   chart, where points are plotted in standard deviation units along with a
+#'   center line at zero and control limits at 3 and -3. Only relevant for P
+#'   and U charts.
 #' @param ... Further arguments to plot function.
 #'
 #' @details If \code{chart} is not specified, \code{qic} plots a \strong{run
@@ -79,6 +83,8 @@
 #'
 #'   If more than one \code{note} is present within any subgroup, the first
 #'   \code{note} (alphabetically) is chosen.
+#'
+#'   Only one of \code{primed} and \code{standardised} can be set to \code{TRUE}.
 #'
 #' @return A list of values and parameters of the qic plot.
 #'

@@ -11,7 +11,7 @@ qic(y, n, x, data, chart = c("run", "i", "mr", "xbar", "s", "t", "p", "c",
   x.format = "\%Y-\%m-\%d", cex = 0.8, main, xlab = "Subgroup",
   ylab = "Indicator", pre.text = "Before data", post.text = "After data",
   runvals = FALSE, linevals = TRUE, plot.chart = TRUE, prnt = FALSE,
-  primed = FALSE, ...)
+  primed = FALSE, standardised = FALSE, ...)
 }
 \arguments{
 \item{y}{Numeric vector of counts or measures to plot. Mandatory.}
@@ -91,6 +91,11 @@ between-subgroup variation as proposed by Laney (2002). This is recommended
 for data involving very large sample sizes \code{n}. Only relevant for P
 and U charts.}
 
+\item{standardised}{Logical value, if TRUE, creates a standardised control
+chart, where points are plotted in standard deviation units along with a
+center line at zero and control limits at 3 and -3. Only relevant for P
+and U charts.}
+
 \item{...}{Further arguments to plot function.}
 }
 \value{
@@ -125,6 +130,8 @@ If \code{chart} is not specified, \code{qic} plots a \strong{run
 
   If more than one \code{note} is present within any subgroup, the first
   \code{note} (alphabetically) is chosen.
+
+  Only one of \code{primed} and \code{standardised} can be set to \code{TRUE}.
 }
 \examples{
 set.seed(1)
