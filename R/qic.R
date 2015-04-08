@@ -238,8 +238,6 @@ qic <- function(y,
     if(length(x) != length(y))
       stop('\"y\" and \"x\" arguments must have same length')
   }
-  if(all(primed, standardised))
-    stop('cannot set both \"primed\" and \"standardised\" to TRUE')
 
   # Fix missing values
   cases <- complete.cases(y, n)
