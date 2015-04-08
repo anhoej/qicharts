@@ -163,29 +163,30 @@ qic <- function(y,
                     'c',
                     'u',
                     'g'),
-                notes      = NULL,
-                cl         = NULL,
-                ylim       = NULL,
-                target     = NULL,
-                freeze     = NULL,
-                breaks     = NULL,
-                exclude    = NULL,
-                negy       = TRUE,
-                dots.only  = FALSE,
-                decimals   = 1,
-                multiply   = 1,
-                x.format   = '%Y-%m-%d',
-                cex        = 0.8,
+                notes        = NULL,
+                cl           = NULL,
+                ylim         = NULL,
+                target       = NULL,
+                freeze       = NULL,
+                breaks       = NULL,
+                exclude      = NULL,
+                negy         = TRUE,
+                dots.only    = FALSE,
+                decimals     = 1,
+                multiply     = 1,
+                x.format     = '%Y-%m-%d',
+                cex          = 0.8,
                 main,
-                xlab       = 'Subgroup',
-                ylab       = 'Indicator',
-                pre.text   = 'Before data',
-                post.text  = 'After data',
-                runvals    = FALSE,
-                linevals   = TRUE,
-                plot.chart = TRUE,
-                prnt       = FALSE,
-                primed     = FALSE,
+                xlab         = 'Subgroup',
+                ylab         = 'Indicator',
+                pre.text     = 'Before data',
+                post.text    = 'After data',
+                runvals      = FALSE,
+                linevals     = TRUE,
+                plot.chart   = TRUE,
+                prnt         = FALSE,
+                primed       = FALSE,
+                standardised = FALSE,
                 ...) {
 
   # Select chart type
@@ -231,6 +232,8 @@ qic <- function(y,
     if(length(x) != length(y))
       stop('\"y\" and \"x\" arguments must have same length')
   }
+  if(all(primed, standardised))
+    stop('cannot set both \"primed\" and \"standardised\" to TRUE')
 
   # Fix missing values
   cases <- complete.cases(y, n)
@@ -300,7 +303,8 @@ qic <- function(y,
                           cl = cl,
                           freeze = freeze,
                           exclude = ex,
-                          primed = primed))
+                          primed = primed,
+                          standardised = standardised))
     qic$y   <- c(qic$y, y$y)
     qic$cl  <- c(qic$cl, y$cl)
     qic$lcl <- c(qic$lcl, y$lcl)
@@ -609,7 +613,7 @@ qic.s <- function(d, freeze = NULL, cl, exclude, ...){
               ucl = ucl))
 }
 
-qic.p <- function(d, freeze, cl, exclude, primed, ...){
+qic.p <- function(d, freeze, cl, exclude, primed, standardised, ...){
 
   # Calcutate indicator to plot
   n <- d$y.sum
@@ -690,7 +694,7 @@ qic.c <- function(d, freeze, cl, exclude, ...){
               ucl = ucl))
 }
 
-qic.u <- function(d, freeze, cl, exclude, primed, ...){
+qic.u <- function(d, freeze, cl, exclude, primed, standardised, ...){
 
   # Calcutate indicator to plot
   n <- d$y.sum
