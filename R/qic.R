@@ -661,9 +661,9 @@ qic.p <- function(d, freeze, cl, exclude, primed, standardised, ...){
   # Calculations for standardised control chart, Montgomery 7.14
   if(standardised) {
     y <- (y[base] - cl[base]) / stdev[base]  # "z_i" in Montgomery
-    cl <- 0
-    ucl <- 3
-    lcl <- -3
+    cl <- rep(0, y.length)
+    ucl <- rep(3, y.length)
+    lcl <- rep(-3, y.length)
   }
 
   # Return object to calling function
@@ -751,9 +751,9 @@ qic.u <- function(d, freeze, cl, exclude, primed, standardised, ...){
   # Calculations for standardised control chart, Montgomery 7.20
   if(standardised) {
     y <- (y[base] - cl[base]) / stdev[base]  # "u_i" in Montgomery
-    cl <- 0
-    ucl <- 3
-    lcl <- -3
+    cl <- rep(0, y.length)
+    ucl <- rep(3, y.length)
+    lcl <- rep(-3, y.length)
   }
 
   # Return object to calling function
