@@ -7,11 +7,11 @@
 qic(y, n, x, data, chart = c("run", "i", "mr", "xbar", "s", "t", "p", "c",
   "u", "g"), notes = NULL, cl = NULL, ylim = NULL, target = NULL,
   freeze = NULL, breaks = NULL, exclude = NULL, negy = TRUE,
-  dots.only = FALSE, decimals = 1, multiply = 1,
-  x.format = "\%Y-\%m-\%d", cex = 0.8, main, xlab = "Subgroup",
-  ylab = "Indicator", pre.text = "Before data", post.text = "After data",
-  runvals = FALSE, linevals = TRUE, plot.chart = TRUE, prnt = FALSE,
-  primed = FALSE, standardised = FALSE, ...)
+  dots.only = FALSE, multiply = 1, x.format = "\%Y-\%m-\%d", cex = 0.8,
+  main, xlab = "Subgroup", ylab = "Indicator", decimals = NULL,
+  pre.text = "Before data", post.text = "After data", runvals = FALSE,
+  linevals = TRUE, plot.chart = TRUE, prnt = FALSE, primed = FALSE,
+  standardised = FALSE, ...)
 }
 \arguments{
 \item{y}{Numeric vector of counts or measures to plot. Mandatory.}
@@ -49,14 +49,11 @@ given).}
 center and control lines.}
 
 \item{negy}{Logical value, if TRUE, the y axis is allowed to be negative
-(only relevant for i and xbar charts).}
+(only relevant for I and Xbar charts).}
 
 \item{dots.only}{Logical value, if TRUE, data points are not connected by
 lines and runs analysis is not performed. Useful for comparison and funnel
 plots.}
-
-\item{decimals}{Integer indicating the number of decimals shown for center
-and limits on the plot.}
 
 \item{multiply}{Integer indicating a number to multiply y axis by, e.g. 100
 for percents rather than proportions.}
@@ -71,6 +68,10 @@ magnified.}
 \item{xlab}{Character string specifying the x axis label.}
 
 \item{ylab}{Character string specifying the y axis label.}
+
+\item{decimals}{Integer indicating the number of decimals shown for center
+and limits on the plot. Default behaviour is smart rounding to at least two
+significant digits.}
 
 \item{pre.text}{Character string labelling pre-freeze period}
 
@@ -93,8 +94,8 @@ and U charts.}
 
 \item{standardised}{Logical value, if TRUE, creates a standardised control
 chart, where points are plotted in standard deviation units along with a
-center line at zero and control limits at 3 and -3. Only relevant for P
-and U charts.}
+center line at zero and control limits at 3 and -3. Only relevant for P, U
+and Xbar charts.}
 
 \item{...}{Further arguments to plot function.}
 }

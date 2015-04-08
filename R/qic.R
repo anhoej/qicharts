@@ -30,8 +30,6 @@
 #' @param dots.only Logical value, if TRUE, data points are not connected by
 #'   lines and runs analysis is not performed. Useful for comparison and funnel
 #'   plots.
-#' @param decimals Integer indicating the number of decimals shown for center
-#'   and limits on the plot.
 #' @param multiply Integer indicating a number to multiply y axis by, e.g. 100
 #'   for percents rather than proportions.
 #' @param x.format Date format of x axis labels.
@@ -40,6 +38,9 @@
 #' @param main Character string specifying the title of the plot.
 #' @param xlab Character string specifying the x axis label.
 #' @param ylab Character string specifying the y axis label.
+#' @param decimals Integer indicating the number of decimals shown for center
+#'   and limits on the plot. Default behaviour is smart rounding to at least two
+#'   significant digits.
 #' @param pre.text Character string labelling pre-freeze period
 #' @param post.text Character string labelling post-freeze period
 #' @param runvals Logical value, if TRUE, prints statistics from runs analysis
@@ -180,13 +181,13 @@ qic <- function(y,
                 exclude      = NULL,
                 negy         = TRUE,
                 dots.only    = FALSE,
-                decimals     = 1,
                 multiply     = 1,
                 x.format     = '%Y-%m-%d',
                 cex          = 0.8,
                 main,
                 xlab         = 'Subgroup',
                 ylab         = 'Indicator',
+                decimals     = NULL,
                 pre.text     = 'Before data',
                 post.text    = 'After data',
                 runvals      = FALSE,
@@ -886,7 +887,7 @@ plot.qic <- function(qic,
   col1            <- rgb(093, 165, 218, maxColorValue = 255)
   col2            <- rgb(223, 092, 036, maxColorValue = 255)
   col3            <- rgb(140, 140, 140, maxColorValue = 255)
-#   col3            <- 'grey50'
+  #   col3            <- 'grey50'
   lwd             <- cex
   n.obs           <- qic$n.obs
   y               <- qic$y
@@ -917,14 +918,14 @@ plot.qic <- function(qic,
 
   # Setup plot margins
   mar             <- par('mar') + c(-0.5, 0, 0, 0)
-#     if(!linevals)
-#       mar           <- mar + c(0, 0, 0, -2)
-#     if(main == '')
-#       mar           <- mar + c(0, 0, -1.8, 0)
-#     if(xlab == '')
-#       mar           <- mar + c(-1, 0, 0, 0)
-#     if(ylab == '')
-#       mar           <- mar + c(0, -1, 0, 0)
+  #     if(!linevals)
+  #       mar           <- mar + c(0, 0, 0, -2)
+  #     if(main == '')
+  #       mar           <- mar + c(0, 0, -1.8, 0)
+  #     if(xlab == '')
+  #       mar           <- mar + c(-1, 0, 0, 0)
+  #     if(ylab == '')
+  #       mar           <- mar + c(0, -1, 0, 0)
   if(runvals & !dots.only)
     mar           <- mar + c(1.5, 0, 0, 0)
   op              <- par(mar = mar)
@@ -1014,23 +1015,23 @@ plot.qic <- function(qic,
 
   # add values for center and limits to the plot
   if(linevals) {
-    mtext(round(cl[n.obs], decimals),
+    mtext(sround(cl[n.obs], decimals),
           side = 4,
           at = cl[n.obs],
           las = 1,
           cex = cex * 0.9)
-    mtext(round(ucl[n.obs], decimals),
+    mtext(sround(ucl[n.obs], decimals),
           side = 4,
           at = ucl[n.obs],
           las = 1,
           cex = cex * 0.9)
-    mtext(round(lcl[n.obs], decimals),
+    mtext(sround(lcl[n.obs], decimals),
           side = 4,
           at = lcl[n.obs],
           las = 1,
           cex = cex * 0.9)
     if(!is.null(target))
-      mtext(round(target, decimals),
+      mtext(sround(target, decimals),
             side = 4,
             at = target,
             las = 1,
@@ -1078,4 +1079,13 @@ plot.qic <- function(qic,
              lwd = lwd)
   }
   par(op)
+}
+
+# Smart rounding for median labels, to at least 2 significant digits
+sround <- function(x, dec) {
+  if(is.null(dec)) {
+    n <- nchar(as.character(floor(x)))
+    return(signif(x, max(2, n)))
+  }
+  return(round(x, dec))
 }
