@@ -84,7 +84,9 @@
 #'   If more than one \code{note} is present within any subgroup, the first
 #'   \code{note} (alphabetically) is chosen.
 #'
-#'   Only one of \code{primed} and \code{standardised} can be set to \code{TRUE}.
+#'   If both \code{primed} and \code{standardised} are \code{TRUE}, points are
+#'   plotted in units corresponding to Laney's modified "standard deviation",
+#'   which incorporates the variation between subgroups.
 #'
 #' @return A list of values and parameters of the qic plot.
 #'

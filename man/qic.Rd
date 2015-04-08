@@ -131,7 +131,9 @@ If \code{chart} is not specified, \code{qic} plots a \strong{run
   If more than one \code{note} is present within any subgroup, the first
   \code{note} (alphabetically) is chosen.
 
-  Only one of \code{primed} and \code{standardised} can be set to \code{TRUE}.
+  If both \code{primed} and \code{standardised} are \code{TRUE}, points are
+  plotted in units corresponding to Laney's modified "standard deviation",
+  which incorporates the variation between subgroups.
 }
 \examples{
 set.seed(1)
