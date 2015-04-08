@@ -748,6 +748,14 @@ qic.u <- function(d, freeze, cl, exclude, primed, standardised, ...){
   lcl <- cl - 3 * stdev
   lcl[lcl < 0] <- NA
 
+  # Calculations for standardised control chart, Montgomery 7.20
+  if(standardised) {
+    y <- (y[base] - cl[base]) / stdev[base]  # "u_i" in Montgomery
+    cl <- 0
+    ucl <- 3
+    lcl <- -3
+  }
+
   # Return object to calling function
   return(list(y = y,
               cl = cl,
