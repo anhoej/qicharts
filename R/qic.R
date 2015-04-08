@@ -641,7 +641,7 @@ qic.p <- function(d, freeze, cl, exclude, primed, standardised, ...){
     cl <- sum(n[base], na.rm = T) / sum(N[base], na.rm = T)
   cl <- rep(cl, y.length)
 
-  # Calculate standard deviation, , Montgomery 7.8
+  # Calculate standard deviation, Montgomery 7.8
   stdev <- sqrt(cl * (1 - cl) / N)
 
   # Calculate standard deviation for Laney's p-primed chart, incorporating
@@ -657,6 +657,14 @@ qic.p <- function(d, freeze, cl, exclude, primed, standardised, ...){
   ucl[ucl > 1] <- NA
   lcl <- cl - 3 * stdev
   lcl[lcl < 0] <- NA
+
+  # Calculations for standardised control chart, Montgomery 7.14
+  if(standardised) {
+    y <- (y[base] - cl[base]) / stdev[base]  # "z_i" in Montgomery
+    cl <- 0
+    ucl <- 3
+    lcl <- -3
+  }
 
   # Return object to calling function
   return(list(y = y,
