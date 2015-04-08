@@ -202,8 +202,16 @@ qic <- function(y,
   fn <- paste0('qic.', type)
 
   # Prepare chart title
-  if(missing(main))
+  no_title <- missing(main)
+
+  if(no_title)
     main <- paste(toupper(type), "Chart of", deparse(substitute(y)))
+
+  if(no_title & primed == T)
+    main <- paste(paste0(toupper(type), "'"), "Chart of", deparse(substitute(y)))
+
+  if(no_title & standardised == T)
+    main <- paste("Standardised", main)
 
   # Get data, sample sizes, subgroups, and notes
   if(!missing(data)){
