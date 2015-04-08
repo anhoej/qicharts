@@ -26,7 +26,7 @@
 #' @param exclude Numeric vector of data points to exclude from calculations of
 #'   center and control lines.
 #' @param negy Logical value, if TRUE, the y axis is allowed to be negative
-#'   (only relevant for i and xbar charts).
+#'   (only relevant for I and Xbar charts).
 #' @param dots.only Logical value, if TRUE, data points are not connected by
 #'   lines and runs analysis is not performed. Useful for comparison and funnel
 #'   plots.
@@ -54,8 +54,8 @@
 #'   and U charts.
 #' @param standardised Logical value, if TRUE, creates a standardised control
 #'   chart, where points are plotted in standard deviation units along with a
-#'   center line at zero and control limits at 3 and -3. Only relevant for P
-#'   and U charts.
+#'   center line at zero and control limits at 3 and -3. Only relevant for P, U
+#'   and Xbar charts.
 #' @param ... Further arguments to plot function.
 #'
 #' @details If \code{chart} is not specified, \code{qic} plots a \strong{run
@@ -660,7 +660,7 @@ qic.p <- function(d, freeze, cl, exclude, primed, standardised, ...){
 
   # Calculations for standardised control chart, Montgomery 7.14
   if(standardised) {
-    y <- (y[base] - cl[base]) / stdev[base]  # "z_i" in Montgomery
+    y <- (y - cl) / stdev # "z_i" in Montgomery
     cl <- rep(0, y.length)
     ucl <- rep(3, y.length)
     lcl <- rep(-3, y.length)
@@ -750,7 +750,7 @@ qic.u <- function(d, freeze, cl, exclude, primed, standardised, ...){
 
   # Calculations for standardised control chart, Montgomery 7.20
   if(standardised) {
-    y <- (y[base] - cl[base]) / stdev[base]  # "u_i" in Montgomery
+    y <- (y - cl) / stdev  # "u_i" in Montgomery
     cl <- rep(0, y.length)
     ucl <- rep(3, y.length)
     lcl <- rep(-3, y.length)
