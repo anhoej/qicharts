@@ -547,13 +547,12 @@ qic.t <- function(d, freeze, cl, exclude, ...) {
               ucl = ucl))
 }
 
-qic.xbar <- function(d, freeze, cl, exclude, ...){
+qic.xbar <- function(d, freeze, cl, exclude, standardised, ...){
 
   # Get values to plot
   y <- d$y.mean
   n <- d$y.n
   s <- d$y.sd
-  excl <- which(is.na(s))
 
   # Get number of subgroups
   y.length <- length(y)
@@ -570,14 +569,21 @@ qic.xbar <- function(d, freeze, cl, exclude, ...){
     cl <- sum(n[base] * y[base], na.rm = T) / sum(n[base], na.rm = T)
   cl <- rep(cl, y.length)
 
-  # Calculate standard deviation and control limits, Montgomery 6.28
+  # Calculate standard deviation and control limits, Montgomery 6.31
   stdev <- sqrt(sum(s[base]^2 * (n[base] - 1), na.rm = T) /
                   sum(n[base] - 1, na.rm = T))
 
-  #   stdev[excl] <- NA
   A3 <- a3(n)
   ucl <- cl + A3 * stdev
   lcl <- cl - A3 * stdev
+
+  # Calculations for standardised control chart
+  if(standardised) {
+    y <- (y - cl) / (stdev / sqrt(n))
+    cl <- rep(0, y.length)
+    ucl <- rep(3, y.length)
+    lcl <- rep(-3, y.length)
+  }
 
   # Return object to calling function
   return(list(y = y,
