@@ -331,10 +331,12 @@ qic <- function(y,
     qic$lcl[qic$lcl < 0] <- NA
 
   # Multiply y axis by multiply argument
-  qic$y   <- as.vector(qic$y) * multiply
-  qic$cl  <- as.vector(qic$cl) * multiply
-  qic$lcl <- as.vector(qic$lcl) * multiply
-  qic$ucl <- as.vector(qic$ucl) * multiply
+  if(!standardised) {
+    qic$y   <- as.vector(qic$y) * multiply
+    qic$cl  <- as.vector(qic$cl) * multiply
+    qic$lcl <- as.vector(qic$lcl) * multiply
+    qic$ucl <- as.vector(qic$ucl) * multiply
+  }
 
   # Create x axis labels
   labels <- row.names(d)
