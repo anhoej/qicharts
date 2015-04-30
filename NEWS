@@ -2,8 +2,17 @@ qicharts 0.1.3
 =================
 * Improved graph design based on the priciples of Stephen Few (perceptualedge.com).
 * Added argument to produce I control charts in trc function.
-* Added argument 'primed' to the qic function, correcting narrow control limits when using P or U charts on data involving very large sample sizes.
-* Smart rounding is used by default for median labels in trc charts. The 'dec' argument still provides manual control if needed.
+* Added argument 'primed' to the qic function, correcting narrow control limits
+  when using P or U charts on data involving very large sample sizes.
+* Added argument 'standardised' to the qic function. When using P, U or Xbar
+  charts, this allows the plotting of data points in standard deviation units
+  with control limits at -3 and 3 along with a center line at zero.
+* If so desired, P and U charts can be primed and standardised at the same time.
+* Smart rounding (to at least two significant digits) is used by default for
+  median labels in trc charts. The 'dec' argument still provides manual control
+  if needed.
+* Smart rounding is also the default for central line and control limit labels
+  in qic charts. The 'decimals' argument allows manual control of decimal digits.
 
 qicharts 0.1.2
 =================
