@@ -19,7 +19,7 @@ paretochart <- function (x,
                          ylab       = 'Frequency',
                          xlab       = '',
                          cumperc.by = 20,
-                         cex = 0.9,
+                         cex = 0.8,
                          ...) {
   varname  <- deparse(substitute(x))
   x        <- factor(x)
@@ -59,9 +59,9 @@ paretochart <- function (x,
                 cex.lab  = cex,
                 ...)
   box(lwd = 0.5, col = 'grey86')
-  title(main = main, adj = 0, line = 1, cex.main = cex, font.main = 1)
+  title(main = main, adj = 0, line = 1, cex.main = cex * 1.25, font.main = 1)
   abline(h = q, col = 'grey86', lty = 3)
-  lines(pc, cumsum.x, type = 'b', pch = 20, col = 'grey40', lwd = 2)
+  lines(pc, cumsum.x, type = 'o', pch = 20, col = 'grey40', lwd = 2)
   axis(2,
        cex.axis = cex,
        lwd = 0.5,

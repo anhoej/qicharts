@@ -1,7 +1,12 @@
 qicharts 0.1.4
 =================
-* Fixed target argument to multiply argument
-* cl argument now takes a vector of lenght >= 1 (is this a good idea?)
+* X axis tick marks only at x axis labels
+* Minor code cleanup
+* Fixed target argument to obey multiply argument
+* cl argument now takes a vector of lenght either one or the number of subgroups
+* Title of trellis run charts is now left justified and normal font weight (thanks to Markus Gesmann, www.magesblog.com)
+* Added gap argument to trc function to control spacing between panels
+* Added argument cex to trc function to control size of print character (thanks to John MacKintosh, @HighlandAnalyst)
 
 qicharts 0.1.3
 =================

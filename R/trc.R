@@ -15,6 +15,8 @@
 #'   rounding to at least two significant digits) should be satisfactory in most
 #'   cases.
 #' @param pch Plotting character
+#' @param cex Number indicating the magnification of plotting character
+#' @param gap Number indicating spacing between panels
 #' @param xpad Number specifying the fraction by which to extend the x-axis in
 #'   order to make space for the median label.
 #' @param ... Further arguments to xyplot
@@ -55,21 +57,24 @@ trc <- function(x,
                 dec    = NULL,
                 xpad   = 0.1,
                 pch    = 20,
+                cex    = 0.7,
+                gap    = 0.5,
                 ...) {
   col1     <- rgb(093, 165, 218, maxColorValue = 255)
   col2     <- rgb(223, 092, 036, maxColorValue = 255)
   col3     <- rgb(140, 140, 140, maxColorValue = 255)
   axiscol  <- 'grey50'
-  stripcol <- 'grey86'
-  stripbor <- 'grey80'
-  #   stripcol <- 'grey96'
-  #   stripbor <- 'grey93'
+  stripcol <- 'grey90'
+  stripbor <- 'grey90'
 
   chart    <- match.arg(chart)
   strip    <- strip.custom(bg = stripcol)
-  par      <- list(axis.line = list(col = 0),
+  par      <- list(axis.line = list(col = stripcol),
                    strip.border = list(col = stripbor),
-                   par.main.text = list(cex = 1))
+                   par.main.text = list(cex = 1.25,
+                                        font = 1,
+                                        just = 'left',
+                                        x = grid::unit(3, 'lines')))
   scales   <- list(y = list(relation = yscale, col = 1),
                    x = list(relation = xscale, col = 1),
                    col = axiscol,
@@ -84,10 +89,10 @@ trc <- function(x,
   }
 
   # Smart rounding for median labels, to at least 2 significant digits
-  sround <- function(x) {
-    n <- nchar(as.character(floor(x)))
-    signif(x, max(2, n))
-  }
+#   sround <- function(x) {
+#     n <- nchar(as.character(floor(x)))
+#     signif(x, max(2, n))
+#   }
 
   # Setup plot
   panel <- function(x, y, ...) {
@@ -96,28 +101,27 @@ trc <- function(x,
 
     if(signal) {
       col <- col2
-      lty <- 2
+      lty <- 5
     } else {
       col <- col3
       lty <- 1
     }
 
-    rounded_labels <- sapply(qic$cl, sround)
-    if (!is.null(dec)) rounded_labels <- round(qic$cl, dec)
+#     rounded_labels <- sapply(qic$cl, sround)
+#     if (!is.null(dec)) rounded_labels <- round(qic$cl, dec)
 
     panel.lines(x, qic$cl, col = col, lty = lty, lwd = 1)
     panel.lines(x, qic$ucl, col = col3, lwd = 1)
     panel.lines(x, qic$lcl, col = col3, lwd = 1)
-    panel.points(x, y, type = 'o', pch = pch, col = col1, lwd = 2.5, cex = 0.5)
+    panel.points(x, y, type = 'o', pch = pch, col = col1, lwd = 2.5, cex = cex)
     panel.text(x = max(x), y = qic$cl,
-               labels = rounded_labels,
+               labels = sround(qic$cl, dec), #rounded_labels,
                cex = 0.8,
-#                col = axiscol,
                pos = 4)
     panel.xyplot(x, y, ...)
     panel.points(x[qic$signal], y[qic$signal],
                  col = col2,
-                 cex = 0.9,
+                 cex = cex * 1.1,
                  pch = pch)
     lims <- current.panel.limits()
     panel.abline(h = lims$ylim[1],
@@ -135,7 +139,7 @@ trc <- function(x,
               col          = col3,
               strip        = strip,
               par.settings = par,
-              between      = list(x = 0.75, y = 0.75),
+              between      = list(x = gap, y = gap),
               ...)
 
   # Use outer strips with two conditioning variables

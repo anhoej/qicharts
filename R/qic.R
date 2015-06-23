@@ -16,7 +16,7 @@
 #'   "g": cases between events chart. }
 #' @param notes Character vector of notes to be added to individual. data
 #'   points.
-#' @param cl Value specifying the center line (if known).
+#' @param cl Value specifying the center line (if known). Should be of length 1 or same as number of subgroups
 #' @param ylim Range of y axis limits.
 #' @param target Value specifying a target line to plot.
 #' @param freeze Number identifying the last data point to include in
@@ -91,12 +91,19 @@
 #'
 #' @return A list of values and parameters of the qic plot.
 #'
-#' @references Runs analysis: \itemize{ \item Mark F. Schilling (2012). The
-#'   Surprising Predictability of Long Runs. Math. Mag. 85, 141-149. \item
-#'   Zhenmin Chen (2010). A note on the runs test. Model Assisted Statistics and
-#'   Applications 5, 73-77. } Calculation of control limits: \itemize{ \item
-#'   Douglas C. Montgomery (2009). Introduction to Statistical Process Control,
-#'   Sixth Edition, John Wiley & Sons. \item James C. Benneyan (2001).
+#' @references Runs analysis: \itemize{ \item Jacob Anhøj, Anne Vingaard Olesen
+#'   (2014). Run Charts Revisited: A Simulation Study of Run Chart Rules for
+#'   Detection of Non-Random Variation in Health Care Processes. PLoS ONE 9(11):
+#'   e113825. doi: 10.1371/journal.pone.0113825 .
+#'   \item Jacob Anhøj (2015). Diagnostic Value of Run Chart Analysis: Using
+#'   Likelihood Ratios to Compare Run Chart Rules on Simulated Data Series.
+#'   PLoS ONE 10(3): e0121349. doi: 10.1371/journal.pone.0121349
+#'   \item Mark F. Schilling (2012). The Surprising Predictability of Long Runs.
+#'   Math. Mag. 85, 141-149. \item Zhenmin Chen (2010). A note on the runs test.
+#'   Model Assisted Statistics and Applications 5, 73-77. }
+#'   Calculation of control limits: \itemize{ \item   Douglas C. Montgomery
+#'   (2009). Introduction to Statistical Process Control, Sixth Edition, John
+#'   Wiley & Sons. \item James C. Benneyan (2001).
 #'   Number-Between g-Type Statistical Quality Control Charts for Monitoring
 #'   Adverse Events. Health Care Management Science 4, 305-318. \item Lloyd P.
 #'   Provost, Sandra K. Murray (2011). The Health Care Data Guide: Learning from
@@ -228,26 +235,30 @@ qic <- function(y,
 
   # Check arguments
   if(missing(y))
-    stop('\"y\" argument must be provided')
+    stop('\"y\" argument must be provided.')
   if(any(type == c('p', 'u')) & missing(n))
-    stop('\"n\" argument must be provided for P and U charts')
+    stop('\"n\" argument must be provided for P and U charts.')
   if(any(type == c('xbar', 's')) & missing(x))
-    stop('\"x\" argument must be provided for Xbar and S charts')
+    stop('\"x\" argument must be provided for Xbar and S charts.')
   if(any(type == c('xbar', 's', 'c', 'g', 't')) & !missing(n)) {
-    warning('\"n\" argument is only relevant for P, U, and I control charts and will be ignored')
+    warning('\"n\" argument is only relevant for P, U, and I control charts and will be ignored.')
     n <- rep(1, length(y))
   }
   if(missing(n)) {
     n <- rep(1, length(y))
   } else {
     if(length(n) != length(y))
-      stop('\"y\" and \"n\" arguments must have same length')
+      stop('\"y\" and \"n\" arguments must have same length.')
   }
   if(missing(x)) {
     x <- 1:length(y)
   } else {
     if(length(x) != length(y))
-      stop('\"y\" and \"x\" arguments must have same length')
+      stop('\"y\" and \"x\" arguments must have same length.')
+  }
+  if(length(target) > 1) {
+    warning('\"target\" argument must be a single value. Argument ignored.')
+    target <- NULL
   }
 
   # Fix missing values
@@ -269,13 +280,18 @@ qic <- function(y,
 
   # Check that subgroups are unique for T and G charts
   if(any(type == c('t', 'g')) & max(d$y.n, na.rm = TRUE) > 1)
-    stop('The grouping argument, \"x\", must contain unique values for T and G charts')
+    stop('The grouping argument, \"x\", must contain unique values for T and G charts.')
 
   # Replace NaN values with NA (if subgroup is empty)
   d[is.nan(d$y.mean),] <- NA
 
   # Get number of data points
   n.obs <- nrow(d)
+
+  if(!length(cl) %in% c(0, 1, n.obs)){
+    warning('\"cl\" argument should be either a single value or a vector of the same length as the number of subgroups. Argument ignored.')
+    cl = NULL
+  }
 
   # Fix notes
   if(missing(notes)) {
@@ -312,7 +328,6 @@ qic <- function(y,
     } else {
       ex <- NULL
     }
-
     # Build qic object
     y <- do.call(fn, list(d = d[p,],
                           cl = cl,
@@ -336,6 +351,8 @@ qic <- function(y,
     qic$cl  <- as.vector(qic$cl) * multiply
     qic$lcl <- as.vector(qic$lcl) * multiply
     qic$ucl <- as.vector(qic$ucl) * multiply
+    if(!is.null(target))
+      target <- as.vector(target) * multiply
   }
 
   # Create x axis labels
@@ -434,7 +451,8 @@ qic.run <- function(d, freeze, cl, exclude, ...){
   # Calculate center line
   if(is.null(cl))
     cl <- median(y[base], na.rm = T)
-  cl <- rep(cl, y.length)
+  if(length(cl) == 1)
+    cl <- rep(cl, y.length)
 
   # Calculate limits
   ucl <- NULL
@@ -889,8 +907,6 @@ plot.qic <- function(qic,
   col1            <- rgb(093, 165, 218, maxColorValue = 255)
   col2            <- rgb(223, 092, 036, maxColorValue = 255)
   col3            <- rgb(140, 140, 140, maxColorValue = 255)
-  #   col3            <- 'grey50'
-  lwd             <- cex
   n.obs           <- qic$n.obs
   y               <- qic$y
   x               <- 1:n.obs
@@ -916,49 +932,51 @@ plot.qic <- function(qic,
   n.crossings     <- qic$n.crossings
   n.crossings.min <- qic$n.crossings.min
   cex             <- par('cex') * cex  # Text size adjustment
+  cex2            <- cex * 0.9
+  lwd             <- cex
   ylim            <- range(ylim, y, ucl, lcl, cl, target, na.rm = T)
 
   # Setup plot margins
   mar             <- par('mar') + c(-0.5, 0, 0, 0)
-  #     if(!linevals)
-  #       mar           <- mar + c(0, 0, 0, -2)
-  #     if(main == '')
-  #       mar           <- mar + c(0, 0, -1.8, 0)
-  #     if(xlab == '')
-  #       mar           <- mar + c(-1, 0, 0, 0)
-  #     if(ylab == '')
-  #       mar           <- mar + c(0, -1, 0, 0)
+
   if(runvals & !dots.only)
     mar           <- mar + c(1.5, 0, 0, 0)
-  op              <- par(mar = mar)
+  op              <- par(mar = mar, cex = cex, lwd = lwd)
 
   # setup empty plot area
-  plot(x    = 1:n.obs,
+  plot(x    = x,
        y    = y,
        type = 'n',
-       xaxt = 'n',
-       yaxt = 'n',
-       bty  = 'n',
+       axes = F,
+#        xaxt = 'n',
+#        yaxt = 'n',
+#        bty  = 'n',
        ylim = ylim,
        xlab = '',
        ylab = '',
        ...)
 
-  # add x axis and title to plot
+  # add axes and title to plot
+  if(dots.only) {
+    at <- x
+  } else {
+    at <- intersect(axTicks(1), x)
+  }
+
   axis(1,
-       at = 1:n.obs,
-       labels = labels,
+       at = at,
+       labels = labels[at],
        tcl = -0.2,
        lwd = 0,
        lwd.ticks = lwd,
-       cex.axis = cex,
+       # cex.axis = cex,
        col = col3,
        ...)
   axis(2,
        tcl = -0.2,
        lwd = 0,
        lwd.ticks = lwd,
-       cex.axis = cex,
+       # cex.axis = cex,
        col = col3,
        las = 2,
        ...)
@@ -968,52 +986,49 @@ plot.qic <- function(qic,
   title(main = main,
         adj = 0,
         line = 2.7,
-        cex.main = cex * 1.25,
+        # cex.main = cex * 1.25,
         font.main = 1)
-  title(xlab = xlab, ylab = ylab, cex.lab = cex)
+  title(xlab = xlab, ylab = ylab)#, cex.lab = cex)
 
   # Color and dash center line if non random variation is present
   lty <- 1
   col <- col3
   if(runs.test & !dots.only) {
-    lty <- 2
+    lty <- 5
     col <- col2
   }
 
-  # Add lines to plot
+  # add lines to plot
   for(p in parts) {
     lines(p, cl[p], col = col, lty = lty, lwd = lwd * 1.5)
-    lines(p, ucl[p], lty = 1, col = col3, lwd = lwd)
-    lines(p, lcl[p], lty = 1, col = col3, lwd = lwd)
-    lines(p, y[p], type = type, col = col1, lwd = lwd * 4,
-          pch = pch, cex = cex)
+    lines(p, ucl[p], lty = 1, col = col3)#, lwd = lwd)
+    lines(p, lcl[p], lty = 1, col = col3)#, lwd = lwd)
+    lines(p, y[p], type = type, col = col1, lwd = lwd * 4, pch = pch)#, cex = cex)
   }
   # add target line
   if(!is.null(target))
-    lines(1:n.obs, rep(target, n.obs), lty = 3, col = col3,
-          lwd = lwd)
+    lines(x, rep(target, n.obs), lty = 3, col = col3)#, lwd = lwd)
 
   # annotate before and after data if freeze argument is given
   if(!is.null(freeze)) {
     abline(v = freeze + 0.5,
            col = col3,
-           lty = 3,
-           lwd = lwd)
+           lty = 3)#, lwd = lwd)
     mtext(pre.text,
           at = freeze / 2,
-          cex = cex * 0.9,
+          cex = cex2,
           line = 0.7)
     mtext(post.text,
           at = freeze + (n.obs - freeze) / 2,
-          cex = cex * 0.9,
+          cex = cex2,
           line = 0.7)
   }
 
   # color data points outside sigma limits
-  points(signals, y[signals], col = col2, pch = pch, cex = cex * 1.5)
+  points(signals, y[signals], col = col2, pch = pch, cex = cex * 2)
 
   # mark excluded data points
-  points(exclude, y[exclude], bg = 0, col = col3, pch = 21, cex = cex * 1.2)
+  points(exclude, y[exclude], bg = 0, col = col3, pch = 21, cex = cex * 1.5)
 
   # add values for center and limits to the plot
   if(linevals) {
@@ -1021,43 +1036,43 @@ plot.qic <- function(qic,
           side = 4,
           at = cl[n.obs],
           las = 1,
-          cex = cex * 0.9)
+          cex = cex2)
     mtext(sround(ucl[n.obs], decimals),
           side = 4,
           at = ucl[n.obs],
           las = 1,
-          cex = cex * 0.9)
+          cex = cex2)
     mtext(sround(lcl[n.obs], decimals),
           side = 4,
           at = lcl[n.obs],
           las = 1,
-          cex = cex * 0.9)
+          cex = cex2)
     if(!is.null(target))
       mtext(sround(target, decimals),
             side = 4,
             at = target,
             las = 1,
-            cex = cex * 0.9)
+            cex = cex2)
   }
 
   # Print statistics from runs analysis to plot
   if(runvals & !dots.only) {
     mtext(paste0('Obs. (usefull) = ', sum(!is.na(y)),
                  ' (', n.usefull, ')'),
-          cex = cex * 0.9,
+          cex = cex2,
           side = 1,
           line = 4.5,
           adj = 0)
     mtext(paste0('Longest run (max) = ', longest.run,
                  ' (', longest.run.max, ')'),
-          cex = cex * 0.9,
+          cex = cex2,
           side = 1,
           line = 4.5,
           adj = 0.5,
           col = ifelse(longest.run > longest.run.max, col2, 1))
     mtext(paste0('Crossings (min) = ', n.crossings,
                  ' (', n.crossings.min, ')'),
-          cex = cex * 0.9,
+          cex = cex2,
           side = 1,
           adj = 1,
           line = 4.5,
@@ -1073,12 +1088,11 @@ plot.qic <- function(qic,
           side = 3,
           at = x,
           adj = 0.5,
-          cex = cex * 0.9)
+          cex = cex2)
     segments(x.ann,
              max(ylim, na.rm = TRUE) * 1.05,
              y1 = y.ann,
-             lty = 3,
-             lwd = lwd)
+             lty = 3)#, lwd = lwd)
   }
   par(op)
 }
