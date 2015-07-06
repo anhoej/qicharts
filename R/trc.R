@@ -5,35 +5,37 @@
 #' @export
 #' @import lattice
 #' @import latticeExtra
-#' @param x Formula object to plot. The formula is of the form y ~ x |
-#'    g1 + g2 + ..., indicating that plots of y (on the y-axis) versus x
-#'    (on the x-axis) should be produced conditional on the variables g1, g2
-#' @param chart Type of chart: 'run' or 'i'
-#' @param xscale Scaling of x-axes: 'same' or 'free'
-#' @param yscale Scaling of y-axes: 'same' or 'free'
+#' @param x Formula object to plot. The formula is of the form y ~ x | g1 + g2 +
+#'   ..., indicating that plots of y (on the y-axis) versus x (on the x-axis)
+#'   should be produced conditional on the variables g1, g2.
+#' @param chart Type of chart: 'run' or 'i'.
+#' @param xscale Scaling of x-axes: 'same' or 'free'.
+#' @param yscale Scaling of y-axes: 'same' or 'free'.
 #' @param dec Number of decimals of median value. The default behaviour (smart
 #'   rounding to at least two significant digits) should be satisfactory in most
 #'   cases.
-#' @param pch Plotting character
-#' @param cex Number indicating the magnification of plotting character
-#' @param gap Number indicating spacing between panels
+#' @param pch Plotting character.
+#' @param cex Number indicating the magnification of plotting character.
+#' @param gap Number indicating spacing between panels.
+#' @param target Value specifying a target line to plot.
 #' @param xpad Number specifying the fraction by which to extend the x-axis in
 #'   order to make space for the median label.
-#' @param ... Further arguments to xyplot
-#' @details
-#' This function is a wrapper for \code{\link{xyplot}} from the
+#' @param ... Further arguments to xyplot.
+#' @details This function is a wrapper for \code{\link{xyplot}} from the
 #' \code{\link{lattice}} package. Some usefull arguments from
 #' \code{\link{xyplot}} are \code{main}, \code{ylab}, \code{xlab}, and
 #' \code{layout}.
 #' @return Returns an object of class "trellis".
-#' @seealso
-#' \code{\link{xyplot}}
+#' @seealso \code{\link{xyplot}}
 #' @examples
 #' # Trellis run chart on 1 conditioning variable
 #' d1 <- data.frame(y = rnorm(96, 12, 3),
 #'                  expand.grid(x = 1:24,
 #'                              g = LETTERS[1:4]))
 #' trc(y ~ x | g, data = d1, main = 'Trellis run chart')
+#'
+#' # Add target line
+#' trc(y ~ x | g, data = d1, main = 'Trellis run chart', target = 20)
 #'
 #' # Trellis run chart on 2 conditioning variables
 #' d2 <- data.frame(y = rnorm(144, 12, 3),
@@ -59,6 +61,7 @@ trc <- function(x,
                 pch    = 20,
                 cex    = 0.7,
                 gap    = 0.5,
+                target = NA,
                 ...) {
   col1     <- rgb(093, 165, 218, maxColorValue = 255)
   col2     <- rgb(223, 092, 036, maxColorValue = 255)
@@ -83,20 +86,16 @@ trc <- function(x,
 
   # Scale axes
   prepanel <- function(x, y, ...) {
-    qic <- qic(y, chart = chart, plot.chart = FALSE, ...)
+    # qic <- qic(y, chart = chart, plot.chart = FALSE, ...)
+    qic <- qic(y, chart = chart, plot = FALSE, ...)
     list(xlim = range(min(x), max(extendrange(x, f = xpad))),
-         ylim = range(qic$y, qic$lcl, qic$ucl, na.rm = T))
+         ylim = range(qic$y, qic$lcl, qic$ucl, target, na.rm = T))
   }
-
-  # Smart rounding for median labels, to at least 2 significant digits
-#   sround <- function(x) {
-#     n <- nchar(as.character(floor(x)))
-#     signif(x, max(2, n))
-#   }
 
   # Setup plot
   panel <- function(x, y, ...) {
-    qic <- qic(y, chart = chart, plot.chart = FALSE, ...)
+    # qic <- qic(y, chart = chart, plot.chart = FALSE, ...)
+    qic <- qic(y, chart = chart, plot = FALSE, ...)
     signal <- qic$runs.test
 
     if(signal) {
@@ -107,15 +106,17 @@ trc <- function(x,
       lty <- 1
     }
 
-#     rounded_labels <- sapply(qic$cl, sround)
-#     if (!is.null(dec)) rounded_labels <- round(qic$cl, dec)
-
     panel.lines(x, qic$cl, col = col, lty = lty, lwd = 1)
     panel.lines(x, qic$ucl, col = col3, lwd = 1)
     panel.lines(x, qic$lcl, col = col3, lwd = 1)
+    panel.lines(x, target, col = col3, lty = 3)
     panel.points(x, y, type = 'o', pch = pch, col = col1, lwd = 2.5, cex = cex)
     panel.text(x = max(x), y = qic$cl,
                labels = sround(qic$cl, dec), #rounded_labels,
+               cex = 0.8,
+               pos = 4)
+    panel.text(x = max(x), y = target,
+               labels = target,
                cex = 0.8,
                pos = 4)
     panel.xyplot(x, y, ...)
@@ -123,11 +124,11 @@ trc <- function(x,
                  col = col2,
                  cex = cex * 1.1,
                  pch = pch)
-    lims <- current.panel.limits()
-    panel.abline(h = lims$ylim[1],
-                 v = lims$xlim[1],
-                 col = axiscol,
-                 lwd = 0.6)
+#     lims <- current.panel.limits()
+#     panel.abline(h = lims$ylim[1],
+#                  v = lims$xlim[1],
+#                  col = axiscol,
+#                  lwd = 0.6)
   }
 
   # Create plot

@@ -1,22 +1,32 @@
-qicharts 0.1.4
+qicharts 0.3.0
 =================
-* X axis tick marks only at x axis labels
-* Minor code cleanup
-* Fixed target argument to obey multiply argument
-* cl argument now takes a vector of lenght either one or the number of subgroups
-* Title of trellis run charts is now left justified and normal font weight (thanks to Markus Gesmann, www.magesblog.com)
-* Added gap argument to trc function to control spacing between panels
-* Added argument cex to trc function to control size of print character (thanks to John MacKintosh, @HighlandAnalyst)
+* New argument, sub, in qic() function. Prints a subtitle at lower left corner.
+* New function, plot.qic(), plots a qic object.
+* qic() now returns a list object of class 'qic' for plotting with plot.qic().
+* prnt argument in qic() function will be deprecated, use print.out instead.
+
+qicharts 0.2.0
+=================
+* Added nint argument to qic() function control the number of tick marks on the x axis.
+* Fixed target argument of qic() function to obey multiply argument.
+* cl argument of qic() function now takes a vector of length either one or the number of subgroups (for variable centre line in run charts).
+* Minor code clean-up.
+* Added cex argument to trc() function to control dot size (thanks to John MacKintosh, @HighlandAnalyst).
+* Added gap argument to trc() function to control spacing between panels.
+* Added target argument to trc() function.
+* Title of trellis run charts is now left justified and of normal font weight (thanks to Markus Gesmann, www.magesblog.com).
+* Fixed a typo in graph output (usefull -> useful).
+* Added two recent run chart references to help section and vignette.
 
 qicharts 0.1.3
 =================
-* Improved graph design based on the priciples of Stephen Few (perceptualedge.com).
-* Added argument to produce I control charts in trc function.
-* Added argument 'primed' to the qic function, correcting narrow control limits
+* Improved graph design based on the principles of Stephen Few (perceptualedge.com).
+* Added argument to produce I control charts in trc() function.
+* Added argument 'primed' to the qic() function, correcting narrow control limits
   when using P or U charts on data involving very large sample sizes.
-* Added argument 'standardised' to the qic function. When using P, U or Xbar
+* Added argument 'standardised' to the qic() function. When using P, U or Xbar
   charts, this allows the plotting of data points in standard deviation units
-  with control limits at -3 and 3 along with a center line at zero.
+  with control limits at -3 and 3 along with a centre line at zero.
 * If so desired, P and U charts can be primed and standardised at the same time.
 * Smart rounding (to at least two significant digits) is used by default for
   median labels in trc charts. The 'dec' argument still provides manual control
@@ -30,14 +40,14 @@ qicharts 0.1.2
 
 qicharts 0.1.1
 =================
-* The trc function now retuns a lattice object.
+* The trc() function now returns a lattice object.
 
-* Added arguments to control printing character and colours in trc function.
+* Added arguments to control printing character and colours in trc() function.
 
 * Added dec argument to control the number of decimals on the label of
-  the center line in trc function.
+  the centre line in trc() function.
 
-* The qic function now plots the main curve on top of other lines in the plot.
+* The qic() function now plots the main curve on top of other lines in the plot.
 
 * Fixed an error caused if data frame argument holds a data frame
   created with the group_by function from dplyr.

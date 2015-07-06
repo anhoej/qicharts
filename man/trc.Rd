@@ -5,18 +5,19 @@
 \title{Trellis run charts for multivariate data}
 \usage{
 trc(x, chart = c("run", "i"), xscale = "same", yscale = "same",
-  dec = NULL, xpad = 0.1, pch = 20, cex = 0.7, gap = 0.5, ...)
+  dec = NULL, xpad = 0.1, pch = 20, cex = 0.7, gap = 0.5,
+  target = NA, ...)
 }
 \arguments{
-\item{x}{Formula object to plot. The formula is of the form y ~ x |
-g1 + g2 + ..., indicating that plots of y (on the y-axis) versus x
-(on the x-axis) should be produced conditional on the variables g1, g2}
+\item{x}{Formula object to plot. The formula is of the form y ~ x | g1 + g2 +
+..., indicating that plots of y (on the y-axis) versus x (on the x-axis)
+should be produced conditional on the variables g1, g2.}
 
-\item{chart}{Type of chart: 'run' or 'i'}
+\item{chart}{Type of chart: 'run' or 'i'.}
 
-\item{xscale}{Scaling of x-axes: 'same' or 'free'}
+\item{xscale}{Scaling of x-axes: 'same' or 'free'.}
 
-\item{yscale}{Scaling of y-axes: 'same' or 'free'}
+\item{yscale}{Scaling of y-axes: 'same' or 'free'.}
 
 \item{dec}{Number of decimals of median value. The default behaviour (smart
 rounding to at least two significant digits) should be satisfactory in most
@@ -25,13 +26,15 @@ cases.}
 \item{xpad}{Number specifying the fraction by which to extend the x-axis in
 order to make space for the median label.}
 
-\item{pch}{Plotting character}
+\item{pch}{Plotting character.}
 
-\item{cex}{Number indicating the magnification of plotting character}
+\item{cex}{Number indicating the magnification of plotting character.}
 
-\item{gap}{Number indicating spacing between panels}
+\item{gap}{Number indicating spacing between panels.}
 
-\item{...}{Further arguments to xyplot}
+\item{target}{Value specifying a target line to plot.}
+
+\item{...}{Further arguments to xyplot.}
 }
 \value{
 Returns an object of class "trellis".
@@ -51,6 +54,9 @@ d1 <- data.frame(y = rnorm(96, 12, 3),
                  expand.grid(x = 1:24,
                              g = LETTERS[1:4]))
 trc(y ~ x | g, data = d1, main = 'Trellis run chart')
+
+# Add target line
+trc(y ~ x | g, data = d1, main = 'Trellis run chart', target = 20)
 
 # Trellis run chart on 2 conditioning variables
 d2 <- data.frame(y = rnorm(144, 12, 3),
