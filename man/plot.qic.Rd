@@ -7,7 +7,7 @@
 \method{plot}{qic}(x, y = NULL, ...)
 }
 \arguments{
-\item{x}{Object returned from the qic() function.}
+\item{x}{List object returned from the qic() function.}
 
 \item{y}{Ignored. Included for compatibility with generic plot function.}
 

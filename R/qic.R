@@ -230,10 +230,10 @@ if(!missing(prnt)) {
   if(no_title)
     main <- paste(toupper(type), "Chart of", deparse(substitute(y)))
 
-  if(no_title & primed == T)
+  if(no_title & primed == TRUE)
     main <- paste(paste0(toupper(type), "'"), "Chart of", deparse(substitute(y)))
 
-  if(no_title & standardised == T)
+  if(no_title & standardised == TRUE)
     main <- paste("Standardised", main)
 
   # Get data, sample sizes, subgroups, and notes
@@ -318,13 +318,13 @@ if(!missing(prnt)) {
 
   # Fix notes
   if(missing(notes)) {
-    notes <- rep(NA, n.obs)
+    notes                  <- rep(NA, n.obs)
   } else {
-    notes <- as.character(notes)
-    notes[notes == ''] <- NA
-    notes <- c(notes, rep(NA, length(y) - length(notes)))
+    notes                  <- as.character(notes)
+    notes[notes == '']     <- NA
+    notes                  <- c(notes, rep(NA, length(y) - length(notes)))
     suppressWarnings(notes <- tapply(notes, x, min, na.rm = TRUE))
-    dimnames(notes) <- NULL
+    dimnames(notes)        <- NULL
   }
 
   # Create indices of chart parts (if breaks argument is given)
@@ -488,7 +488,7 @@ qic.run <- function(d, freeze, cl, exclude, ...){
 
   # Calculate center line
   if(is.null(cl))
-    cl <- median(y[base], na.rm = T)
+    cl <- median(y[base], na.rm = TRUE)
   if(length(cl) == 1)
     cl <- rep(cl, y.length)
 
@@ -514,27 +514,27 @@ qic.i <- function(d, freeze, cl, exclude, ...) {
   # Define subgroups to be used in calculations
   if(is.null(freeze))
     freeze <- y.length
-  base <- (1:freeze)
+  base <- 1:freeze
   if(!is.null(exclude))
     base <- base[-exclude]
 
   # Calculate center line
   if(is.null(cl))
-    cl <- mean(y[base], na.rm = T)
+    cl <- mean(y[base], na.rm = TRUE)
   cl <- rep(cl, y.length)
 
   # Calculate moving ranges
   mr <- abs(diff(y[base]))
-  amr <- mean(mr, na.rm = T)
+  amr <- mean(mr, na.rm = TRUE)
 
   # Calculate upper limit for moving ranges
   ulmr <- 3.267 * amr
 
   # Remove moving ranges bigger than ulmr and recalculate amr, Provost
   mr <- mr[mr < ulmr]
-  amr <- mean(mr, na.rm = T)
+  amr <- mean(mr, na.rm = TRUE)
 
-  # Calculate standard deviation, Montgomery, p. 6.33
+  # Calculate standard deviation, Montgomery, 6.33
   stdev <- amr/1.128
   stdev <- rep(stdev, y.length)
 
@@ -567,7 +567,7 @@ qic.mr <- function(d, freeze, cl, exclude, ...) {
 
   # Calculate center line
   if(is.null(cl))
-    cl <- mean(y[base], na.rm = T)
+    cl <- mean(y[base], na.rm = TRUE)
   cl <- rep(cl, y.length)
 
   # Calculate upper limit for moving ranges
@@ -585,11 +585,11 @@ qic.t <- function(d, freeze, cl, exclude, ...) {
   # Get values to plot
   y <- d$y.sum
 
-  if(min(y, na.rm = T) < 0) {
+  if(min(y, na.rm = TRUE) < 0) {
     stop('Time between events cannot contain negative values')
   }
 
-  if(min(y, na.rm = T) == 0) {
+  if(min(y, na.rm = TRUE) == 0) {
     y[y == 0] <- 0.1
     warning('Time between events should not contain zero values. Zeros replaced by 0.1')
   }
@@ -598,7 +598,7 @@ qic.t <- function(d, freeze, cl, exclude, ...) {
   y <- y^(1 / 3.6)
   d$y.sum <- y
 
-  # Calculate center and limits for I chart
+  # Calculate center and limits for transformed values
   qic <- qic.i(d, freeze, cl, exclude, ...)
 
   # Back transform center line and limits
@@ -633,12 +633,12 @@ qic.xbar <- function(d, freeze, cl, exclude, standardised, ...){
 
   # Calculate center line, Montgomery 6.30
   if(is.null(cl))
-    cl <- sum(n[base] * y[base], na.rm = T) / sum(n[base], na.rm = T)
+    cl <- sum(n[base] * y[base], na.rm = TRUE) / sum(n[base], na.rm = TRUE)
   cl <- rep(cl, y.length)
 
   # Calculate standard deviation and control limits, Montgomery 6.31
-  stdev <- sqrt(sum(s[base]^2 * (n[base] - 1), na.rm = T) /
-                  sum(n[base] - 1, na.rm = T))
+  stdev <- sqrt(sum(s[base]^2 * (n[base] - 1), na.rm = TRUE) /
+                  sum(n[base] - 1, na.rm = TRUE))
 
   A3 <- a3(n)
   ucl <- cl + A3 * stdev
@@ -677,8 +677,8 @@ qic.s <- function(d, freeze = NULL, cl, exclude, ...){
     base <- base[-exclude]
 
   # Calculate center line, Montgomery 6.31
-  sbar <- sqrt(sum(s[base]^2 * (n[base] - 1), na.rm = T) /
-                 (sum(n[base], na.rm = T) - y.length))
+  sbar <- sqrt(sum(s[base]^2 * (n[base] - 1), na.rm = TRUE) /
+                 (sum(n[base], na.rm = TRUE) - y.length))
   cl <- rep(sbar, y.length)
   B3 <- b3(n)
   B4 <- b4(n)
@@ -711,7 +711,7 @@ qic.p <- function(d, freeze, cl, exclude, primed, standardised, ...){
 
   # Calculate center line, Montgomery 7.7
   if(is.null(cl))
-    cl <- sum(n[base], na.rm = T) / sum(N[base], na.rm = T)
+    cl <- sum(n[base], na.rm = TRUE) / sum(N[base], na.rm = TRUE)
   cl <- rep(cl, y.length)
 
   # Calculate standard deviation, Montgomery 7.8
@@ -763,7 +763,7 @@ qic.c <- function(d, freeze, cl, exclude, ...){
 
   # Calculate center line
   if(is.null(cl))
-    cl <- mean(y[base], na.rm = T)
+    cl <- mean(y[base], na.rm = TRUE)
   cl <- rep(cl, y.length)
 
   # Calculate standard deviation, Montgomery 7.17
@@ -802,7 +802,7 @@ qic.u <- function(d, freeze, cl, exclude, primed, standardised, ...){
 
   # Calculate center line
   if(is.null(cl))
-    cl <- sum(n[base], na.rm = T) / sum(N[base], na.rm = T)
+    cl <- sum(n[base], na.rm = TRUE) / sum(N[base], na.rm = TRUE)
   cl <- rep(cl, y.length)
 
   # Calculate standard deviation, Montgomery 7.19
@@ -853,7 +853,7 @@ qic.g <- function(d, freeze, cl, exclude, ...){
 
   # Calculate center line
   if(is.null(cl))
-    cl <- mean(y[base], na.rm = T)
+    cl <- mean(y[base], na.rm = TRUE)
   cl <- rep(cl, y.length)
 
   # Calculate standard deviation:
@@ -935,7 +935,7 @@ c4 <- function(n) {
 #' Plot qic object
 #'
 #' @export
-#' @param x Object returned from the qic() function.
+#' @param x List object returned from the qic() function.
 #' @param y Ignored. Included for compatibility with generic plot function.
 #' @param ... Further arguments to plot function.
 #'
@@ -981,7 +981,7 @@ plot.qic <- function(x, y = NULL, ...) {
   nint            <- x$nint
   cex             <- x$cex
   x               <- 1:n.obs
-  ylim            <- range(ylim, y, ucl, lcl, cl, target, na.rm = T)
+  ylim            <- range(ylim, y, ucl, lcl, cl, target, na.rm = TRUE)
   lwd             <- cex
   cex             <- par('cex') * cex
   cex2            <- cex * 0.9
@@ -990,21 +990,22 @@ plot.qic <- function(x, y = NULL, ...) {
 
 
   # Setup plot margins
-  mar             <- par('mar') + c(-0.5, 0.25, 0, 0.25)
+  mar <- par('mar')
+  mar <- mar + c(-0.5, 0.25, 0, 0.25)
 
   if(runvals & !dots.only)
-    mar           <- mar + c(1.5, 0, 0, 0)
+    mar <- mar + c(1.5, 0, 0, 0)
 
   if(!is.null(sub))
-    mar           <- mar + c(1, 0, 0, 0)
+    mar <- mar + c(1, 0, 0, 0)
 
-  op              <- par(mar = mar, cex = cex, lwd = lwd)
+  op <- par(mar = mar, cex = cex, lwd = lwd)
 
   # setup empty plot area
   plot(x    = x,
        y    = y,
        type = 'n',
-       axes = F,
+       axes = FALSE,
        ylim = ylim,
        xlab = '',
        ylab = '',
@@ -1058,9 +1059,9 @@ plot.qic <- function(x, y = NULL, ...) {
 
   # add lines to plot
   for(p in parts) {
-    lines(p, cl[p], col = col, lty = lty, lwd = lwd * 1.5)
-    lines(p, ucl[p], lty = 1, col = col3)#, lwd = lwd)
-    lines(p, lcl[p], lty = 1, col = col3)#, lwd = lwd)
+    lines(p, cl[p], lty = lty, col = col, lwd = lwd * 1.5)
+    lines(p, ucl[p], lty = 1, col = col3)
+    lines(p, lcl[p], lty = 1, col = col3)
     lines(p, y[p], type = type, col = col1, lwd = lwd * 4, pch = pch)
   }
   # add target line
