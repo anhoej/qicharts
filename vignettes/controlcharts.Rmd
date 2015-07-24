@@ -1,0 +1,374 @@
+---
+title: "Control Charts with qicharts for R"
+author: "Jacob Anhoej"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    fig_height: 3.5
+    fig_width: 6
+    fig_caption: true
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{controlharts}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteDepends{qicharts}
+  %\usepackage[utf8]{inputenc}
+---
+
+## Introduction
+
+The purpose of this vignette is to demonstrate the use of `qicharts` for creating control charts. I recommend that you read the vignette on run charts first for a detailed introduction to the most important arguments of the `qic()` function.
+
+I assume that you are already familiar with basic control chart theory. If not, I suggest that you buy a good, old fashioned book on the subject. I highly recommend Montgomery's Introduction to Statistical Process Control (Montgomery 2009). Also, The Healthcare Data Guide (Provost 2011) is very useful and contains a wealth of information on the specific use of control charts in healthcare settings. In particular, the sections on rare events T and G control charts and the detailed explanation of primed charts are most helpful. However, I suggest that you avoid the chapter on run charts in this book, since it promotes the use of certain run chart rules that have been proven ineffective and even misleading (Anhoej 2015).
+
+Before we start, we will load the qicharts package and lock the random number generator in order to make reproducible data sets for this vignette.
+
+```{r}
+# Load the qicharts package
+library(qicharts)
+
+# Lock random number generator to reproduce the charts from this vignette
+set.seed(7)
+```
+
+## Control chart basics
+
+To illustrate the control chart's anatomy and physiology, we will use a simple vector of random numbers.
+
+```{r fig1, fig.cap='Figure 1: I chart showing common cause variation'}
+# Create vector of random values to plot
+y <- rnorm(24)
+
+# Plot I chart
+qic(y, chart = 'i')
+```
+
+Similar to the run chart, the control charts is a line graph showing a measure (y axis) over time (x axis). In contrast to the run chart, the centre line of the control chart represents the (weighted) mean rather than the median. Additionally, two lines representing the upper and lower control limits are shown.
+
+The control limits represent the boundaries of the so called common cause variation inherent in the process.
+
+[Walther A. Shewhart](http://en.wikipedia.org/wiki/Walter_A._Shewhart), who invented the control chart, described two types of variation, *chance cause variation* and *assignable cause variation*. These were later renamed to common cause and special cause variation.
+
+**Common cause variation**
+
+* is present in any process,
+* is caused by phenomena that are always present within the system,
+* makes the process predictable (within limits),
+* is also called random variation or noise.
+
+**Special cause variation**
+
+* is present in some processes,
+* is caused by phenomena that are not normally present in the system,
+* makes the process unpredictable,
+* is also called non-random variation or signal.
+
+Figure 2 is an example of special cause variation. One data point, no. 18, lies above the upper control limit, which indicates that special causes are present in the process. Data point no. 18 is under influence of forces that are not normally present in the system. The presence of special cause variation makes the process unpredictable.
+
+```{r fig2, fig.cap='Figure 2: I chart, special cause variation'}
+# Introduce an outlier at data point number 18
+y[18] <- 5
+
+# Plot I chart
+qic(y, chart = 'i')
+```
+
+It is important to note that neither common nor special cause variation is in itself good or bad. A stable process may function at an unsatisfactory level, and an unstable process may be moving in the right direction. But the end goal of improvement is always a stable process functioning at a satisfactory level.
+
+## Types of control charts
+
+The control limits, also called sigma limits, are usually placed at $\pm3$ standard deviations from the centre line. The standard deviation is the estimated standard deviation of the common cause variation in the process of interest, which depends on the theoretical distribution of data. It is a beginner's mistake to simply calculate the standard deviation of all the data points, which would include both the common and special cause variation.
+
+Since the calculations of control limits depend on the type of data many types of control charts have been developed for specific purposes. 
+
+The `qicharts` package employs a handful of the classic Shewhart charts for measure and count data plus a couple of rare events charts. Together these charts cover the majority of control chart needs of healthcare quality improvement and control.
+
+The formulas for calculation of control limits can be found in Montgomery 2009 and Provost 2011.
+
+### C chart for count of defects
+
+To demonstrate the use of C, U and P charts for count data we will create a data frame mimicking the weekly number of hospital acquired pressure ulcers at a hospital that, on average, has 300 patients with an average length of stay of four days.
+
+```{r pudata}
+# Setup parameters
+m.beds       <- 300
+m.stay       <- 4
+m.days       <- m.beds * 7
+m.discharges <- m.days / m.stay
+p.pu         <- 0.08
+
+# Simulate data
+discharges  <- rpois(24, lambda = m.discharges)
+patientdays <- round(rnorm(24, mean = m.days, sd = 100))
+n.pu        <- rpois(24, lambda = m.discharges * p.pu * 1.5)
+n.pat.pu    <- rbinom(24, size = discharges, prob = p.pu)
+week        <- seq(as.Date('2014-1-1'),
+                    length.out = 24, 
+                    by         = 'week') 
+
+# Combine data into a data frame
+d <- data.frame(week, discharges, patientdays,n.pu, n.pat.pu)
+d
+```
+
+Each of the data frame's 24 rows contains information for one week on the number of discharges, patient days, pressure ulcers, and number of discharged patients with one or more pressure ulcers. On average, 8% of discharged patients have 1.5 hospital acquired pressure ulcers.
+
+Traditionally, the term "defect" has been used to name whatever it is one is counting with control charts. There is a subtle but important distinction between counting defects, e.g. number of pressure ulcers, and counting defectives, e.g. number of patient with one or more pressure ulcers. 
+
+Defects are expected to reflect the [poisson distribution](https://en.wikipedia.org/wiki/Poisson_distribution), while defectives reflect the [binomial distribution](https://en.wikipedia.org/wiki/Binomial_distribution).
+
+The correct control chart on the number of pressure ulcers is the C chart, which is based on the poisson distribution.
+
+```{r fig3, fig.cap='Figure 3: C chart displaying the number of defects'}
+qic(n.pu,
+    x     = week,
+    data  = d,
+    chart = 'c',
+    main  = 'Hospital acquired pressure ulcers (C chart)',
+    ylab  = 'Count',
+    xlab  = 'Week')
+```
+
+Figure 3 shows that the average weekly number of hospital acquired pressure ulcers is 66 and that anything between 41 and 90 would be within the expected range.
+
+### U chart for rate of defects
+
+The U chart is different from the C chart in that it accounts for variation in the area of opportunity, e.g. the number of patients or the number of patient days, over time or between units one wishes to compare. If there are many more patients in the hospital in the winter than in the summer, the C chart may falsely detect special cause variation in the raw number of pressure ulcers.
+
+The U chart plots the rate of defects. A rate differs from a proportion in that the numerator and the denominator need not be of the same kind and that the numerator may exceed the denominator. For example, the rate of pressure ulcers may be expressed as the number of pressure ulcers per 1000 patient days.
+
+```{r fig4, fig.cap='Figure 4: U chart displaying the rate of defects'}
+qic(n.pu, 
+    n        = patientdays,
+    x        = week,
+    data     = d,
+    chart    = 'u',
+    multiply = 1000,
+    main     = 'Hospital acquired pressure ulcers (U chart)',
+    ylab     = 'Count per 1000 patient days',
+    xlab     = 'Week')
+```
+
+Figure 4 displays the number of pressure ulcers per 1000 patient days. Note that the control limits vary slightly. This happens when the numerator (area of opportunity) differs between subgroups. The larger the numerator, the narrower the control limits.
+
+### P chart for proportion of defective units
+
+The P chart is probably the most common control chart in healthcare. It is used to plot the proportion (or percent) of defective units, e.g. the proportion of patients with one or more pressure ulcers. As mentioned, defectives are modelled by the binomial distribution.
+
+```{r fig5, fig.cap='Figure 5: P chart displaying the percent of defectives'}
+qic(n.pat.pu,
+    n        = discharges,
+    x        = week,
+    data     = d,
+    chart    = 'p',
+    multiply = 100,
+    main     = 'Hospital acquired pressure ulcers (P chart)',
+    ylab     = 'Percent patients',
+    xlab     = 'Week')
+```
+
+In theory, the P chart is less sensitive to special cause variation than the U chart because it discards information by dichotomising inspection units (patients) in defectives and non-defectives ignoring the fact that a unit may have more than one defect (pressure ulcers).
+
+On the other hand, the P chart often communicates better. For most people, not to mention the press, the percent of harmed patients is easier to grasp than the the rate of pressure ulcers expressed in counts per 1000 patient days.
+
+Luckily, one does not have to choose between C, U and P charts. One can do them all at the same time.
+
+### G chart for units produced between defective units
+
+When defects or defectives are rare and the subgroups are small, C, U, and P charts become useless as most subgroups will have no defects. If, for example, 8% of discharged patients have a hospitals acquired pressure ulcer and the average weekly number of discharges in a small department is 10, we would, on average, expect to have less than one pressure ulcer per week.
+
+Instead we could plot the number of discharges between each discharge of a patient with one or more pressure ulcers. The number of units between defectives is modelled by the [geometric distribution](https://en.wikipedia.org/wiki/Geometric_distribution).
+
+```{r fig6, fig.cap='Figure 6: G chart displaying the number of units produced between defectives'}
+# Create vector of random values from a geometric distribution
+d <- c(NA, rgeom(23, 0.08))
+d
+
+# Plot G chart
+qic(d,
+    chart = 'g',
+    main  = 'Patients between pressure ulcers (G chart)',
+    ylab  = 'Count',
+    xlab  = 'Discharge no.')
+```
+
+Figure 6 displays a G chart mimicking 24 discharged patient with pressure ulcers. The indicator is the number of discharges between each of these. Note that the first patient with pressure ulcer is missing from the chart since, we do not know how many discharges there had been since the previous patient with pressure ulcer.
+
+The centre line of the G chart is the theoretical median of the distribution ($mean \times 0.693$). This is because the geometric distribution is highly skewed, thus the median is a better representation of the process centre to be used with the runs analysis.
+
+Also note that the G chart rarely has a lower control limit.
+
+An alternative to the G chart is the T chart for time between defects, which we will come back to later.
+
+### I and MR charts for individual measurements
+
+In healthcare, which, you may have guessed, is my domain, most quality data are count data. However, from time to time I stumble across measure data, often in the form of physiological parameters or waiting times.
+
+Figure 7 is an I chart of birth weights from 24 babies.
+
+```{r fig7, fig.cap='Figure 7: I chart for individual measurements'}
+# Vector of birth weights from 24 babies
+y <- round(rnorm(24, mean = 3400, sd = 400))
+y
+
+# Plot I chart of individual birth weights
+qic(y,
+    chart = 'i',
+    main  = 'Birth weight (I chart)',
+    ylab  = 'Grams',
+    xlab  = 'Baby no.')
+```
+
+I charts are often accompanied by moving range (MR) charts, which show the absolute difference between neighbouring data points.
+
+```{r fig8, fig.cap='Figure 8: Moving range chart'}
+# Plot moving ranges
+qic(y,
+    chart = 'mr',
+    main  = 'Pairwise differences in birth weights (MR chart)',
+    ylab  = 'Grams',
+    xlab  = 'Baby no.')
+
+```
+
+The purpose of the MR chart is to identify sudden changes in the (estimated) within subgroup variation. If any data point in the MR is above the upper control limit, one should interpret the I chart very cautiously.
+
+### Xbar and S charts for average measurements
+
+If there is more than one measurement in each subgroup the Xbar and S charts will display the average and the within subgroup standard deviation respectively.
+
+```{r fig9, fig.cap='Figure 9: Xbar chart of average measurements'}
+# Vector of 24 subgroup sizes (average = 12)
+sizes <- rpois(24, 12)
+
+# Vector of dates identifying subgroups
+date <- seq(as.Date('2015-1-1'), length.out = 24, by = 'day')
+date <- rep(date, sizes)
+
+# Vector of birth weights
+y <- round(rnorm(sum(sizes), 3400, 400))
+
+# Data frame of birth weights and dates
+d <- data.frame(y, date)
+head(d, 24)
+
+# Plot Xbar chart of average birth weights by date of birth
+qic(y, 
+    x     = date, 
+    data  = d,
+    chart = 'xbar',
+    main  = 'Average birth weight (Xbar chart)',
+    ylab  = 'Grams',
+    xlab  = 'Date')
+```
+
+```{r fig10, fig.cap='Figure 10: S chart of within subgroup standard deviations'}
+# Plot S chart of within subgroup standard deviation
+qic(y, 
+    x = date, 
+    data = d,
+    chart = 's',
+    main = 'Standard deviation of birth weight (S chart)',
+    ylab = 'Grams',
+    xlab = 'Date')
+```
+
+### T chart for time between events
+
+Like the G chart, the T chart is a rare event chart. But instead of displaying the number of cases between events (defectives) it displays the time between events. And since time is a continuous variable it belongs with the other charts for measure data.
+
+```{r fig11, fig.cap='Figure 11: T chart displaying time between events'}
+# Pick 24 random dates and sort them
+dates  <- seq(as.Date('2015-1-1'), as.Date('2015-12-31'), by = 'day')
+events <- sort(sample(dates, 24))
+events
+
+# Vector of time (days) between events
+d <- c(NA, diff(events))
+d
+
+# Plot T chart of days between events
+qic(d,
+    chart = 't',
+    main  = 'Days between pressure ulcers (T chart)',
+    ylab  = 'Days',
+    xlab  = 'Pressure ulcer no.')
+```
+
+
+### Standardised control charts
+
+If one does not like the wavy control lines in U, P, Xbar and S charts, one can do a standardised chart, which turns the indicator into a Z score by subtracting the mean from each value and dividing by the standard deviation. The standardised chart has fixed control limits at $\pm3$ and a centre line at 0.
+
+```{r fig12, fig.cap='Figure 12: Standardised P chart'}
+# Rebuild data frame from figure 5
+d <- data.frame(n.pat.pu, discharges, week)
+
+# Plot standardised P chart
+qic(n.pat.pu, 
+    n            = discharges,
+    x            = week, 
+    data         = d,
+    chart        = 'p',
+    standardised = TRUE,
+    main         = 'Patients with hospital acquired pressure ulcers (Standardised P chart)',
+    ylab         = 'Standard deviations',
+    xlab         = 'Week')
+```
+
+The standardised chart shows the same information as its not-standardised peer, but the straight control lines may appear less confusing. On the other hand, one looses the original units of data, which may make the chart harder to interpret.
+
+### Primed control charts
+
+Sometimes, with very large subgroups, the control limits of U and P charts seem much too narrow leaving almost all data points outside of common cause variation. This may be an artefact caused by the fact that the "true" common cause variation in data is greater than that predicted by the poisson or binomial distribution. This is called overdispersion. In theory, overdispersion will often be present in real life data but only detectable with large subgroups where point estimates become very precise.
+
+Laney proposed a solution to this problem that incorporates the between subgroup variation (Laney 2002).
+
+```{r fig13, fig.cap='Figure 13: Primed P chart'}
+# Plot primed P chart
+qic(n.pat.pu, discharges, week, d,
+    chart    = 'p',
+    multiply = 100,
+    main     = 'Primed P chart of patients with pressure ulcer',
+    ylab     = 'Percent',
+    xlab     = 'Week',
+    primed   = TRUE)
+```
+
+Figure 13 is a primed P chart of the same data as in figure 5. The control limits are slightly wider.
+
+In an interview [Laney says that there is no reason not always to use primed charts](http://www.minitab.com/en-us/Published-Articles/On-the-Charts--A-Conversation-with-David-Laney/). However, Provost and Murray (Provost 2011) suggest to use primed charts only for very large subgroups (N > 2000) when all other explanations for special cause variation have been examined.
+
+## Control charts or run charts?
+
+It is a common misunderstanding that control charts are superior to run charts. The confusion may stem from the fact that different sets of rules for identifying non-random variation in run charts are available, and that these sets differ significantly in their diagnostic properties. Especially, the set of rules promoted by Provost and Murray (Provost 2011), have very poor diagnostic properties (Anhoej 2015).
+
+In a recent study, using simulated data series, I found that run charts (using appropriate rules) are more sensitive to moderate, persistent shifts in data (< 2 SD) than control charts, while keeping a low rate of false positive signals that is independent of the number of data points (Anhoej 2014). Control charts, on the other hand, are quicker to pick up large (transient) shifts in data.
+
+One big advantage of run charts is that they are oblivious to assumptions on the theoretical distribution of data. Also they are easier to construct (by pen and paper) and understand than are control charts. Finally, as mentioned, the diagnostic value of run charts is independent of the number of data points, which is not the case with control charts unless one adjusts the control limits in accordance with the number of data points.
+
+In practice I always do the run chart analysis first. If, and only if, the run chart shows random variation and I need to further investigate data for outliers or to know the limits of common cause variation, I would do a control chart analysis combining the run chart rules with Shewhart's original 3 sigma rule (one or more data point outside control limits). I do not use any other sensitising control chart rules.
+
+There is one exception to this practice: When dealing with rare events data, it often pays to do the G or T control chart up front, as it may otherwise take very long time to detect improvement using run chart rules alone.
+
+## Conclusion
+
+In this vignette I have demonstrated the use of the `qicharts` package to create control charts for measure and count data. Together with my vignettes on run charts it forms a reference on the typical day-to-day use of the package.
+
+It was not my intention to go deep into the theoretical basis of run and control charts. For that, seek out the references listed below.
+
+There are many more arguments available for the `qic()` function than I have demonstrated here. Please study the documentation (`?qic`) for that.
+
+----------------
+
+## References
+
+1. Douglas C. Montgomery (2009). Introduction to Statistical Process Control, Sixth Edition, John Wiley & Sons.
+
+2. Lloyd P. Provost, Sandra K. Murray (2011). The Health Care Data Guide: Learning from Data for Improvement. San Francisco: John Wiley & Sons Inc.
+
+3. David B. Laney (2002). [Improved control charts for attributes](http://www.tandfonline.com/doi/abs/10.1081/QEN-120003555). Quality Engineering, 14(4), 531-537.
+
+4. Jacob Anhoej (2015). [Diagnostic Value of Run Chart Analysis: Using Likelihood Ratios to Compare Run Chart Rules on Simulated Data Series](http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0121349). PLoS ONE 10(3): e0121349.
+
+5. Jacob Anhoej, Anne Vingaard Olesen (2014). [Run Charts Revisited: A Simulation Study of Run Chart Rules for Detection of Non-Random Variation in Health Care Processes](http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0113825). PLoS ONE 9(11): e113825.

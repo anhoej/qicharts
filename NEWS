@@ -4,6 +4,8 @@ qicharts 0.3.0
 * New function, plot.qic(), plots a qic object.
 * qic() now returns a list object of class 'qic' for plotting with plot.qic().
 * prnt argument in qic() function will be deprecated, use print.out instead.
+* New vignette "controlcharts".
+* Vignette "runcharts" updated.
 
 qicharts 0.2.0
 =================

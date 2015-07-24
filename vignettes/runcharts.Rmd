@@ -16,6 +16,7 @@ vignette: >
 ---
 
 ## Introduction
+
 Plotting data over time is a simple method to learn from trends, patterns, and variation in data and to study the effect of improvement efforts.
 
 A run chart is a simple line graph of a measure over time with the median shown as a horizontal line dividing the data points so that half of the points are above the median and half are below.
@@ -35,11 +36,11 @@ If the process of interest shows only random variation, the data points will be 
 
 If the process shifts, these conditions are no longer true and patterns of non-random variation may be detected by statistical tests.
 
-Non-random variation may present itself in several ways. If the process centre is shifting due to improvement or degradation we may observe _unusually_ long runs of consecutive data points on the same side of the median or that the graph crosses the median _unusually_ few times. The length of the longest run and the number of crossings in a random process are predictable within limits and depend on the total number of data points in the run chart.
+Non-random variation may present itself in several ways. If the process centre is shifting due to improvement or degradation we may observe _unusually_ long runs of consecutive data points on the same side of the median or that the graph crosses the median _unusually_ few times. The length of the longest run and the number of crossings in a random process are predictable within limits and depend on the total number of data points in the run chart (Anhoej 2014, Anhoej 2015).
 
-- A **shift signal** is present if any run of consecutive data points on the same side of the median is longer than the prediction limit, `round(log2(n) + 3)`. Data points that fall on the median do not count, they do neither break nor contribute to the run.
+- A **shift signal** is present if any run of consecutive data points on the same side of the median is longer than the prediction limit, `round(log2(n) + 3)`. Data points that fall on the median do not count, they do neither break nor contribute to the run (Schilling 2012).
 
-- A **crossings signal** is present if the number of times the graph crosses the median is smaller than the prediction limit, `qbinom(0.05, n - 1, 0.5)`.
+- A **crossings signal** is present if the number of times the graph crosses the median is smaller than the prediction limit, `qbinom(0.05, n - 1, 0.5)` (Chen 2010).
 
 `n` is the number of useful data points, that is, data points that do not fall on the median.
 
@@ -65,6 +66,7 @@ data.frame(
 ```
 
 ## Analysis of before-and-after data
+
 If data have been collected before and after a change, it may be useful to calculate the median only from the data points that belong to the before period.
 
 ```{r fig3, fig.cap='Figure 3'}
@@ -88,6 +90,7 @@ qic(y, n)                               # Plot run chart of y/n
 ```
 
 ## Using title, labels, and annotations
+
 Tick mark labels for the x axis may be provided with the `x` argument. Chart title and labels for the x and y axis are provided the usual way using the `main`, `xlab`, and `ylab` arguments. Annotations can be added by the `notes` argument, which takes a character vector containing text to be added to individual data points.
 
 ```{r fig6, fig.cap='Figure 6'}
@@ -107,7 +110,7 @@ qic(y, n,
 
 ## Automatic data aggregation by subgroups
 
-Besides providing tick mark labels for the x axis, the `x` argument serves as a subrouping vector. If, for instance, one collects data daily but wishes to aggregate data by week, this can be achieved by using weeks as the subgrouping, `x`, vector.
+Besides providing tick mark labels for the x axis, the `x` argument serves as a subgrouping vector. If, for instance, one collects data daily but wishes to aggregate data by week, this can be achieved by using weeks as the subgrouping, `x`, vector.
 
 This example uses a data frame containing the numerator, the denominator, and the subgroups to plot.
 
@@ -127,12 +130,12 @@ By using the `data` argument, we may avoid the clumsy `$` notation. And by using
 qic(y, n, x = week, data = d)
 ```
 
-## Further reading
+## References
 
-* Jacob Anhoej, Anne Vingaard Olesen (2014). Run Charts Revisited: A Simulation Study of Run Chart Rules for Detection of Non-Random Variation in Health Care Processes. PLoS ONE 9(11): e113825. doi: 10.1371/journal.pone.0113825 .
+1. Jacob Anhoej, Anne Vingaard Olesen (2014). [Run Charts Revisited: A Simulation Study of Run Chart Rules for Detection of Non-Random Variation in Health Care Processes](http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0113825). PLoS ONE 9(11): e113825.
 
-* Jacob Anhoej (2015). Diagnostic Value of Run Chart Analysis: Using Likelihood Ratios to Compare Run Chart Rules on Simulated Data Series. PLoS ONE 10(3): e0121349. doi: 10.1371/journal.pone.0121349
+2. Jacob Anhoej (2015). [Diagnostic Value of Run Chart Analysis: Using Likelihood Ratios to Compare Run Chart Rules on Simulated Data Series](http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0121349). PLoS ONE 10(3): e0121349.
 
-* Mark F. Schilling (2012). The Surprising Predictability of Long Runs. Math. Mag. 85, 141-149
+3. Mark F. Schilling (2012). The Surprising Predictability of Long Runs. Math. Mag. 85, 141-149
 
-* Zhenmin Chen (2010). A note on the runs test. Model Assisted Statistics and Applications 5, 73-77
+4. Zhenmin Chen (2010). A note on the runs test. Model Assisted Statistics and Applications 5, 73-77
