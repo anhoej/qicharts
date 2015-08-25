@@ -7,11 +7,12 @@
 qic(y, n, x, data, chart = c("run", "i", "mr", "xbar", "s", "t", "p", "c",
   "u", "g"), notes = NULL, cl = NULL, ylim = NULL, target = NULL,
   freeze = NULL, breaks = NULL, exclude = NULL, negy = TRUE,
-  dots.only = FALSE, multiply = 1, primed = FALSE, standardised = FALSE,
-  x.format = "\%Y-\%m-\%d", nint = 5, cex = 0.8, main,
-  xlab = "Subgroup", ylab = "Indicator", sub = NULL, decimals = NULL,
-  pre.text = "Before data", post.text = "After data", runvals = FALSE,
-  linevals = TRUE, plot.chart = TRUE, prnt, print.out = FALSE, ...)
+  dots.only = FALSE, multiply = 1, primed, prime = FALSE,
+  standardised = FALSE, x.format = "\%Y-\%m-\%d", nint = 5, cex = 0.8,
+  main, xlab = "Subgroup", ylab = "Indicator", sub = NULL,
+  decimals = NULL, pre.text = "Before data", post.text = "After data",
+  runvals = FALSE, linevals = TRUE, plot.chart = TRUE, prnt,
+  print.out = FALSE, ...)
 }
 \arguments{
 \item{y}{Numeric vector of counts or measures to plot. Mandatory.}
@@ -60,7 +61,7 @@ plots.}
 \item{multiply}{Integer indicating a number to multiply y axis by, e.g. 100
 for percents rather than proportions.}
 
-\item{primed}{Logical value, if TRUE, control limits incorporate
+\item{prime}{Logical value, if TRUE, control limits incorporate
 between-subgroup variation as proposed by Laney (2002). This is recommended
 for data involving very large sample sizes. Only relevant for P and U
 charts.}
@@ -144,7 +145,7 @@ If \code{chart} is not specified, \code{qic()} plots a \strong{run
   If more than one \code{note} is present within any subgroup, the first
   \code{note} (alphabetically) is chosen.
 
-  If both \code{primed} and \code{standardised} are \code{TRUE}, points are
+  If both \code{prime} and \code{standardised} are \code{TRUE}, points are
   plotted in units corresponding to Laney's modified "standard deviation",
   which incorporates the variation between subgroups.
 }

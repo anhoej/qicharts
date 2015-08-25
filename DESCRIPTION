@@ -1,6 +1,6 @@
 Package: qicharts
-Version: 0.3.0
-Date: 2015-07-24
+Version: 0.3.1
+Date: 2015-07-29
 Title: Quality Improvement Charts
 Authors@R: c(person("Jacob", "Anhoej",
     email = "jacob@anhoej.net",
@@ -19,7 +19,10 @@ Depends:
     R (>= 3.0.0)
 Imports:
     lattice,
-    latticeExtra
+    latticeExtra,
+    graphics,
+    grDevices,
+    stats
 Suggests:
     knitr
 VignetteBuilder: knitr

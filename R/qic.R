@@ -3,6 +3,9 @@
 #' Run and control charts for quality improvement and control
 #'
 #' @export
+#' @import graphics
+#' @import grDevices
+#' @import stats
 #' @param y Numeric vector of counts or measures to plot. Mandatory.
 #' @param n Numeric vector of sample sizes. Mandatory for P and U charts.
 #' @param x Subgrouping vector used for aggregating data and making x-labels.
@@ -57,7 +60,7 @@
 #' @param prnt Logical value, if TRUE, prints return value. Deprecated, use
 #'   print.out instead.
 #' @param print.out Logical value, if TRUE, prints return value
-#' @param primed Logical value, if TRUE, control limits incorporate
+#' @param prime Logical value, if TRUE, control limits incorporate
 #'   between-subgroup variation as proposed by Laney (2002). This is recommended
 #'   for data involving very large sample sizes. Only relevant for P and U
 #'   charts.
@@ -93,7 +96,7 @@
 #'   If more than one \code{note} is present within any subgroup, the first
 #'   \code{note} (alphabetically) is chosen.
 #'
-#'   If both \code{primed} and \code{standardised} are \code{TRUE}, points are
+#'   If both \code{prime} and \code{standardised} are \code{TRUE}, points are
 #'   plotted in units corresponding to Laney's modified "standard deviation",
 #'   which incorporates the variation between subgroups.
 #'
@@ -196,7 +199,8 @@ qic <- function(y,
                 negy         = TRUE,
                 dots.only    = FALSE,
                 multiply     = 1,
-                primed       = FALSE,
+                primed,
+                prime       = FALSE,
                 standardised = FALSE,
                 x.format     = '%Y-%m-%d',
                 nint         = 5,
@@ -215,10 +219,15 @@ qic <- function(y,
                 print.out    = FALSE,
                 ...) {
 
-if(!missing(prnt)) {
-  warning('\"prnt\" argument will be deprecated. Use \"print.out\" instead.')
-  print.out = prnt
-}
+  if(!missing(prnt)) {
+    warning('\"prnt\" argument will be deprecated. Use \"print.out\" instead.')
+    print.out <- prnt
+  }
+
+  if(!missing(primed)) {
+    warning('\"primed\" argument will be deprecated. Use \"prime\" instead.')
+    prime <- primed
+  }
 
   # Select chart type
   type <- match.arg(chart)
@@ -230,7 +239,7 @@ if(!missing(prnt)) {
   if(no_title)
     main <- paste(toupper(type), "Chart of", deparse(substitute(y)))
 
-  if(no_title & primed == TRUE)
+  if(no_title & prime == TRUE)
     main <- paste(paste0(toupper(type), "'"), "Chart of", deparse(substitute(y)))
 
   if(no_title & standardised == TRUE)
@@ -356,7 +365,7 @@ if(!missing(prnt)) {
                           cl = cl,
                           freeze = freeze,
                           exclude = ex,
-                          primed = primed,
+                          prime = prime,
                           standardised = standardised))
     qic$y   <- c(qic$y, y$y)
     qic$cl  <- c(qic$cl, y$cl)
@@ -692,7 +701,7 @@ qic.s <- function(d, freeze = NULL, cl, exclude, ...){
               ucl = ucl))
 }
 
-qic.p <- function(d, freeze, cl, exclude, primed, standardised, ...){
+qic.p <- function(d, freeze, cl, exclude, prime, standardised, ...){
 
   # Calcutate indicator to plot
   n <- d$y.sum
@@ -717,11 +726,11 @@ qic.p <- function(d, freeze, cl, exclude, primed, standardised, ...){
   # Calculate standard deviation, Montgomery 7.8
   stdev <- sqrt(cl * (1 - cl) / N)
 
-  # Calculate standard deviation for Laney's p-primed chart, incorporating
+  # Calculate standard deviation for Laney's p-prime chart, incorporating
   # between-subgroup variation.
-  if(primed) {
+  if(prime) {
     z_i <- (y[base] - cl[base]) / stdev[base]
-    sigma_z <- mean(abs(diff(z_i))) / 1.128
+    sigma_z <- mean(abs(diff(z_i)), na.rm = TRUE) / 1.128
     stdev <- stdev * sigma_z
   }
 
@@ -781,7 +790,7 @@ qic.c <- function(d, freeze, cl, exclude, ...){
               ucl = ucl))
 }
 
-qic.u <- function(d, freeze, cl, exclude, primed, standardised, ...){
+qic.u <- function(d, freeze, cl, exclude, prime, standardised, ...){
 
   # Calcutate indicator to plot
   n <- d$y.sum
@@ -808,11 +817,11 @@ qic.u <- function(d, freeze, cl, exclude, primed, standardised, ...){
   # Calculate standard deviation, Montgomery 7.19
   stdev <- sqrt(cl / N)
 
-  # Calculate standard deviation for Laney's p-primed chart, incorporating
+  # Calculate standard deviation for Laney's p-prime chart, incorporating
   # between-subgroup variation.
-  if(primed) {
+  if(prime) {
     z_i <- (y[base] - cl[base]) / stdev[base]
-    sigma_z <- mean(abs(diff(z_i))) / 1.128
+    sigma_z <- mean(abs(diff(z_i)), na.rm = TRUE) / 1.128
     stdev <- stdev * sigma_z
   }
 
@@ -991,7 +1000,7 @@ plot.qic <- function(x, y = NULL, ...) {
 
   # Setup plot margins
   mar <- par('mar')
-  mar <- mar + c(-0.5, 0.25, 0, 0.25)
+  mar <- mar + c(-0.5, 0.5, 0, 0.25)
 
   if(runvals & !dots.only)
     mar <- mar + c(1.5, 0, 0, 0)
@@ -1041,7 +1050,8 @@ plot.qic <- function(x, y = NULL, ...) {
         line = 2.7,
         # cex.main = cex * 1.25,
         font.main = 1)
-  title(xlab = xlab, ylab = ylab)
+  title(xlab = xlab, line = 2.8)
+  title(ylab = ylab, line = 3.5)
 
   if(!is.null(sub))
     title(sub = sub,
