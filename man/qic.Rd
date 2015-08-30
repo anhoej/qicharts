@@ -5,14 +5,14 @@
 \title{Quality improvement charts}
 \usage{
 qic(y, n, x, data, chart = c("run", "i", "mr", "xbar", "s", "t", "p", "c",
-  "u", "g"), notes = NULL, cl = NULL, ylim = NULL, target = NULL,
-  freeze = NULL, breaks = NULL, exclude = NULL, negy = TRUE,
-  dots.only = FALSE, multiply = 1, primed, prime = FALSE,
-  standardised = FALSE, x.format = "\%Y-\%m-\%d", nint = 5, cex = 0.8,
-  main, xlab = "Subgroup", ylab = "Indicator", sub = NULL,
-  decimals = NULL, pre.text = "Before data", post.text = "After data",
-  runvals = FALSE, linevals = TRUE, plot.chart = TRUE, prnt,
-  print.out = FALSE, ...)
+  "u", "g"), notes = NULL, cl = NULL, agg.fun = c("mean", "median", "sum",
+  "sd"), ylim = NULL, target = NULL, freeze = NULL, breaks = NULL,
+  exclude = NULL, negy = TRUE, dots.only = FALSE, multiply = 1,
+  prime = FALSE, standardised = FALSE, x.format = "\%Y-\%m-\%d",
+  nint = 5, cex = 0.8, main, xlab = "Subgroup", ylab = "Indicator",
+  sub = NULL, decimals = NULL, pre.text = "Before data",
+  post.text = "After data", runvals = FALSE, linevals = TRUE,
+  plot.chart = TRUE, print.out = FALSE, ...)
 }
 \arguments{
 \item{y}{Numeric vector of counts or measures to plot. Mandatory.}
@@ -36,6 +36,10 @@ points.}
 
 \item{cl}{Value specifying the center line (if known). Must be of length one
 or same as number of subgroups (for variable center line).}
+
+\item{agg.fun}{String specifying the aggregate function if there is more than
+one value per subgroup. Possible values are  'mean', 'median', 'sum', 'sd'.
+Only relevant for run charts and I charts.}
 
 \item{ylim}{Range of y axis limits.}
 
@@ -103,9 +107,6 @@ on plot.}
 lines on plot.}
 
 \item{plot.chart}{Logical value, if TRUE, prints plot.}
-
-\item{prnt}{Logical value, if TRUE, prints return value. Deprecated, use
-print.out instead.}
 
 \item{print.out}{Logical value, if TRUE, prints return value}
 

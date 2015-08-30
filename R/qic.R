@@ -21,6 +21,9 @@
 #'   points.
 #' @param cl Value specifying the center line (if known). Must be of length one
 #'   or same as number of subgroups (for variable center line).
+#' @param agg.fun String specifying the aggregate function if there is more than
+#'   one value per subgroup. Possible values are  'mean', 'median', 'sum', 'sd'.
+#'   Only relevant for run charts and I charts.
 #' @param ylim Range of y axis limits.
 #' @param target Value specifying a target line to plot.
 #' @param freeze Number identifying the last data point to include in
@@ -57,8 +60,6 @@
 #' @param linevals Logical value, if TRUE, prints values for center and control
 #'   lines on plot.
 #' @param plot.chart Logical value, if TRUE, prints plot.
-#' @param prnt Logical value, if TRUE, prints return value. Deprecated, use
-#'   print.out instead.
 #' @param print.out Logical value, if TRUE, prints return value
 #' @param prime Logical value, if TRUE, control limits incorporate
 #'   between-subgroup variation as proposed by Laney (2002). This is recommended
@@ -191,6 +192,7 @@ qic <- function(y,
                                  'g'),
                 notes        = NULL,
                 cl           = NULL,
+                agg.fun      = c('mean', 'median', 'sum', 'sd'),
                 ylim         = NULL,
                 target       = NULL,
                 freeze       = NULL,
@@ -199,7 +201,6 @@ qic <- function(y,
                 negy         = TRUE,
                 dots.only    = FALSE,
                 multiply     = 1,
-                primed,
                 prime       = FALSE,
                 standardised = FALSE,
                 x.format     = '%Y-%m-%d',
@@ -215,23 +216,15 @@ qic <- function(y,
                 runvals      = FALSE,
                 linevals     = TRUE,
                 plot.chart   = TRUE,
-                prnt,
                 print.out    = FALSE,
                 ...) {
-
-  if(!missing(prnt)) {
-    warning('\"prnt\" argument will be deprecated. Use \"print.out\" instead.')
-    print.out <- prnt
-  }
-
-  if(!missing(primed)) {
-    warning('\"primed\" argument will be deprecated. Use \"prime\" instead.')
-    prime <- primed
-  }
 
   # Select chart type
   type <- match.arg(chart)
   fn <- paste0('qic.', type)
+
+  # Select aggregate function
+  agg.fun <- match.arg(agg.fun)
 
   # Prepare chart title
   no_title <- missing(main)
@@ -299,10 +292,11 @@ qic <- function(y,
   }
 
   # Create data frame of values to analyse
-  d <- data.frame(y.sum  = tapply(y, x, sum, na.rm = TRUE),
-                  y.mean = tapply(y, x, mean, na.rm = TRUE),
-                  y.sd   = tapply(y, x, sd, na.rm = TRUE),
-                  y.n    = tapply(n, x, sum, na.rm = TRUE))
+  d <- data.frame(y.sum    = tapply(y, x, sum, na.rm = TRUE),
+                  y.mean   = tapply(y, x, mean, na.rm = TRUE),
+                  y.median = tapply(y, x, median, na.rm = TRUE),
+                  y.sd     = tapply(y, x, sd, na.rm = TRUE),
+                  y.n      = tapply(n, x, sum, na.rm = TRUE))
 
   # Check that subgroups are unique for T and G charts
   if(any(type == c('t', 'g')) & max(d$y.n, na.rm = TRUE) > 1)
@@ -361,11 +355,12 @@ qic <- function(y,
       ex <- NULL
     }
     # Build qic object
-    y <- do.call(fn, list(d = d[p,],
-                          cl = cl,
-                          freeze = freeze,
-                          exclude = ex,
-                          prime = prime,
+    y <- do.call(fn, list(d            = d[p,],
+                          cl           = cl,
+                          agg.fun      = agg.fun,
+                          freeze       = freeze,
+                          exclude      = ex,
+                          prime        = prime,
                           standardised = standardised))
     qic$y   <- c(qic$y, y$y)
     qic$cl  <- c(qic$cl, y$cl)
@@ -426,6 +421,7 @@ qic <- function(y,
   signals            <- which(qic$y > qic$ucl | qic$y < qic$lcl)
 
   # Complete qic object
+  qic$agg.fun         <- agg.fun
   qic$target          <- target
   qic$n               <- as.vector(d$y.n)
   qic$labels          <- labels
@@ -460,17 +456,6 @@ qic <- function(y,
   # Plot qic chart
   if(plot.chart)
     plot(qic, ...)
-  #       plot.qic(qic = qic,
-  #                dots.only = dots.only,
-  #                decimals  = decimals,
-  #                runvals   = runvals,
-  #                linevals  = linevals,
-  #                ylim      = ylim,
-  #                pre.text  = pre.text,
-  #                post.text = post.text,
-  #                nint = nint,
-  #                cex = cex,
-  # ...)
 
   # Return qic object
   if(print.out) {
@@ -480,10 +465,15 @@ qic <- function(y,
   }
 }
 
-qic.run <- function(d, freeze, cl, exclude, ...){
+qic.run <- function(d, freeze, cl, agg.fun, exclude, ...){
   # Calcutate indicator to plot
 
-  y <- d$y.sum / d$y.n
+  switch(agg.fun,
+         mean   = y <- d$y.mean,
+         median = y <- d$y.median,
+         sum    = y <- d$y.sum,
+         sd     = y <- d$y.sd)
+
 
   # Get number of subgroups
   y.length <- length(y)
@@ -512,10 +502,15 @@ qic.run <- function(d, freeze, cl, exclude, ...){
               ucl = ucl))
 }
 
-qic.i <- function(d, freeze, cl, exclude, ...) {
+qic.i <- function(d, freeze, cl, agg.fun, exclude, ...) {
 
   # Get indicator to plot
-  y <- d$y.sum / d$y.n
+  # y <- d$y.sum / d$y.n
+  switch(agg.fun,
+         mean   = y <- d$y.mean,
+         median = y <- d$y.median,
+         sum    = y <- d$y.sum,
+         sd     = y <- d$y.sd)
 
   # Get number of subgroups
   y.length <- length(y)
@@ -592,7 +587,7 @@ qic.mr <- function(d, freeze, cl, exclude, ...) {
 qic.t <- function(d, freeze, cl, exclude, ...) {
 
   # Get values to plot
-  y <- d$y.sum
+  y <- d$y.mean
 
   if(min(y, na.rm = TRUE) < 0) {
     stop('Time between events cannot contain negative values')
@@ -605,7 +600,7 @@ qic.t <- function(d, freeze, cl, exclude, ...) {
 
   # Transform measures, Montgomery 7.28
   y <- y^(1 / 3.6)
-  d$y.sum <- y
+  d$y.mean <- y
 
   # Calculate center and limits for transformed values
   qic <- qic.i(d, freeze, cl, exclude, ...)
