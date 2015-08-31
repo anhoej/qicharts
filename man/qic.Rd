@@ -5,8 +5,8 @@
 \title{Quality improvement charts}
 \usage{
 qic(y, n, x, data, chart = c("run", "i", "mr", "xbar", "s", "t", "p", "c",
-  "u", "g"), notes = NULL, cl = NULL, agg.fun = c("mean", "median", "sum",
-  "sd"), ylim = NULL, target = NULL, freeze = NULL, breaks = NULL,
+  "u", "g"), notes = NULL, cl = NULL, agg.fun = c("mean", "sum"),
+  ylim = NULL, target = NULL, freeze = NULL, breaks = NULL,
   exclude = NULL, negy = TRUE, dots.only = FALSE, multiply = 1,
   prime = FALSE, standardised = FALSE, x.format = "\%Y-\%m-\%d",
   nint = 5, cex = 0.8, main, xlab = "Subgroup", ylab = "Indicator",
@@ -38,7 +38,7 @@ points.}
 or same as number of subgroups (for variable center line).}
 
 \item{agg.fun}{String specifying the aggregate function if there is more than
-one value per subgroup. Possible values are  'mean', 'median', 'sum', 'sd'.
+one value per subgroup. Possible values are  'mean', 'sum'.
 Only relevant for run charts and I charts.}
 
 \item{ylim}{Range of y axis limits.}

@@ -22,7 +22,7 @@
 #' @param cl Value specifying the center line (if known). Must be of length one
 #'   or same as number of subgroups (for variable center line).
 #' @param agg.fun String specifying the aggregate function if there is more than
-#'   one value per subgroup. Possible values are  'mean', 'median', 'sum', 'sd'.
+#'   one value per subgroup. Possible values are  'mean', 'sum'.
 #'   Only relevant for run charts and I charts.
 #' @param ylim Range of y axis limits.
 #' @param target Value specifying a target line to plot.
@@ -192,7 +192,7 @@ qic <- function(y,
                                  'g'),
                 notes        = NULL,
                 cl           = NULL,
-                agg.fun      = c('mean', 'median', 'sum', 'sd'),
+                agg.fun      = c('mean', 'sum'),
                 ylim         = NULL,
                 target       = NULL,
                 freeze       = NULL,
@@ -225,6 +225,10 @@ qic <- function(y,
 
   # Select aggregate function
   agg.fun <- match.arg(agg.fun)
+
+  if(agg.fun != 'mean' & !missing(n)) {
+    warning('\"n\" argument is irrelevant and will be ignored when \"agg.fun\" argument is provided.')
+  }
 
   # Prepare chart title
   no_title <- missing(main)
@@ -469,10 +473,8 @@ qic.run <- function(d, freeze, cl, agg.fun, exclude, ...){
   # Calcutate indicator to plot
 
   switch(agg.fun,
-         mean   = y <- d$y.mean,
-         median = y <- d$y.median,
-         sum    = y <- d$y.sum,
-         sd     = y <- d$y.sd)
+         mean   = y <- d$y.sum / d$y.n,
+         sum    = y <- d$y.sum)
 
 
   # Get number of subgroups
@@ -507,10 +509,8 @@ qic.i <- function(d, freeze, cl, agg.fun, exclude, ...) {
   # Get indicator to plot
   # y <- d$y.sum / d$y.n
   switch(agg.fun,
-         mean   = y <- d$y.mean,
-         median = y <- d$y.median,
-         sum    = y <- d$y.sum,
-         sd     = y <- d$y.sd)
+         mean   = y <- d$y.sum / d$y.n,
+         sum    = y <- d$y.sum)
 
   # Get number of subgroups
   y.length <- length(y)
