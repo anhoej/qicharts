@@ -1,6 +1,6 @@
 Package: qicharts
-Version: 0.3.1.9000
-Date: 2015-08-25
+Version: 0.3.2.9000
+Date: 2015-09-07
 Title: Quality Improvement Charts
 Authors@R: c(person("Jacob", "Anhoej",
     email = "jacob@anhoej.net",

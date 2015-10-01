@@ -6,13 +6,14 @@
 \usage{
 qic(y, n, x, data, chart = c("run", "i", "mr", "xbar", "s", "t", "p", "c",
   "u", "g"), notes = NULL, cl = NULL, agg.fun = c("mean", "sum"),
-  ylim = NULL, target = NULL, freeze = NULL, breaks = NULL,
-  exclude = NULL, negy = TRUE, dots.only = FALSE, multiply = 1,
-  prime = FALSE, standardised = FALSE, x.format = "\%Y-\%m-\%d",
-  nint = 5, cex = 0.8, main, xlab = "Subgroup", ylab = "Indicator",
-  sub = NULL, decimals = NULL, pre.text = "Before data",
-  post.text = "After data", runvals = FALSE, linevals = TRUE,
-  plot.chart = TRUE, print.out = FALSE, ...)
+  ylim = NULL, target = NULL, direction = NULL, freeze = NULL,
+  breaks = NULL, exclude = NULL, negy = TRUE, dots.only = FALSE,
+  multiply = 1, prime = FALSE, standardised = FALSE,
+  x.format = "\%Y-\%m-\%d", nint = 5, cex = 0.8, main,
+  xlab = "Subgroup", ylab = "Indicator", sub = NULL, decimals = NULL,
+  pre.text = "Before data", post.text = "After data",
+  rag.text = c("Improve", "Investigate", "Control"), runvals = FALSE,
+  linevals = TRUE, plot.chart = TRUE, print.out = FALSE, ...)
 }
 \arguments{
 \item{y}{Numeric vector of counts or measures to plot. Mandatory.}
@@ -38,12 +39,17 @@ points.}
 or same as number of subgroups (for variable center line).}
 
 \item{agg.fun}{String specifying the aggregate function if there is more than
-one value per subgroup. Possible values are  'mean', 'sum'.
-Only relevant for run charts and I charts.}
+one value per subgroup. Possible values are  'mean' and 'sum'. Only
+relevant if you want to aggregate count data with run charts or I charts.
+If \code{agg.fun} = 'sum', the \code{n} argument (if provided) will be
+ignored.}
 
 \item{ylim}{Range of y axis limits.}
 
 \item{target}{Value specifying a target line to plot.}
+
+\item{direction}{Value indication direction of improvement, 0 (down) or 1
+(up).}
 
 \item{freeze}{Number identifying the last data point to include in
 calculations of center and limits (ignored if \code{breaks} argument is
@@ -100,6 +106,9 @@ significant digits.}
 
 \item{post.text}{Character string labelling post-freeze period}
 
+\item{rag.text}{Character vector with three elements indicating "traffic
+light" labels.}
+
 \item{runvals}{Logical value, if TRUE, prints statistics from runs analysis
 on plot.}
 
@@ -121,7 +130,7 @@ Run and control charts for quality improvement and control
 }
 \details{
 If \code{chart} is not specified, \code{qic()} plots a \strong{run
-  chart}. Non-random variation will be marked by a dashed, red center line
+  chart}. Non-random variation will be marked by a dashed, yellow center line
   (the median) if either the longest run of data points above or below the
   median is longer than predicted or if the graph crosses the median fewer
   times than predicted (see references for details).
@@ -129,7 +138,8 @@ If \code{chart} is not specified, \code{qic()} plots a \strong{run
   Only the \code{y} argument giving the count or measure of interest is
   mandatory for a run chart. If a denominator argument, \code{n}, is given,
   \eqn{y/n} will be plotted. If a subgrouping argument, \code{x}, is given,
-  \eqn{sum(y)/sum(n)}, within each subgroup will be plotted.
+  \eqn{sum(y)/sum(n)}, within each subgroup will be plotted. This behaviour
+  can be modified using the \code{agg.fun} argument.
 
   With \strong{controlcharts}, data aggregation by subgroups is handled
   according to chart type. For P, U, and I charts, data are aggregated as

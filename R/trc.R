@@ -18,6 +18,8 @@
 #' @param cex Number indicating the magnification of plotting character.
 #' @param gap Number indicating spacing between panels.
 #' @param target Value specifying a target line to plot.
+#' @param direction Value indication direction of improvement, 0 (down) or 1
+#'   (up).
 #' @param xpad Number specifying the fraction by which to extend the x-axis in
 #'   order to make space for the median label.
 #' @param ... Further arguments to xyplot.
@@ -26,7 +28,7 @@
 #' \code{\link{xyplot}} are \code{main}, \code{ylab}, \code{xlab}, and
 #' \code{layout}.
 #' @return Returns an object of class "trellis".
-#' @seealso \code{\link{xyplot}}
+#' @seealso \code{\link{xyplot}}, \code{\link{qic}}
 #' @examples
 #' # Trellis run chart on 1 conditioning variable
 #' d1 <- data.frame(y = rnorm(96, 12, 3),
@@ -62,16 +64,24 @@ trc <- function(x,
                 cex    = 0.7,
                 gap    = 0.5,
                 target = NA,
+                direction = NULL,
                 ...) {
-  col1     <- rgb(093, 165, 218, maxColorValue = 255)
-  col2     <- rgb(223, 092, 036, maxColorValue = 255)
-  col3     <- rgb(140, 140, 140, maxColorValue = 255)
+#   col1     <- rgb(093, 165, 218, maxColorValue = 255)
+#   col2     <- rgb(223, 092, 036, maxColorValue = 255)
+#   col3     <- rgb(140, 140, 140, maxColorValue = 255)
+  col1            <- rgb(093, 165, 218, maxColorValue = 255) # blue
+  col2            <- rgb(140, 140, 140, maxColorValue = 255) # grey
+  col3            <- rgb(005, 151, 072, maxColorValue = 255) # green
+  col4            <- rgb(255, 165, 000, maxColorValue = 255) # yellow
+  col5            <- rgb(241, 088, 084, maxColorValue = 255) # red
+
   axiscol  <- 'grey50'
   stripcol <- 'grey90'
   stripbor <- 'grey90'
 
   chart    <- match.arg(chart)
   strip    <- strip.custom(bg = stripcol)
+  # strip    <- strip.custom(bg = col)
   par      <- list(axis.line = list(col = stripcol),
                    strip.border = list(col = stripbor),
                    par.main.text = list(cex = 1.25,
@@ -99,36 +109,43 @@ trc <- function(x,
     signal <- qic$runs.test
 
     if(signal) {
-      col <- col2
+      col <- col4
       lty <- 5
     } else {
-      col <- col3
+      col <- col2
       lty <- 1
     }
 
+    # colour center line according to type of variation and target (red-amber-green)
+    lty <- 1
+    col <- col2
+    m <- ifelse(direction, 1, -1)
+    if(signal) {
+      lty <- 5
+      col <- col4
+    } else if(!is.na(target) & !is.null(direction)) {
+      col <- ifelse((target - tail(qic$cl, 1)) * m > 0, col5, col3)
+    }
+
     panel.lines(x, qic$cl, col = col, lty = lty, lwd = 1)
-    panel.lines(x, qic$ucl, col = col3, lwd = 1)
-    panel.lines(x, qic$lcl, col = col3, lwd = 1)
-    panel.lines(x, target, col = col3, lty = 3)
+    panel.lines(x, qic$ucl, col = col2, lwd = 1)
+    panel.lines(x, qic$lcl, col = col2, lwd = 1)
+    panel.lines(x, target, col = col2, lty = 3)
     panel.points(x, y, type = 'o', pch = pch, col = col1, lwd = 2.5, cex = cex)
     panel.text(x = max(x), y = qic$cl,
                labels = sround(qic$cl, dec), #rounded_labels,
                cex = 0.8,
                pos = 4)
+
     panel.text(x = max(x), y = target,
                labels = target,
                cex = 0.8,
                pos = 4)
     panel.xyplot(x, y, ...)
     panel.points(x[qic$signal], y[qic$signal],
-                 col = col2,
-                 cex = cex * 1.1,
+                 col = col4,
+                 cex = cex * 1.5,
                  pch = pch)
-#     lims <- current.panel.limits()
-#     panel.abline(h = lims$ylim[1],
-#                  v = lims$xlim[1],
-#                  col = axiscol,
-#                  lwd = 0.6)
   }
 
   # Create plot
@@ -137,7 +154,7 @@ trc <- function(x,
               scales       = scales,
               prepanel     = prepanel,
               panel        = panel,
-              col          = col3,
+              col          = col2,
               strip        = strip,
               par.settings = par,
               between      = list(x = gap, y = gap),

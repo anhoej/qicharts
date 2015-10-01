@@ -1,8 +1,15 @@
-qicharts 0.3.1.9000
+qicharts 0.3.2.9000
+=================
+* New argument, direction, in qic() and trc() functions. Adds an up or down arrow indicating the desired direction of improvement to qic plots and is used together with target argument to colour code centre line in qic and trc plots.
+* Added colour coding of centre line. Red means stable process on the wrong side of the target. Green means stable process on the right side of the target. Amber means unstable process (= non-random variation is present).
+* Fixed a calculation error in T chart
+* Removed unused levels from x axis labels
+
+qicharts 0.3.2
 =================
 * Fixed handling of missing data in prime charts.
 * primed argument in qic() function is deprecated, use prime instead.
-* Minor adjustments to margins.
+* Minor adjustments to plot margins.
 * New argument, agg.fun, in qic() function. Specifies the aggregate function if there is more than one value per subgroup.
 
 qicharts 0.3.1

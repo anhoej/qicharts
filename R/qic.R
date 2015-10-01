@@ -22,10 +22,14 @@
 #' @param cl Value specifying the center line (if known). Must be of length one
 #'   or same as number of subgroups (for variable center line).
 #' @param agg.fun String specifying the aggregate function if there is more than
-#'   one value per subgroup. Possible values are  'mean', 'sum'.
-#'   Only relevant for run charts and I charts.
+#'   one value per subgroup. Possible values are  'mean' and 'sum'. Only
+#'   relevant if you want to aggregate count data with run charts or I charts.
+#'   If \code{agg.fun} = 'sum', the \code{n} argument (if provided) will be
+#'   ignored.
 #' @param ylim Range of y axis limits.
 #' @param target Value specifying a target line to plot.
+#' @param direction Value indication direction of improvement, 0 (down) or 1
+#'   (up).
 #' @param freeze Number identifying the last data point to include in
 #'   calculations of center and limits (ignored if \code{breaks} argument is
 #'   given).
@@ -55,6 +59,8 @@
 #'   significant digits.
 #' @param pre.text Character string labelling pre-freeze period
 #' @param post.text Character string labelling post-freeze period
+#' @param rag.text Character vector with three elements indicating "traffic
+#'   light" labels.
 #' @param runvals Logical value, if TRUE, prints statistics from runs analysis
 #'   on plot.
 #' @param linevals Logical value, if TRUE, prints values for center and control
@@ -72,7 +78,7 @@
 #' @param ... Further arguments to plot function.
 #'
 #' @details If \code{chart} is not specified, \code{qic()} plots a \strong{run
-#'   chart}. Non-random variation will be marked by a dashed, red center line
+#'   chart}. Non-random variation will be marked by a dashed, yellow center line
 #'   (the median) if either the longest run of data points above or below the
 #'   median is longer than predicted or if the graph crosses the median fewer
 #'   times than predicted (see references for details).
@@ -80,7 +86,8 @@
 #'   Only the \code{y} argument giving the count or measure of interest is
 #'   mandatory for a run chart. If a denominator argument, \code{n}, is given,
 #'   \eqn{y/n} will be plotted. If a subgrouping argument, \code{x}, is given,
-#'   \eqn{sum(y)/sum(n)}, within each subgroup will be plotted.
+#'   \eqn{sum(y)/sum(n)}, within each subgroup will be plotted. This behaviour
+#'   can be modified using the \code{agg.fun} argument.
 #'
 #'   With \strong{controlcharts}, data aggregation by subgroups is handled
 #'   according to chart type. For P, U, and I charts, data are aggregated as
@@ -195,6 +202,7 @@ qic <- function(y,
                 agg.fun      = c('mean', 'sum'),
                 ylim         = NULL,
                 target       = NULL,
+                direction    = NULL,
                 freeze       = NULL,
                 breaks       = NULL,
                 exclude      = NULL,
@@ -213,6 +221,7 @@ qic <- function(y,
                 decimals     = NULL,
                 pre.text     = 'Before data',
                 post.text    = 'After data',
+                rag.text     = c('Improve', 'Investigate', 'Control'),
                 runvals      = FALSE,
                 linevals     = TRUE,
                 plot.chart   = TRUE,
@@ -276,12 +285,20 @@ qic <- function(y,
   if(missing(x)) {
     x <- 1:length(y)
   } else {
+    if(is.factor(x))
+      x <- droplevels(x)
     if(length(x) != length(y))
       stop('\"y\" and \"x\" arguments must have same length.')
   }
   if(length(target) > 1) {
     warning('\"target\" argument must be a single value. Argument ignored.')
     target <- NULL
+  }
+  if(!is.null(direction)) {
+    if(!direction %in% c(0, 1)) {
+      warning('\"direction\" must be 0 or 1. Argument ignored')
+      direction <- NULL
+    }
   }
 
   # Fix missing values
@@ -372,6 +389,12 @@ qic <- function(y,
     qic$ucl <- c(qic$ucl, y$ucl)
   }
 
+  if(max(table(qic$y) >= length(na.omit(qic$y)) / 2)){
+    qic$cl <- NA
+    qic$ucl <- NA
+    qic$lcl <- NA
+  }
+
   # Prevent negative y axis if negy argument is FALSE
   if(!negy & min(qic$y, na.rm = TRUE) >= 0)
     qic$lcl[qic$lcl < 0] <- NA
@@ -427,6 +450,7 @@ qic <- function(y,
   # Complete qic object
   qic$agg.fun         <- agg.fun
   qic$target          <- target
+  qic$direction       <- direction
   qic$n               <- as.vector(d$y.n)
   qic$labels          <- labels
   qic$notes           <- notes
@@ -451,6 +475,7 @@ qic <- function(y,
   qic$sub             <- sub
   qic$pre.text        <- pre.text
   qic$post.text       <- post.text
+  qic$rag.text        <- rag.text
   qic$ylim            <- ylim
   qic$nint            <- nint
   qic$cex             <- cex
@@ -494,8 +519,8 @@ qic.run <- function(d, freeze, cl, agg.fun, exclude, ...){
     cl <- rep(cl, y.length)
 
   # Calculate limits
-  ucl <- NULL
-  lcl <- NULL
+  ucl <- rep(NA, y.length)
+  lcl <- ucl
 
   # Return object to calling function
   return(list(y = y,
@@ -507,7 +532,6 @@ qic.run <- function(d, freeze, cl, agg.fun, exclude, ...){
 qic.i <- function(d, freeze, cl, agg.fun, exclude, ...) {
 
   # Get indicator to plot
-  # y <- d$y.sum / d$y.n
   switch(agg.fun,
          mean   = y <- d$y.sum / d$y.n,
          sum    = y <- d$y.sum)
@@ -553,10 +577,14 @@ qic.i <- function(d, freeze, cl, agg.fun, exclude, ...) {
               ucl = ucl))
 }
 
-qic.mr <- function(d, freeze, cl, exclude, ...) {
+qic.mr <- function(d, freeze, cl, agg.fun, exclude, ...) {
 
   # Calcutate indicator to plot
-  y <- d$y.sum / d$y.n
+  switch(agg.fun,
+         mean   = y <- d$y.sum / d$y.n,
+         sum    = y <- d$y.sum)
+
+  # y <- d$y.sum / d$y.n
   y <- c(NA, abs(diff(y)))
 
   # Get number of subgroups
@@ -600,7 +628,8 @@ qic.t <- function(d, freeze, cl, exclude, ...) {
 
   # Transform measures, Montgomery 7.28
   y <- y^(1 / 3.6)
-  d$y.mean <- y
+  #   d$y.mean <- y
+  d$y.sum <- y
 
   # Calculate center and limits for transformed values
   qic <- qic.i(d, freeze, cl, exclude, ...)
@@ -950,15 +979,18 @@ c4 <- function(n) {
 #' p <- qic(y, plot.chart = FALSE)
 #' plot(p)
 plot.qic <- function(x, y = NULL, ...) {
-  col1            <- rgb(093, 165, 218, maxColorValue = 255)
-  col2            <- rgb(223, 092, 036, maxColorValue = 255)
-  col3            <- rgb(140, 140, 140, maxColorValue = 255)
+  col1            <- rgb(093, 165, 218, maxColorValue = 255) # blue
+  col2            <- rgb(140, 140, 140, maxColorValue = 255) # grey
+  col3            <- rgb(005, 151, 072, maxColorValue = 255) # green
+  col4            <- rgb(255, 165, 000, maxColorValue = 255) # yellow
+  col5            <- rgb(241, 088, 084, maxColorValue = 255) # red
   n.obs           <- x$n.obs
   y               <- x$y
   cl              <- x$cl
   lcl             <- x$lcl
   ucl             <- x$ucl
   target          <- x$target
+  direction       <- x$direction
   signals         <- x$signals
   runs.test       <- x$runs.test
   freeze          <- x$freeze
@@ -982,6 +1014,7 @@ plot.qic <- function(x, y = NULL, ...) {
   ylim            <- x$ylim
   pre.text        <- x$pre.text
   post.text       <- x$post.text
+  rag.text        <- x$rag.text
   nint            <- x$nint
   cex             <- x$cex
   x               <- 1:n.obs
@@ -992,10 +1025,9 @@ plot.qic <- function(x, y = NULL, ...) {
   type            <- ifelse(dots.only, 'p', 'o')
   pch             <- ifelse(dots.only, 19, 20)
 
-
   # Setup plot margins
   mar <- par('mar')
-  mar <- mar + c(-0.5, 0.5, 0, 0.25)
+  mar <- mar + c(-0.5, 1, 0, 3)
 
   if(runvals & !dots.only)
     mar <- mar + c(1.5, 0, 0, 0)
@@ -1028,25 +1060,25 @@ plot.qic <- function(x, y = NULL, ...) {
        tcl = -0.2,
        lwd = 0,
        lwd.ticks = lwd,
-       col = col3,
+       col = col2,
        ...)
   axis(2,
        tcl = -0.2,
        lwd = 0,
        lwd.ticks = lwd,
-       col = col3,
+       col = col2,
        las = 2,
        ...)
   box(bty = 'l',
       lwd = lwd,
-      col = col3)
+      col = col2)
   title(main = main,
         adj = 0,
         line = 2.7,
         # cex.main = cex * 1.25,
         font.main = 1)
   title(xlab = xlab, line = 2.8)
-  title(ylab = ylab, line = 3.5)
+  title(ylab = ylab, line = 3.75)
 
   if(!is.null(sub))
     title(sub = sub,
@@ -1054,29 +1086,65 @@ plot.qic <- function(x, y = NULL, ...) {
           cex.sub = cex,
           line = ifelse(runvals & !dots.only, 5.8, 4.3))
 
-  # Color and dash center line if non random variation is present
+  # colour center line according to type of variation and target (red-amber-green)
   lty <- 1
-  col <- col3
-  if(runs.test & !dots.only) {
+  col <- col2
+  m <- ifelse(direction, 1, -1)
+
+  # if(runs.test | length(signals) & !dots.only) {
+  if(runs.test | length(signals) & !all(signals %in% exclude) & !dots.only) {
     lty <- 5
-    col <- col2
+    col <- col4
+  } else if(!is.null(target) & !is.null(direction)) {
+    col <- ifelse((target - tail(cl, 1)) * m > 0, col5, col3)
   }
+  # traffic light
+  if(!is.null(target) & !is.null(direction) & !is.na(col)) {
+    bg <- c(0, 0, 0)
+    legend <- c('', '', '')
+    if(col == col5) {
+      bg[1] <- col5
+      legend[1] <- rag.text[1]
+    }
+    if(col == col4) {
+      bg[2] <- col4
+      legend[2] <- rag.text[2]
+    }
+    if(col == col3) {
+      bg[3] <- col3
+      legend[3] <- rag.text[3]
+    }
+
+    legend(max(x), max(ylim),
+           legend = legend,
+           pch = rep(21, 3),
+           pt.cex = 2.25,
+           col = c(col5, col4, col3),
+           pt.bg = bg,
+           yjust = 0,
+           xjust = 0.1,
+           xpd = T,
+           # y.intersp = 1,
+           bty = 'n')
+  }
+
 
   # add lines to plot
   for(p in parts) {
     lines(p, cl[p], lty = lty, col = col, lwd = lwd * 1.5)
-    lines(p, ucl[p], lty = 1, col = col3)
-    lines(p, lcl[p], lty = 1, col = col3)
+    lines(p, ucl[p], lty = 1, col = col2)
+    lines(p, lcl[p], lty = 1, col = col2)
     lines(p, y[p], type = type, col = col1, lwd = lwd * 4, pch = pch)
   }
+
   # add target line
   if(!is.null(target))
-    lines(x, rep(target, n.obs), lty = 3, col = col3)
+    lines(x, rep(target, n.obs), lty = 3, col = col2)
 
   # annotate before and after data if freeze argument is given
   if(!is.null(freeze)) {
     abline(v = freeze + 0.5,
-           col = col3,
+           col = col2,
            lty = 3)
     mtext(pre.text,
           at = freeze / 2,
@@ -1088,35 +1156,57 @@ plot.qic <- function(x, y = NULL, ...) {
           line = 0.7)
   }
 
-  # color data points outside sigma limits
-  points(signals, y[signals], col = col2, pch = pch, cex = cex * 2)
+  # colour data points outside sigma limits
+  points(signals, y[signals], col = col4, pch = pch, cex = cex * 2.1)
 
   # mark excluded data points
-  points(exclude, y[exclude], bg = 0, col = col3, pch = 21, cex = cex * 1.5)
+  points(exclude, y[exclude], bg = 0, col = col2, pch = 21, cex = cex * 1.5)
 
   # add values for center and limits to the plot
   if(linevals) {
-    mtext(sround(cl[n.obs], decimals),
-          side = 4,
-          at = cl[n.obs],
-          las = 1,
-          cex = cex2)
-    mtext(sround(ucl[n.obs], decimals),
-          side = 4,
-          at = ucl[n.obs],
-          las = 1,
-          cex = cex2)
-    mtext(sround(lcl[n.obs], decimals),
-          side = 4,
-          at = lcl[n.obs],
-          las = 1,
-          cex = cex2)
-    if(!is.null(target))
-      mtext(sround(target, decimals),
+    val <- tail(na.omit(cl), 1)
+    if(length(val) && !is.na(val)) {
+      mtext(paste('CL =', sround(val, decimals)),
             side = 4,
-            at = target,
+            at = val,
             las = 1,
             cex = cex2)
+    }
+    val <- tail((lcl), 1)
+    if(length(val) && !is.na(val)) {
+      mtext(paste('LCL =', sround(val, decimals)),
+            side = 4,
+            at = val,  #lcl[n.obs],
+            las = 1,
+            cex = cex2)
+    }
+    val <- tail((ucl), 1)
+    if(length(val) && !is.na(val)) {
+      mtext(paste('UCL =', sround(val, decimals)),
+            side = 4,
+            at = val,
+            las = 1,
+            cex = cex2)
+    }
+    padj <- NA
+    if(length(target) & !is.na(cl[1])) {
+      ll <- c(lcl = tail(na.omit(lcl), 1),
+              cl = tail(na.omit(cl), 1),
+              ucl = tail(na.omit(ucl), 1))
+      ll <- get(names(which.min(abs(tail(target, 1) - ll))))
+      ll <- tail(ll, 1)
+      padj <- ifelse(ll > tail(target, 1), 1.5, -0.5)
+    }
+
+    if(length(target)) {
+
+      mtext(paste('TRG =', target), #sround(target, decimals)),
+            side = 4,
+            at = target,
+            padj = padj,
+            las = 1,
+            cex = cex2)
+    }
   }
 
   # Print statistics from runs analysis to plot
@@ -1133,14 +1223,14 @@ plot.qic <- function(x, y = NULL, ...) {
           side = 1,
           line = 4.5,
           adj = 0.5,
-          col = ifelse(longest.run > longest.run.max, col2, 1))
+          col = ifelse(longest.run > longest.run.max, col4, 1))
     mtext(paste0('Crossings (min) = ', n.crossings,
                  ' (', n.crossings.min, ')'),
           cex = cex2,
           side = 1,
           adj = 1,
           line = 4.5,
-          col = ifelse(n.crossings < n.crossings.min, col2, 1))
+          col = ifelse(n.crossings < n.crossings.min, col4, 1))
   }
 
   # Add notes to plot
@@ -1158,6 +1248,13 @@ plot.qic <- function(x, y = NULL, ...) {
              y1 = y.ann,
              lty = 3)#, lwd = lwd)
   }
+
+  # Add direction arrow
+  if(!is.null(direction) & length(na.omit(cl))) {
+    a <- ifelse(direction, expression('' %->% ''), expression('' %<-% ''))
+    mtext(a, side = 4, line = -1.2, at = tail(na.omit(cl), 1), col = col2)
+  }
+
   par(op)
 }
 
