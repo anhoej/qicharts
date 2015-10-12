@@ -16,6 +16,7 @@ For quick demos, run
 ```
 example(qic)
 example(trc)
+example(tcc)
 example(paretochart)
 vignette('runcharts')
 ```
