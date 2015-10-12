@@ -8,6 +8,8 @@ The main function is `qic()`, which in its simplest form takes a vector of value
 
 The `trc()` function creates trellis run charts, i.e. small multiple run charts from multivariate data.
 
+`tcc()` is an experimental function aiming at replacing `trc()` and, eventually, `qic()`. It allows for multivariate run and control charts in trellis layout.
+
 The `paretochart()` function plots a pareto chart from categorical data.
 
 For quick demos, run

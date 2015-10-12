@@ -4,7 +4,7 @@
 #'
 #' @export
 #' @import lattice
-#' @import latticeExtra
+#' @importFrom  latticeExtra useOuterStrips
 #' @param x Formula object to plot. The formula is of the form y ~ x | g1 + g2 +
 #'   ..., indicating that plots of y (on the y-axis) versus x (on the x-axis)
 #'   should be produced conditional on the variables g1, g2.
