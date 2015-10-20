@@ -389,7 +389,7 @@ qic <- function(y,
     qic$ucl <- c(qic$ucl, y$ucl)
   }
 
-  if(max(table(qic$y) >= length(na.omit(qic$y)) / 2 & chart == 'run')){
+  if(max(table(qic$y)) >= (length(na.omit(qic$y)) / 2) & type == 'run') {
     qic$cl <- NA
     qic$ucl <- NA
     qic$lcl <- NA
