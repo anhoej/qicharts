@@ -1,10 +1,18 @@
-qicharts 0.3.2.9000
+qicharts 0.4.1.9000
+=================
+* Removed empty levels from data frame
+
+qicharts 0.4.1
+=================
+* Fixed undefined globals
+
+qicharts 0.4.0
 =================
 * New experimental function, tcc(), trellis control charts. Aims at replacing trc() and, eventually, qic(). Allows for multivariate run and control charts in lattice (grid) layout.
 * New argument, direction, in qic() and trc() functions. Adds an up or down arrow indicating the desired direction of improvement to qic plots and is used together with the target argument to colour code the centre line in qic and trc plots.
 * Added colour coding of centre line. Red means stable process on the wrong side of the target. Green means stable process on the right side of the target. Amber means unstable process (= non-random variation is present).
 * Fixed a calculation error in T chart
-* Removed unused levels from x axis labels
+* Median line is suppressed in run charts if more than half of the data points have the same value.
 
 qicharts 0.3.2
 =================

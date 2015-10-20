@@ -44,6 +44,8 @@
 #' @param main Character string specifying the title of the plot.
 #' @param xlab Character string specifying the x axis label.
 #' @param ylab Character string specifying the y axis label.
+#' @param plot Logical. If TRUE (default), plot chart.
+#' @param print Logical. if TRUE, prints return value.
 #' @param ... Further arguments to ggplot function.
 #'
 #' @details \code{tcc()} is a wrapper function that uses \code{\link{ggplot2}}
@@ -54,9 +56,6 @@
 #'   plot.
 #'
 #' @export
-#'
-#' @import ggplot2
-#' @import scales
 #'
 #' @examples
 #' # Run chart of 24 random vaiables
@@ -116,6 +115,8 @@ tcc <- function(n, d, x, g1, g2, breaks,
                 main,
                 xlab        = 'Time',
                 ylab        = 'Indicator',
+                plot        = TRUE,
+                print       = FALSE,
                 ...) {
   # Get chart type
   type <- match.arg(chart)
@@ -200,10 +201,10 @@ tcc <- function(n, d, x, g1, g2, breaks,
                   FUN = sd,
                   na.rm = TRUE,
                   na.action = na.pass)
-#   d3 <- aggregate(cbind(n.obs = n) ~ x + g1 + g2 + breaks,
-#                   data = df,
-#                   FUN = length,
-#                   na.action = na.pass)
+  #   d3 <- aggregate(cbind(n.obs = n) ~ x + g1 + g2 + breaks,
+  #                   data = df,
+  #                   FUN = length,
+  #                   na.action = na.pass)
   d3 <- aggregate(cbind(n.obs = cases) ~ x + g1 + g2 + breaks,
                   data = df,
                   FUN = sum,
@@ -211,12 +212,14 @@ tcc <- function(n, d, x, g1, g2, breaks,
   df <- merge(d1, d2)
   df <- merge(df, d3)
   df <- df[order(df$x), ]
+
   # Calculate y variable
   if(sum.n & no.d | type %in% c('c', 't', 'g')) {
     df$y <- df$n
   } else {
     df$y <- df$n / df$d
   }
+  df$y[is.nan(df$y)] <- NA
 
   # Build exclude variable
   df$exclude <- FALSE
@@ -226,8 +229,10 @@ tcc <- function(n, d, x, g1, g2, breaks,
     df <- do.call(rbind, df)
   }
 
+  df <- droplevels(df)
   # Complete data frame
   df                  <- split(df, list(df$g1, df$g2, df$breaks))
+# return(df)
   df                  <- lapply(df, fn, freeze = freeze, prime = prime, sum.n)
   df                  <- lapply(df, runs.analysis)
   df                  <- do.call(rbind, df)
@@ -257,9 +262,16 @@ tcc <- function(n, d, x, g1, g2, breaks,
   class(tcc) <- 'tcc'
 
   # Plot and return
-  plot.tcc(tcc, cex = cex, pex = pex, ylim = ylim, date.format = date.format,
-           flip = flip, dots.only = dots.only, ...)
-  invisible(tcc)
+  if(plot) {
+    plot.tcc(tcc, cex = cex, pex = pex, ylim = ylim, date.format = date.format,
+             flip = flip, dots.only = dots.only, ...)
+  }
+
+  if(print) {
+    return(tcc)
+  } else {
+    invisible(tcc)
+  }
 }
 
 tcc.run <- function(df, freeze, ...) {
@@ -275,6 +287,7 @@ tcc.run <- function(df, freeze, ...) {
   lcl  <- NA
   ucl  <- NA
   df   <- cbind(df, cl, ucl, lcl)
+
   return(df)
 }
 
@@ -633,6 +646,9 @@ c4 <- function(n) {
 #'
 #' @export
 #'
+#' @import ggplot2
+#' @import scales
+#'
 #' @examples
 #' p <- tcc(rnorm(24))
 #' plot(p)
@@ -646,8 +662,8 @@ plot.tcc <- function(x,
                      flip        = FALSE,
                      dots.only   = FALSE,
                      ...) {
-#   require(scales)
-#   require(ggplot2)
+  #   require(scales)
+  #   require(ggplot2)
 
   df      <- x$df
   main    <- x$main
@@ -743,6 +759,12 @@ plot.tcc <- function(x,
     p <- p + coord_flip()
 
   }
+
+  #   p <- p +
+  #     geom_text(aes(x = max(x), y = cl, label = round(cl, 2)),
+  #               # hjust = 1,
+  #               vjust = 0,
+  #               size = 3)
 
   plot(p)
 }

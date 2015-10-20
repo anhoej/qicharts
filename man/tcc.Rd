@@ -8,7 +8,8 @@ tcc(n, d, x, g1, g2, breaks, data, chart = c("run", "i", "mr", "xbar", "s",
   "t", "p", "c", "u", "g"), multiply = 1, freeze = NULL, exclude,
   sum.n = FALSE, neg.y = TRUE, cex = 1, pex = 1, ylim = NULL,
   date.format = NULL, prime = TRUE, flip = FALSE, dots.only = FALSE,
-  main, xlab = "Time", ylab = "Indicator", ...)
+  main, xlab = "Time", ylab = "Indicator", plot = TRUE, print = FALSE,
+  ...)
 }
 \arguments{
 \item{n}{Numeric vector of counts or measures to plot. Mandatory.}
@@ -75,6 +76,10 @@ plots.}
 \item{xlab}{Character string specifying the x axis label.}
 
 \item{ylab}{Character string specifying the y axis label.}
+
+\item{plot}{Logical. If TRUE (default), plot chart.}
+
+\item{print}{Logical. if TRUE, prints return value.}
 
 \item{...}{Further arguments to ggplot function.}
 }

@@ -389,7 +389,7 @@ qic <- function(y,
     qic$ucl <- c(qic$ucl, y$ucl)
   }
 
-  if(max(table(qic$y) >= length(na.omit(qic$y)) / 2)){
+  if(max(table(qic$y) >= length(na.omit(qic$y)) / 2 & chart == 'run')){
     qic$cl <- NA
     qic$ucl <- NA
     qic$lcl <- NA
@@ -968,6 +968,9 @@ c4 <- function(n) {
 #' Plot qic object
 #'
 #' @export
+#'
+#' @importFrom utils tail
+#'
 #' @param x List object returned from the qic() function.
 #' @param y Ignored. Included for compatibility with generic plot function.
 #' @param ... Further arguments to plot function.
