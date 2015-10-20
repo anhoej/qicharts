@@ -168,6 +168,7 @@ tcc <- function(n, d, x, g1, g2, breaks,
 
   # Initialise data frame
   df <- data.frame(n, d, x, g1, g2, cases)
+  df <- droplevels(df)
 
   # Build breaks variable
   if(missing(breaks)) {
@@ -201,10 +202,6 @@ tcc <- function(n, d, x, g1, g2, breaks,
                   FUN = sd,
                   na.rm = TRUE,
                   na.action = na.pass)
-  #   d3 <- aggregate(cbind(n.obs = n) ~ x + g1 + g2 + breaks,
-  #                   data = df,
-  #                   FUN = length,
-  #                   na.action = na.pass)
   d3 <- aggregate(cbind(n.obs = cases) ~ x + g1 + g2 + breaks,
                   data = df,
                   FUN = sum,
@@ -229,10 +226,8 @@ tcc <- function(n, d, x, g1, g2, breaks,
     df <- do.call(rbind, df)
   }
 
-  df <- droplevels(df)
   # Complete data frame
   df                  <- split(df, list(df$g1, df$g2, df$breaks))
-# return(df)
   df                  <- lapply(df, fn, freeze = freeze, prime = prime, sum.n)
   df                  <- lapply(df, runs.analysis)
   df                  <- do.call(rbind, df)
