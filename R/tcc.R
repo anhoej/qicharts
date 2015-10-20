@@ -621,7 +621,9 @@ c4 <- function(n) {
   return(x)
 }
 
-#' Title
+#' Plot trellis control chart
+#'
+#' Creates a plot of a tcc object
 #'
 #' @param x List object returned from the tcc() function.
 #' @param y Ignored. Included for compatibility with generic plot function.

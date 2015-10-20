@@ -2,7 +2,7 @@
 % Please edit documentation in R/tcc.R
 \name{plot.tcc}
 \alias{plot.tcc}
-\title{Title}
+\title{Plot trellis control chart}
 \usage{
 \method{plot}{tcc}(x, y = NULL, cex = 1, pex = 1, ylim = NULL,
   date.format = "\%Y-\%m-\%d", flip = FALSE, dots.only = FALSE, ...)
@@ -34,7 +34,7 @@ plots.}
 Creates a tcc plot.
 }
 \description{
-Title
+Creates a plot of a tcc object
 }
 \examples{
 p <- tcc(rnorm(24))
