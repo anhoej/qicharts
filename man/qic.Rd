@@ -12,8 +12,9 @@ qic(y, n, x, data, chart = c("run", "i", "mr", "xbar", "s", "t", "p", "c",
   x.format = "\%Y-\%m-\%d", nint = 5, cex = 0.8, main,
   xlab = "Subgroup", ylab = "Indicator", sub = NULL, decimals = NULL,
   pre.text = "Before data", post.text = "After data",
-  rag.text = c("Improve", "Investigate", "Control"), runvals = FALSE,
-  linevals = TRUE, plot.chart = TRUE, print.out = FALSE, ...)
+  rag.text = c("Improve", "Investigate", "Control"), llabs = c("LCL", "CL",
+  "UCL", "TRG"), runvals = FALSE, linevals = TRUE, plot.chart = TRUE,
+  print.out = FALSE, ...)
 }
 \arguments{
 \item{y}{Numeric vector of counts or measures to plot. Mandatory.}
@@ -108,6 +109,10 @@ significant digits.}
 
 \item{rag.text}{Character vector with three elements indicating "traffic
 light" labels.}
+
+\item{llabs}{Character vector with four elements specifying labels for lower
+control limit, centre line, upper control limit and target line
+respectively}
 
 \item{runvals}{Logical value, if TRUE, prints statistics from runs analysis
 on plot.}

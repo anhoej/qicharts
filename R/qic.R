@@ -61,6 +61,9 @@
 #' @param post.text Character string labelling post-freeze period
 #' @param rag.text Character vector with three elements indicating "traffic
 #'   light" labels.
+#' @param llabs Character vector with four elements specifying labels for lower
+#'   control limit, centre line, upper control limit and target line
+#'   respectively
 #' @param runvals Logical value, if TRUE, prints statistics from runs analysis
 #'   on plot.
 #' @param linevals Logical value, if TRUE, prints values for center and control
@@ -222,6 +225,7 @@ qic <- function(y,
                 pre.text     = 'Before data',
                 post.text    = 'After data',
                 rag.text     = c('Improve', 'Investigate', 'Control'),
+                llabs        = c('LCL', 'CL', 'UCL', 'TRG'),
                 runvals      = FALSE,
                 linevals     = TRUE,
                 plot.chart   = TRUE,
@@ -478,6 +482,7 @@ qic <- function(y,
   qic$pre.text        <- pre.text
   qic$post.text       <- post.text
   qic$rag.text        <- rag.text
+  qic$llabs           <- llabs
   qic$ylim            <- ylim
   qic$nint            <- nint
   qic$cex             <- cex
@@ -1020,6 +1025,7 @@ plot.qic <- function(x, y = NULL, ...) {
   pre.text        <- x$pre.text
   post.text       <- x$post.text
   rag.text        <- x$rag.text
+  llabs           <- x$llabs
   nint            <- x$nint
   cex             <- x$cex
   x               <- 1:n.obs
@@ -1144,7 +1150,7 @@ plot.qic <- function(x, y = NULL, ...) {
 
   # add target line
   if(!is.null(target))
-    lines(x, rep(target, n.obs), lty = 3, col = col2)
+    lines(x, rep(target, n.obs), lty = 3, col = col2, lwd = lwd * 1.5)
 
   # annotate before and after data if freeze argument is given
   if(!is.null(freeze)) {
@@ -1171,7 +1177,8 @@ plot.qic <- function(x, y = NULL, ...) {
   if(linevals) {
     val <- tail(na.omit(cl), 1)
     if(length(val) && !is.na(val)) {
-      mtext(paste('CL =', sround(val, decimals)),
+      # mtext(paste('CL =', sround(val, decimals)),
+      mtext(paste(llabs[2], '=', sround(val, decimals)),
             side = 4,
             at = val,
             las = 1,
@@ -1179,15 +1186,15 @@ plot.qic <- function(x, y = NULL, ...) {
     }
     val <- tail((lcl), 1)
     if(length(val) && !is.na(val)) {
-      mtext(paste('LCL =', sround(val, decimals)),
+      mtext(paste(llabs[1], '=', sround(val, decimals)),
             side = 4,
-            at = val,  #lcl[n.obs],
+            at = val,
             las = 1,
             cex = cex2)
     }
     val <- tail((ucl), 1)
     if(length(val) && !is.na(val)) {
-      mtext(paste('UCL =', sround(val, decimals)),
+      mtext(paste(llabs[3], '=', sround(val, decimals)),
             side = 4,
             at = val,
             las = 1,
@@ -1205,7 +1212,7 @@ plot.qic <- function(x, y = NULL, ...) {
 
     if(length(target)) {
 
-      mtext(paste('TRG =', target), #sround(target, decimals)),
+      mtext(paste(llabs[4], '=', target), #sround(target, decimals)),
             side = 4,
             at = target,
             padj = padj,
