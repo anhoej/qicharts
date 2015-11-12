@@ -19,10 +19,12 @@ example(trc)
 example(tcc)
 example(paretochart)
 vignette('runcharts')
+vignette('controlcharts')
 ```
 Then read the help files
 ```
 ?qic
 ?trc
+?tcc
 ?paretochart
 ```
