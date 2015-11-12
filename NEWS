@@ -1,6 +1,12 @@
-qicharts 0.4.1.9000
+qicharts 0.4.2.9000
 =================
-* Removed empty levels from data frame
+* Fixed infinite control limits in tcc().
+* Fixed loading errors caused by imports from scales
+
+qicharts 0.4.2
+=================
+* Removed empty levels from data frame in tcc().
+* Fixed a bug in qic() code that handles run charts with more than half of the data points having same value.
 
 qicharts 0.4.1
 =================

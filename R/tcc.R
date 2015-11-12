@@ -48,14 +48,13 @@
 #' @param print Logical. if TRUE, prints return value.
 #' @param ... Further arguments to ggplot function.
 #'
-#' @details \code{tcc()} is a wrapper function that uses \code{\link{ggplot2}}
+#' @details \code{tcc()} is a wrapper function that uses ggplot2
 #'   to create multivariate run and control charts. It takes up to two grouping
 #'   variables to make one or two dimensional trellis plots.
 #'
 #' @return A list of of class tcc containing values and parameters of the tcc
 #'   plot.
 #'
-#' @export
 #'
 #' @examples
 #' # Run chart of 24 random vaiables
@@ -95,7 +94,7 @@
 #'
 #' # P chart with two data points excluded from calculations
 #' tcc(n, d, mo, g1 = g1, g2 = g2, data = d, chart = 'p', exclude = c(12, 18))
-
+#' @export
 tcc <- function(n, d, x, g1, g2, breaks,
                 data,
                 chart        = c("run", "i", "mr", "xbar", "s",
@@ -239,6 +238,10 @@ tcc <- function(n, d, x, g1, g2, breaks,
   df$limits.signal    <- df$y < df$lcl | df$y > df$ucl
   x                   <- is.na(df$limits.signal)
   df$limits.signal[x] <- FALSE
+
+  df$ucl[!is.finite(df$ucl)] <- NA
+  df$lcl[!is.finite(df$lcl)] <- NA
+
 
   # Prevent negative y axis if negy argument is FALSE
   if(!neg.y & min(df$y, na.rm = TRUE) >= 0)
@@ -625,6 +628,9 @@ c4 <- function(n) {
 #'
 #' Creates a plot of a tcc object
 #'
+#' @export
+#' @import ggplot2
+#' @importFrom scales date_format
 #' @param x List object returned from the tcc() function.
 #' @param y Ignored. Included for compatibility with generic plot function.
 #' @param cex Number indicating the amount by which text should be magnified.
@@ -641,15 +647,11 @@ c4 <- function(n) {
 #'
 #' @return Creates a tcc plot.
 #'
-#' @export
 #'
-#' @import ggplot2
-#' @import scales
 #'
 #' @examples
 #' p <- tcc(rnorm(24))
 #' plot(p)
-#'
 plot.tcc <- function(x,
                      y           = NULL,
                      cex         = 1,

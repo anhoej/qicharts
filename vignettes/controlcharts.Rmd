@@ -19,7 +19,7 @@ vignette: >
 
 The purpose of this vignette is to demonstrate the use of `qicharts` for creating control charts. I recommend that you read the vignette on run charts first for a detailed introduction to the most important arguments of the `qic()` function.
 
-I assume that you are already familiar with basic control chart theory. If not, I suggest that you buy a good, old fashioned book on the subject. I highly recommend Montgomery's Introduction to Statistical Process Control (Montgomery 2009). Also, The Healthcare Data Guide (Provost 2011) is very useful and contains a wealth of information on the specific use of control charts in healthcare settings. In particular, the sections on rare events T and G control charts and the detailed explanation of primed charts are most helpful. However, I suggest that you avoid the chapter on run charts in this book, since it promotes the use of certain run chart rules that have been proven ineffective and even misleading (Anhoej 2015).
+I assume that you are already familiar with basic control chart theory. If not, I suggest that you buy a good, old fashioned book on the subject. I highly recommend Montgomery's Introduction to Statistical Process Control (Montgomery 2009). Also, The Healthcare Data Guide (Provost 2011) is very useful and contains a wealth of information on the specific use of control charts in healthcare settings. In particular, the sections on rare events T and G control charts and the detailed explanation of prime charts are most helpful. However, I suggest that you avoid the chapter on run charts in this book, since it promotes the use of certain run chart rules that have been proven ineffective and even misleading (Anhoej 2015).
 
 Before we start, we will load the qicharts package and lock the random number generator in order to make reproducible data sets for this vignette.
 
@@ -318,26 +318,26 @@ qic(n.pat.pu,
 
 The standardised chart shows the same information as its not-standardised peer, but the straight control lines may appear less confusing. On the other hand, one looses the original units of data, which may make the chart harder to interpret.
 
-### Primed control charts
+### Prime control charts
 
 Sometimes, with very large subgroups, the control limits of U and P charts seem much too narrow leaving almost all data points outside of common cause variation. This may be an artefact caused by the fact that the "true" common cause variation in data is greater than that predicted by the poisson or binomial distribution. This is called overdispersion. In theory, overdispersion will often be present in real life data but only detectable with large subgroups where point estimates become very precise.
 
 Laney proposed a solution to this problem that incorporates the between subgroup variation (Laney 2002).
 
-```{r fig13, fig.cap='Figure 13: Primed P chart'}
-# Plot primed P chart
+```{r fig13, fig.cap='Figure 13: Prime P chart'}
+# Plot prime P chart
 qic(n.pat.pu, discharges, week, d,
     chart    = 'p',
     multiply = 100,
-    main     = 'Primed P chart of patients with pressure ulcer',
+    main     = 'Prime P chart of patients with pressure ulcer',
     ylab     = 'Percent',
     xlab     = 'Week',
-    primed   = TRUE)
+    prime    = TRUE)
 ```
 
-Figure 13 is a primed P chart of the same data as in figure 5. The control limits are slightly wider.
+Figure 13 is a prime P chart of the same data as in figure 5. The control limits are slightly wider.
 
-In an interview [Laney says that there is no reason not always to use primed charts](http://www.minitab.com/en-us/Published-Articles/On-the-Charts--A-Conversation-with-David-Laney/). However, Provost and Murray (Provost 2011) suggest to use primed charts only for very large subgroups (N > 2000) when all other explanations for special cause variation have been examined.
+In an interview [Laney says that there is no reason not always to use prime charts](http://www.minitab.com/en-us/Published-Articles/On-the-Charts--A-Conversation-with-David-Laney/). However, Provost and Murray (Provost 2011) suggest to use prime charts only for very large subgroups (N > 2000) when all other explanations for special cause variation have been examined.
 
 ## Control charts or run charts?
 

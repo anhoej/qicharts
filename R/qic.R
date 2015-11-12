@@ -209,7 +209,7 @@ qic <- function(y,
                 negy         = TRUE,
                 dots.only    = FALSE,
                 multiply     = 1,
-                prime       = FALSE,
+                prime        = FALSE,
                 standardised = FALSE,
                 x.format     = '%Y-%m-%d',
                 nint         = 5,
@@ -389,6 +389,8 @@ qic <- function(y,
     qic$ucl <- c(qic$ucl, y$ucl)
   }
 
+  # Suppress center and control lines in run charts if more than half
+  #  the data points are of the same value
   if(max(table(qic$y)) >= (length(na.omit(qic$y)) / 2) & type == 'run') {
     qic$cl <- NA
     qic$ucl <- NA
@@ -968,7 +970,6 @@ c4 <- function(n) {
 #' Plot qic object
 #'
 #' @export
-#'
 #' @importFrom utils tail
 #'
 #' @param x List object returned from the qic() function.
@@ -981,6 +982,7 @@ c4 <- function(n) {
 #' y <- rnorm(24)
 #' p <- qic(y, plot.chart = FALSE)
 #' plot(p)
+#'
 plot.qic <- function(x, y = NULL, ...) {
   col1            <- rgb(093, 165, 218, maxColorValue = 255) # blue
   col2            <- rgb(140, 140, 140, maxColorValue = 255) # grey
