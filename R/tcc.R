@@ -2,6 +2,7 @@
 #'
 #' Run and control charts for multivariate data i trellis (grid) layout.
 #'
+#' @export
 #' @param n Numeric vector of counts or measures to plot. Mandatory.
 #' @param d Numeric vector of sample sizes. Mandatory for P and U charts.
 #' @param x Subgrouping vector used for aggregating data and making x-labels.
@@ -55,7 +56,6 @@
 #' @return A list of of class tcc containing values and parameters of the tcc
 #'   plot.
 #'
-#'
 #' @examples
 #' # Run chart of 24 random vaiables
 #' tcc(rnorm(24))
@@ -94,7 +94,7 @@
 #'
 #' # P chart with two data points excluded from calculations
 #' tcc(n, d, mo, g1 = g1, g2 = g2, data = d, chart = 'p', exclude = c(12, 18))
-#' @export
+
 tcc <- function(n, d, x, g1, g2, breaks,
                 data,
                 chart        = c("run", "i", "mr", "xbar", "s",
@@ -173,7 +173,7 @@ tcc <- function(n, d, x, g1, g2, breaks,
   if(missing(breaks)) {
     df$breaks <- rep(1, nrow(df))
   } else {
-    freeze = NULL
+    freeze <- NULL
     df <- split(df, list(df$g1, df$g2))
     df <- lapply(df, function(x) {
       if(!all(breaks %in% 2:(nrow(x) - 2))) {
@@ -215,13 +215,16 @@ tcc <- function(n, d, x, g1, g2, breaks,
   } else {
     df$y <- df$n / df$d
   }
-  df$y[is.nan(df$y)] <- NA
+
+  # df$y[is.nan(df$y)] <- NA
+  df$y[df$d == 0] <- NA
+
 
   # Build exclude variable
   df$exclude <- FALSE
   if(!missing(exclude)) {
     df <- split(df, list(df$g1, df$g2))
-    df <- lapply(df, function(x) {x$exclude[exclude] <- T; return(x)})
+    df <- lapply(df, function(x) {x$exclude[exclude] <- TRUE; return(x)})
     df <- do.call(rbind, df)
   }
 
@@ -238,10 +241,8 @@ tcc <- function(n, d, x, g1, g2, breaks,
   df$limits.signal    <- df$y < df$lcl | df$y > df$ucl
   x                   <- is.na(df$limits.signal)
   df$limits.signal[x] <- FALSE
-
   df$ucl[!is.finite(df$ucl)] <- NA
   df$lcl[!is.finite(df$lcl)] <- NA
-
 
   # Prevent negative y axis if negy argument is FALSE
   if(!neg.y & min(df$y, na.rm = TRUE) >= 0)
@@ -661,9 +662,6 @@ plot.tcc <- function(x,
                      flip        = FALSE,
                      dots.only   = FALSE,
                      ...) {
-  #   require(scales)
-  #   require(ggplot2)
-
   df      <- x$df
   main    <- x$main
   ylab    <- x$ylab
@@ -713,7 +711,9 @@ plot.tcc <- function(x,
                        na.rm = TRUE)
   }
 
-  p <- p + geom_point(aes_string(x = 'x', y = 'y', group = 'breaks', fill = 'pcol'),
+  p <- p + geom_point(aes_string(x = 'x', y = 'y',
+                                 group = 'breaks',
+                                 fill = 'pcol'),
                       colour = col1,
                       size = 2.5 * pex * cex,
                       shape = 21,
@@ -732,8 +732,14 @@ plot.tcc <- function(x,
   } else if(ng2) {
     p <- p + facet_wrap(~ g2, ...)
   } else {
-    p <- p + theme(panel.border = element_blank(),
-                   axis.line = element_line(size = 0.1, colour = col3))
+    p <- p +
+      theme(panel.border = element_blank(),
+            axis.line = element_line(size = 0.1, colour = col3)) +
+      geom_text(aes_string(x = 'tail(x, 1)', y = 'cl', label = 'round(cl, 2)'),
+                hjust = -0.15,
+                # vjust = 1,
+                col = 'grey30',
+                size = 3)
   }
 
   if(!is.null(freeze)) {
@@ -758,12 +764,6 @@ plot.tcc <- function(x,
     p <- p + coord_flip()
 
   }
-
-  #   p <- p +
-  #     geom_text(aes(x = max(x), y = cl, label = round(cl, 2)),
-  #               # hjust = 1,
-  #               vjust = 0,
-  #               size = 3)
 
   plot(p)
 }

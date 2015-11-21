@@ -1,7 +1,10 @@
 qicharts 0.4.2.9000
 =================
+* Fixed issue with categorical x axis in tcc().
+* Fixed issue with empty subgroups in tcc().
 * Fixed infinite control limits in tcc().
-* Fixed loading errors caused by imports from scales
+* Fixed loading errors caused by imports from scales.
+* Added centre line value label to single pane plots in tcc().
 
 qicharts 0.4.2
 =================
