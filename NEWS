@@ -1,15 +1,15 @@
 qicharts 0.4.2.9000
 =================
-* Fixed issue with categorical x axis in tcc().
-* Fixed issue with empty subgroups in tcc().
+* Added centre and control line value label to single pane plots in tcc().
+* New argument, dec, to tcc() specifying the number of decimals in line labels.
+* Fixed issue with empty subgroups being summed to 0 rather than NA in tcc().
 * Fixed infinite control limits in tcc().
 * Fixed loading errors caused by imports from scales.
-* Added centre line value label to single pane plots in tcc().
 
 qicharts 0.4.2
 =================
 * Removed empty levels from data frame in tcc().
-* Fixed a bug in qic() code that handles run charts with more than half of the data points having same value.
+* Fixed a bug in qic() that handles run charts with more than half of the data points having same value.
 
 qicharts 0.4.1
 =================
@@ -79,14 +79,10 @@ qicharts 0.1.2
 qicharts 0.1.1
 =================
 * The trc() function now returns a lattice object.
-
 * Added arguments to control printing character and colours in trc() function.
-
 * Added dec argument to control the number of decimals on the label of
   the centre line in trc() function.
-
 * The qic() function now plots the main curve on top of other lines in the plot.
-
 * Fixed an error caused if data frame argument holds a data frame
   created with the group_by function from dplyr.
 

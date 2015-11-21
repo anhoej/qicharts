@@ -6,10 +6,10 @@
 \usage{
 tcc(n, d, x, g1, g2, breaks, data, chart = c("run", "i", "mr", "xbar", "s",
   "t", "p", "c", "u", "g"), multiply = 1, freeze = NULL, exclude,
-  sum.n = FALSE, neg.y = TRUE, cex = 1, pex = 1, ylim = NULL,
-  date.format = NULL, prime = TRUE, flip = FALSE, dots.only = FALSE,
-  main, xlab = "Time", ylab = "Indicator", plot = TRUE, print = FALSE,
-  ...)
+  sum.n = FALSE, neg.y = TRUE, cex = 1, pex = 1, dec = 2,
+  ylim = NULL, date.format = NULL, prime = TRUE, flip = FALSE,
+  dots.only = FALSE, main, xlab = "Time", ylab = "Indicator",
+  plot = TRUE, print = FALSE, ...)
 }
 \arguments{
 \item{n}{Numeric vector of counts or measures to plot. Mandatory.}
@@ -55,6 +55,8 @@ negative (only relevant for I and Xbar charts).}
 
 \item{pex}{Number indicating the amount by which plotting symbols should be
 magnified.}
+
+\item{dec}{Number of decimals on center and control line labels.}
 
 \item{ylim}{Range of y axis.}
 

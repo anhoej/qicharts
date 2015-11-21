@@ -32,6 +32,7 @@
 #' @param cex Number indicating the amount by which text should be magnified.
 #' @param pex Number indicating the amount by which plotting symbols should be
 #'   magnified.
+#' @param dec Number of decimals on center and control line labels.
 #' @param ylim Range of y axis.
 #' @param date.format Date format of x axis labels. See \code{?strftime} for
 #'   possible date formats.
@@ -106,6 +107,7 @@ tcc <- function(n, d, x, g1, g2, breaks,
                 neg.y       = TRUE,
                 cex         = 1,
                 pex         = 1,
+                dec         = 2,
                 ylim        = NULL,
                 date.format = NULL,
                 prime       = TRUE,
@@ -262,7 +264,7 @@ tcc <- function(n, d, x, g1, g2, breaks,
 
   # Plot and return
   if(plot) {
-    plot.tcc(tcc, cex = cex, pex = pex, ylim = ylim, date.format = date.format,
+    plot.tcc(tcc, cex = cex, pex = pex, dec = dec, ylim = ylim, date.format = date.format,
              flip = flip, dots.only = dots.only, ...)
   }
 
@@ -637,6 +639,7 @@ c4 <- function(n) {
 #' @param cex Number indicating the amount by which text should be magnified.
 #' @param pex Number indicating the amount by which plotting symbols should be
 #'   magnified.
+#' @param dec Number of decimals on center and control line labels.
 #' @param ylim Range of y axis.
 #' @param date.format Date format of x axis labels. See \code{?strftime} for
 #'   date formats.
@@ -648,8 +651,6 @@ c4 <- function(n) {
 #'
 #' @return Creates a tcc plot.
 #'
-#'
-#'
 #' @examples
 #' p <- tcc(rnorm(24))
 #' plot(p)
@@ -658,6 +659,7 @@ plot.tcc <- function(x,
                      cex         = 1,
                      pex         = 1,
                      ylim        = NULL,
+                     dec         = 2,
                      date.format = '%Y-%m-%d',
                      flip        = FALSE,
                      dots.only   = FALSE,
@@ -735,11 +737,27 @@ plot.tcc <- function(x,
     p <- p +
       theme(panel.border = element_blank(),
             axis.line = element_line(size = 0.1, colour = col3)) +
-      geom_text(aes_string(x = 'tail(x, 1)', y = 'cl', label = 'round(cl, 2)'),
+      geom_text(aes_string(x = 'tail(x, 1)', y = 'tail(cl, 1)',
+                           label = 'round(tail(cl, 1), dec)'),
                 hjust = -0.15,
-                # vjust = 1,
                 col = 'grey30',
                 size = 3)
+    if(length(na.omit(df$ucl))) {
+      p <- p +
+        geom_text(aes_string(x = 'tail(x, 1)', y = 'tail(na.omit(ucl), 1)',
+                             label = 'round(tail(na.omit(ucl), 1), dec)'),
+                  hjust = -0.15,
+                  col = 'grey30',
+                  size = 3)
+    }
+    if(length(na.omit(df$lcl))) {
+      p <- p +
+        geom_text(aes_string(x = 'tail(x, 1)', y = 'tail(na.omit(lcl), 1)',
+                             label = 'round(tail(na.omit(lcl), 1), dec)'),
+                  hjust = -0.15,
+                  col = 'grey30',
+                  size = 3)
+    }
   }
 
   if(!is.null(freeze)) {

@@ -5,7 +5,8 @@
 \title{Plot trellis control chart}
 \usage{
 \method{plot}{tcc}(x, y = NULL, cex = 1, pex = 1, ylim = NULL,
-  date.format = "\%Y-\%m-\%d", flip = FALSE, dots.only = FALSE, ...)
+  dec = 2, date.format = "\%Y-\%m-\%d", flip = FALSE, dots.only = FALSE,
+  ...)
 }
 \arguments{
 \item{x}{List object returned from the tcc() function.}
@@ -18,6 +19,8 @@
 magnified.}
 
 \item{ylim}{Range of y axis.}
+
+\item{dec}{Number of decimals on center and control line labels.}
 
 \item{date.format}{Date format of x axis labels. See \code{?strftime} for
 date formats.}
