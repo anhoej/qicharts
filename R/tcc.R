@@ -186,8 +186,10 @@ tcc <- function(n, d, x, g1, g2, breaks,
         breaks <- sort(breaks)
         breaks <- diff(breaks)
         breaks <- rep(1:length(breaks), breaks)
-        x$breaks <- breaks}
-      return(x)})
+        x$breaks <- breaks
+      }
+      return(x)
+    })
     df <- do.call(rbind, df)
     df <- df[order(df$g1, df$g2, df$breaks, df$x), ]
   }
@@ -264,8 +266,9 @@ tcc <- function(n, d, x, g1, g2, breaks,
 
   # Plot and return
   if(plot) {
-    plot.tcc(tcc, cex = cex, pex = pex, dec = dec, ylim = ylim, date.format = date.format,
-             flip = flip, dots.only = dots.only, ...)
+    plot.tcc(tcc, cex = cex, pex = pex, dec = dec, ylim = ylim,
+             date.format = date.format, flip = flip, dots.only = dots.only,
+             ...)
   }
 
   if(print) {
@@ -279,7 +282,6 @@ tcc.run <- function(df, freeze, ...) {
   l <- nrow(df)
   if(is.null(freeze))
     freeze <- l
-
   base <- 1:freeze
   base <- base[!df$exclude]
   y    <- df$y
@@ -298,7 +300,6 @@ tcc.i <- function(df, freeze, ...) {
     freeze <- l
   base <- 1:freeze
   base <- base[!df$exclude]
-
   y    <- df$y
 
   # Calculate centre line
@@ -334,7 +335,6 @@ tcc.mr <- function(df, freeze, ...) {
     freeze <- l
   base <- 1:freeze
   base <- base[!df$exclude]
-
   y    <- df$y
   y    <- c(NA, abs(diff(y)))
   df$y <- y
@@ -385,14 +385,12 @@ tcc.xbar <- function(df, freeze, ...){
     freeze <- l
   base <- 1:freeze
   base <- base[!df$exclude]
-
-  y <- df$y
-  n <- df$n.obs
-  s <- df$s
+  y    <- df$y
+  n    <- df$n.obs
+  s    <- df$s
 
   # Calculate centre line, Montgomery 6.30
-  cl <- sum(n[base] * y[base], na.rm = TRUE) / sum(n[base],
-                                                   na.rm = TRUE)
+  cl <- sum(n[base] * y[base], na.rm = TRUE) / sum(n[base], na.rm = TRUE)
   cl <- rep(cl, l)
 
   # Calculate standard deviation and control limits, Montgomery 6.31
@@ -411,7 +409,6 @@ tcc.s <- function(df, freeze, ...){
   l <- nrow(df)
   if(is.null(freeze))
     freeze <- l
-
   base <- 1:freeze
   base <- base[!df$exclude]
   s    <- df$s
@@ -436,7 +433,6 @@ tcc.p <- function(df, freeze, prime, ...) {
   l <- nrow(df)
   if(is.null(freeze))
     freeze <- l
-
   base  <- 1:freeze
   base  <- base[!df$exclude]
   n     <- df$n
@@ -470,7 +466,6 @@ tcc.c <- function(df, freeze, ...){
     freeze <- l
   base <- 1:freeze
   base <- base[!df$exclude]
-
   y  <- df$y
   cl <- mean(y[base], na.rm = TRUE)
   cl <- rep(cl, l)
@@ -492,7 +487,6 @@ tcc.u <- function(df, freeze, prime, ...){
   l        <- nrow(df)
   if(is.null(freeze))
     freeze <- l
-
   base <- 1:freeze
   base <- base[!df$exclude]
   n    <- df$n
@@ -504,7 +498,7 @@ tcc.u <- function(df, freeze, prime, ...){
   # Calculate standard deviation, Montgomery 7.19
   stdev <- sqrt(cl / d)
 
-  # Calculate standard deviation for Laney's p-prime chart, incorporating
+  # Calculate standard deviation for Laney's u-prime chart, incorporating
   # between-subgroup variation.
   if(prime) {
     z_i     <- (y[base] - cl[base]) / stdev[base]
@@ -523,10 +517,9 @@ tcc.u <- function(df, freeze, prime, ...){
 }
 
 tcc.g <- function(df, freeze, ...){
-  l        <- nrow(df)
+  l <- nrow(df)
   if(is.null(freeze))
     freeze <- l
-
   base <- 1:freeze
   base <- base[!df$exclude]
   y    <- df$y
@@ -600,6 +593,7 @@ b3 <- function(n) {
 }
 
 b4 <- function(n) {
+  n[n == 0]    <- NA
   tbl          <- c(NA,
                     3.267, 2.568, 2.266, 2.089, 1.970, 1.882,
                     1.815, 1.761, 1.716, 1.679, 1.646, 1.618,
@@ -720,8 +714,11 @@ plot.tcc <- function(x,
                       size = 2.5 * pex * cex,
                       shape = 21,
                       na.rm = TRUE) +
+    # Colour centre line according to runs analysis
     scale_colour_manual(values = cols) +
+    # Colour data points according to limits analysis
     scale_fill_manual(values = cols) +
+    # Suppress legend
     guides(colour = FALSE, fill = FALSE)
 
   ng1 <- nlevels(droplevels(as.factor(df$g1))) > 1
@@ -736,12 +733,17 @@ plot.tcc <- function(x,
   } else {
     p <- p +
       theme(panel.border = element_blank(),
-            axis.line = element_line(size = 0.1, colour = col3)) +
-      geom_text(aes_string(x = 'tail(x, 1)', y = 'tail(cl, 1)',
-                           label = 'round(tail(cl, 1), dec)'),
-                hjust = -0.15,
-                col = 'grey30',
-                size = 3)
+            axis.line = element_line(size = 0.1, colour = col3))
+    # Add centre line label
+    if(length(na.omit(df$cl))) {
+      p <- p +
+        geom_text(aes_string(x = 'tail(x, 1)', y = 'tail(na.omit(cl), 1)',
+                             label = 'round(tail(cl, 1), dec)'),
+                  hjust = -0.15,
+                  col = 'grey30',
+                  size = 3)
+    }
+    # Add upper control limit label
     if(length(na.omit(df$ucl))) {
       p <- p +
         geom_text(aes_string(x = 'tail(x, 1)', y = 'tail(na.omit(ucl), 1)',
@@ -750,6 +752,7 @@ plot.tcc <- function(x,
                   col = 'grey30',
                   size = 3)
     }
+    # Add lower control limit label
     if(length(na.omit(df$lcl))) {
       p <- p +
         geom_text(aes_string(x = 'tail(x, 1)', y = 'tail(na.omit(lcl), 1)',
@@ -760,12 +763,14 @@ plot.tcc <- function(x,
     }
   }
 
+  # Add vertical line to mark freeze point
   if(!is.null(freeze)) {
     f <- as.numeric(df$x[freeze])
     f <- f + as.numeric(df$x[freeze + 1] - df$x[freeze]) / 2
     p <- p + geom_vline(xintercept = f, size = 0.5, lty = 3, colour = col3)
   }
 
+  # Format data axis
   if(inherits(df$x, c('Date')) & !is.null(date.format)) {
     p <- p + scale_x_date(labels = date_format(date.format))
   }
@@ -774,14 +779,16 @@ plot.tcc <- function(x,
     p <- p + scale_x_datetime(labels = date_format(date.format))
   }
 
+  # Add title and axis labels
   p <- p +
     labs(title = main, x = xlab, y = ylab) +
     coord_cartesian(ylim = ylim)
 
+  # Flip chart
   if(flip) {
     p <- p + coord_flip()
-
   }
 
+  # Plot chart
   plot(p)
 }
