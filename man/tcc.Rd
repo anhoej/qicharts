@@ -8,7 +8,7 @@ tcc(n, d, x, g1, g2, breaks, data, chart = c("run", "i", "mr", "xbar", "s",
   "t", "p", "c", "u", "g"), multiply = 1, freeze = NULL, exclude,
   sum.n = FALSE, neg.y = TRUE, cex = 1, pex = 1, dec = 2,
   ylim = NULL, date.format = NULL, prime = TRUE, flip = FALSE,
-  dots.only = FALSE, main, xlab = "Time", ylab = "Indicator",
+  dots.only = FALSE, main, xlab = "Subgroup", ylab = "Indicator",
   plot = TRUE, print = FALSE, ...)
 }
 \arguments{
@@ -21,7 +21,7 @@ Mandatory for Xbar and S charts.}
 
 \item{g1}{Grouping vector 1 used for trellis layout (facets).}
 
-\item{g2}{Grouping vector 2used for trellis layout (facets).}
+\item{g2}{Grouping vector 2 used for trellis layout (facets).}
 
 \item{breaks}{Numeric vector of break points. Useful for splitting graph in
 two or more sections with separate center line and control limits.}
@@ -46,7 +46,8 @@ given).}
 center and control lines.}
 
 \item{sum.n}{Logical value indicating whether the mean (default) or sum of
-counts should be plotted. Only relevant for run charts and I charts.}
+counts or measures should be plotted. Only relevant for run charts and I
+charts with multiple counts or measures per subgroup.}
 
 \item{neg.y}{Logical value. If TRUE (default), the y axis is allowed to be
 negative (only relevant for I and Xbar charts).}
@@ -60,18 +61,18 @@ magnified.}
 
 \item{ylim}{Range of y axis.}
 
-\item{date.format}{Date format of x axis labels. See \code{?strftime} for
+\item{date.format}{Date format of x axis labels. See \code{?strftime()} for
 possible date formats.}
 
-\item{prime}{Logical value, If TRUE (default), control limits incorporate
-between-subgroup variation as proposed by Laney (2002). Only relevant for P
-and U charts.}
+\item{prime}{Logical value, If TRUE (default unless dots.only = TRUE),
+control limits incorporate between-subgroup variation as proposed by Laney
+(2002). Only relevant for P and U charts.}
 
 \item{flip}{Logical. If TRUE rotates the plot 90 degrees.}
 
 \item{dots.only}{Logical value. If TRUE, data points are not connected by
-lines and runs analysis is not performed. Useful for comparison and funnel
-plots.}
+lines, prime is forced to be FALSE and runs analysis is not performed.
+Useful for comparison and funnel plots.}
 
 \item{main}{Character string specifying the title of the plot.}
 
@@ -93,12 +94,12 @@ A list of of class tcc containing values and parameters of the tcc
 Run and control charts for multivariate data i trellis (grid) layout.
 }
 \details{
-\code{tcc()} is a wrapper function that uses ggplot2
-  to create multivariate run and control charts. It takes up to two grouping
-  variables to make one or two dimensional trellis plots.
+\code{tcc()} is a wrapper function that uses ggplot2 to create
+  multivariate run and control charts. It takes up to two grouping variables
+  to make one or two dimensional trellis plots.
 }
 \examples{
-# Run chart of 24 random vaiables
+# Run chart of 24 random normal variables
 tcc(rnorm(24))
 
 # Build data frame for examples

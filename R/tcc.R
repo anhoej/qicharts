@@ -8,7 +8,7 @@
 #' @param x Subgrouping vector used for aggregating data and making x-labels.
 #'   Mandatory for Xbar and S charts.
 #' @param g1 Grouping vector 1 used for trellis layout (facets).
-#' @param g2 Grouping vector 2used for trellis layout (facets).
+#' @param g2 Grouping vector 2 used for trellis layout (facets).
 #' @param breaks Numeric vector of break points. Useful for splitting graph in
 #'   two or more sections with separate center line and control limits.
 #' @param data Data frame containing variables.
@@ -26,7 +26,8 @@
 #' @param exclude Numeric vector of data points to exclude from calculations of
 #'   center and control lines.
 #' @param sum.n Logical value indicating whether the mean (default) or sum of
-#'   counts should be plotted. Only relevant for run charts and I charts.
+#'   counts or measures should be plotted. Only relevant for run charts and I
+#'   charts with multiple counts or measures per subgroup.
 #' @param neg.y Logical value. If TRUE (default), the y axis is allowed to be
 #'   negative (only relevant for I and Xbar charts).
 #' @param cex Number indicating the amount by which text should be magnified.
@@ -34,15 +35,15 @@
 #'   magnified.
 #' @param dec Number of decimals on center and control line labels.
 #' @param ylim Range of y axis.
-#' @param date.format Date format of x axis labels. See \code{?strftime} for
+#' @param date.format Date format of x axis labels. See \code{?strftime()} for
 #'   possible date formats.
-#' @param prime Logical value, If TRUE (default), control limits incorporate
-#'   between-subgroup variation as proposed by Laney (2002). Only relevant for P
-#'   and U charts.
+#' @param prime Logical value, If TRUE (default unless dots.only = TRUE),
+#'   control limits incorporate between-subgroup variation as proposed by Laney
+#'   (2002). Only relevant for P and U charts.
 #' @param flip Logical. If TRUE rotates the plot 90 degrees.
 #' @param dots.only Logical value. If TRUE, data points are not connected by
-#'   lines and runs analysis is not performed. Useful for comparison and funnel
-#'   plots.
+#'   lines, prime is forced to be FALSE and runs analysis is not performed.
+#'   Useful for comparison and funnel plots.
 #' @param main Character string specifying the title of the plot.
 #' @param xlab Character string specifying the x axis label.
 #' @param ylab Character string specifying the y axis label.
@@ -50,15 +51,15 @@
 #' @param print Logical. if TRUE, prints return value.
 #' @param ... Further arguments to ggplot function.
 #'
-#' @details \code{tcc()} is a wrapper function that uses ggplot2
-#'   to create multivariate run and control charts. It takes up to two grouping
-#'   variables to make one or two dimensional trellis plots.
+#' @details \code{tcc()} is a wrapper function that uses ggplot2 to create
+#'   multivariate run and control charts. It takes up to two grouping variables
+#'   to make one or two dimensional trellis plots.
 #'
 #' @return A list of of class tcc containing values and parameters of the tcc
 #'   plot.
 #'
 #' @examples
-#' # Run chart of 24 random vaiables
+#' # Run chart of 24 random normal variables
 #' tcc(rnorm(24))
 #'
 #' # Build data frame for examples
@@ -98,8 +99,8 @@
 
 tcc <- function(n, d, x, g1, g2, breaks,
                 data,
-                chart        = c("run", "i", "mr", "xbar", "s",
-                                 "t", "p", "c", "u", "g"),
+                chart      = c("run", "i", "mr", "xbar", "s",
+                               "t", "p", "c", "u", "g"),
                 multiply    = 1,
                 freeze      = NULL,
                 exclude,
@@ -114,7 +115,7 @@ tcc <- function(n, d, x, g1, g2, breaks,
                 flip        = FALSE,
                 dots.only   = FALSE,
                 main,
-                xlab        = 'Time',
+                xlab        = 'Subgroup',
                 ylab        = 'Indicator',
                 plot        = TRUE,
                 print       = FALSE,
@@ -166,6 +167,11 @@ tcc <- function(n, d, x, g1, g2, breaks,
   n[!cases] <- NA
   d[!cases] <- NA
   cases <- complete.cases(n, d)
+
+  # Prevent prime if dots.only
+  if(dots.only) {
+    prime = FALSE
+  }
 
   # Initialise data frame
   df <- data.frame(n, d, x, g1, g2, cases)
@@ -441,7 +447,6 @@ tcc.p <- function(df, freeze, prime, ...) {
   cl    <- sum(n[base], na.rm = TRUE) / sum(d[base], na.rm = TRUE)
   cl    <- rep(cl, l)
   stdev <- sqrt(cl * (1 - cl) / d)
-
   # Calculate standard deviation for Laney's p-prime chart, incorporating
   # between-subgroup variation.
   if(prime) {
@@ -558,8 +563,9 @@ runs.analysis <- function(df) {
   n.crossings.min <- qbinom(0.05, max(n.useful - 1, 0), 0.5)  # Chen 2010 (7)
   runs.signal     <- longest.run > longest.run.max ||
     n.crossings < n.crossings.min
-  runs.signal     <- rep(runs.signal, length(y))
-  df              <- cbind(df, runs.signal)
+#   runs.signal     <- rep(runs.signal, length(y))
+#   df              <- cbind(df, runs.signal)
+  df$runs.signal  <- runs.signal
 
   return(df)
 }
@@ -738,7 +744,9 @@ plot.tcc <- function(x,
     if(length(na.omit(df$cl))) {
       p <- p +
         geom_text(aes_string(x = 'tail(x, 1)', y = 'tail(na.omit(cl), 1)',
-                             label = 'round(tail(cl, 1), dec)'),
+                             label = 'sround(tail(cl, 1), dec)'),
+#         geom_text(aes_string(x = 'tail(x, 1)', y = 'mean(cl, na.rm = TRUE)',
+#                              label = 'sround(mean(cl, na.rm = TRUE), dec)'),
                   hjust = -0.15,
                   col = 'grey30',
                   size = 3)
@@ -747,7 +755,9 @@ plot.tcc <- function(x,
     if(length(na.omit(df$ucl))) {
       p <- p +
         geom_text(aes_string(x = 'tail(x, 1)', y = 'tail(na.omit(ucl), 1)',
-                             label = 'round(tail(na.omit(ucl), 1), dec)'),
+                             label = 'sround(tail(na.omit(ucl), 1), dec)'),
+#         geom_text(aes_string(x = 'tail(x, 1)', y = 'mean(ucl, na.rm = TRUE)',
+#                              label = 'sround(mean(ucl, na.rm = T), dec)'),
                   hjust = -0.15,
                   col = 'grey30',
                   size = 3)
@@ -756,7 +766,9 @@ plot.tcc <- function(x,
     if(length(na.omit(df$lcl))) {
       p <- p +
         geom_text(aes_string(x = 'tail(x, 1)', y = 'tail(na.omit(lcl), 1)',
-                             label = 'round(tail(na.omit(lcl), 1), dec)'),
+                             label = 'sround(tail(na.omit(lcl), 1), dec)'),
+#         geom_text(aes_string(x = 'tail(x, 1)', y = 'mean(lcl, na.rm = TRUE)',
+#                              label = 'sround(mean(lcl, na.rm = TRUE), dec)'),
                   hjust = -0.15,
                   col = 'grey30',
                   size = 3)

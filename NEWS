@@ -1,9 +1,9 @@
-qicharts 0.4.2.9000
+qicharts 0.4.3
 =================
-* Added centre and control line value label to single pane plots in tcc().
+* Added centre and control line value label to single panel plots in tcc().
 * New argument, dec, to tcc() specifying the number of decimals in line labels.
 * Fixed issue with empty subgroups being summed to 0 rather than NA in tcc().
-* Fixed infinite control limits in tcc().
+* Fixed "infinite" control limits in tcc().
 * Fixed loading errors caused by imports from scales.
 
 qicharts 0.4.2
