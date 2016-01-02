@@ -1,3 +1,7 @@
+qicharts 0.4.3.9000
+=================
+* No longer needs to import scales
+
 qicharts 0.4.3
 =================
 * Added centre and control line value label to single panel plots in tcc().

@@ -633,7 +633,6 @@ c4 <- function(n) {
 #'
 #' @export
 #' @import ggplot2
-#' @importFrom scales date_format
 #' @param x List object returned from the tcc() function.
 #' @param y Ignored. Included for compatibility with generic plot function.
 #' @param cex Number indicating the amount by which text should be magnified.
@@ -784,11 +783,13 @@ plot.tcc <- function(x,
 
   # Format data axis
   if(inherits(df$x, c('Date')) & !is.null(date.format)) {
-    p <- p + scale_x_date(labels = date_format(date.format))
+    # p <- p + scale_x_date(labels = date_format(date.format))
+    p <- p + scale_x_date(date_labels = date.format)
   }
 
   if(inherits(df$x, c('POSIXct')) & !is.null(date.format)) {
-    p <- p + scale_x_datetime(labels = date_format(date.format))
+    # p <- p + scale_x_datetime(labels = date_format(date.format))
+    p <- p + scale_x_datetime(date_labels = date.format)
   }
 
   # Add title and axis labels
