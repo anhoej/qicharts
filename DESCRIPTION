@@ -23,7 +23,7 @@ Imports:
     graphics,
     grDevices,
     stats,
-    ggplot2,
+    ggplot2 (>= 2.0.0)
 Suggests:
     knitr
 VignetteBuilder: knitr
