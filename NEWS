@@ -1,6 +1,7 @@
 qicharts 0.4.3.9000
 =================
 * No longer needs to import scales
+* Imports ggplot >= 2.0.0
 
 qicharts 0.4.3
 =================
