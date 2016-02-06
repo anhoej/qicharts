@@ -1039,7 +1039,7 @@ plot.qic <- function(x, y = NULL, ...) {
 
   # Setup plot margins
   mar <- par('mar')
-  mar <- mar + c(-0.5, 1, 0, 3)
+  mar <- mar + c(-0.5, 1, -1, 3)
 
   if(runvals & !dots.only)
     mar <- mar + c(1.5, 0, 0, 0)
@@ -1086,7 +1086,7 @@ plot.qic <- function(x, y = NULL, ...) {
       col = col2)
   title(main = main,
         adj = 0,
-        line = 2.7,
+        line = 1.7,
         # cex.main = cex * 1.25,
         font.main = 1)
   title(xlab = xlab, line = 2.8)
@@ -1098,47 +1098,52 @@ plot.qic <- function(x, y = NULL, ...) {
           cex.sub = cex,
           line = ifelse(runvals & !dots.only, 5.8, 4.3))
 
-  # colour center line according to type of variation and target (red-amber-green)
+  # colour center line according to runs analysis
   lty <- 1
   col <- col2
   m <- ifelse(direction, 1, -1)
 
-  # if(runs.test | length(signals) & !dots.only) {
-  if(runs.test | length(signals) & !all(signals %in% exclude) & !dots.only) {
-    lty <- 5
+  if(runs.test & !dots.only) {
     col <- col4
-  } else if(!is.null(target) & !is.null(direction)) {
-    col <- ifelse((target - tail(cl, 1)) * m > 0, col5, col3)
+    lty <- 5
   }
-  # traffic light
-  if(!is.null(target) & !is.null(direction) & !is.na(col)) {
-    bg <- c(0, 0, 0)
-    legend <- c('', '', '')
-    if(col == col5) {
-      bg[1] <- col5
-      legend[1] <- rag.text[1]
-    }
-    if(col == col4) {
-      bg[2] <- col4
-      legend[2] <- rag.text[2]
-    }
-    if(col == col3) {
-      bg[3] <- col3
-      legend[3] <- rag.text[3]
-    }
 
-    legend(max(x), max(ylim),
-           legend = legend,
-           pch = rep(21, 3),
-           pt.cex = 2.25,
-           col = c(col5, col4, col3),
-           pt.bg = bg,
-           yjust = 0,
-           xjust = 0.1,
-           xpd = T,
-           # y.intersp = 1,
-           bty = 'n')
-  }
+#   if(runs.test | length(signals) & !all(signals %in% exclude) & !dots.only) {
+#     lty <- 5
+#     col <- col4
+#   } else if(!is.null(target) & !is.null(direction)) {
+#     col <- ifelse((target - tail(cl, 1)) * m > 0, col5, col3)
+#   }
+
+#   # traffic light
+#   if(!is.null(target) & !is.null(direction) & !is.na(col)) {
+#     bg <- c(0, 0, 0)
+#     legend <- c('', '', '')
+#     if(col == col5) {
+#       bg[1] <- col5
+#       legend[1] <- rag.text[1]
+#     }
+#     if(col == col4) {
+#       bg[2] <- col4
+#       legend[2] <- rag.text[2]
+#     }
+#     if(col == col3) {
+#       bg[3] <- col3
+#       legend[3] <- rag.text[3]
+#     }
+
+#     legend(max(x), max(ylim),
+#            legend = legend,
+#            pch = rep(21, 3),
+#            pt.cex = 2.25,
+#            col = c(col5, col4, col3),
+#            pt.bg = bg,
+#            yjust = 0,
+#            xjust = 0.1,
+#            xpd = T,
+#            # y.intersp = 1,
+#            bty = 'n')
+#   }
 
 
   # add lines to plot
@@ -1271,7 +1276,7 @@ plot.qic <- function(x, y = NULL, ...) {
   par(op)
 }
 
-# Smart rounding for median labels, to at least 2 significant digits
+# Smart rounding for labels to at least 2 significant digits
 sround <- function(x, dec) {
   if(is.null(dec)) {
     n <- nchar(as.character(floor(x)))
