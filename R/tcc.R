@@ -156,7 +156,7 @@ tcc <- function(n, d, x, g1, g2, breaks,
 
   # Set missing subgroups
   if(missing(x))
-    x <- 1:length(n)
+    x <- seq_along(n)  #1:length(n)
   if(missing(g1))
     g1 <- rep(1, length(n))
   if(missing(g2))
@@ -191,7 +191,7 @@ tcc <- function(n, d, x, g1, g2, breaks,
         breaks <- c(0, breaks, nrow(x))
         breaks <- sort(breaks)
         breaks <- diff(breaks)
-        breaks <- rep(1:length(breaks), breaks)
+        breaks <- rep(seq_along(breaks), breaks) #rep(1:length(breaks), breaks)
         x$breaks <- breaks
       }
       return(x)
@@ -226,9 +226,7 @@ tcc <- function(n, d, x, g1, g2, breaks,
     df$y <- df$n / df$d
   }
 
-  # df$y[is.nan(df$y)] <- NA
   df$y[df$d == 0] <- NA
-
 
   # Build exclude variable
   df$exclude <- FALSE
@@ -239,18 +237,18 @@ tcc <- function(n, d, x, g1, g2, breaks,
   }
 
   # Complete data frame
-  df                  <- split(df, list(df$g1, df$g2, df$breaks))
-  df                  <- lapply(df, fn, freeze = freeze, prime = prime, sum.n)
-  df                  <- lapply(df, runs.analysis)
-  df                  <- do.call(rbind, df)
-  row.names(df)       <- NULL
-  num.cols            <- c('n', 'd', 's', 'n.obs', 'cl', 'lcl', 'ucl', 'y')
-  mult.cols           <- c('cl', 'lcl', 'ucl', 'y')
-  df[num.cols]        <- sapply(df[num.cols], as.numeric)
-  df[mult.cols]       <- sapply(df[mult.cols], function(x) x * multiply)
-  df$limits.signal    <- df$y < df$lcl | df$y > df$ucl
-  x                   <- is.na(df$limits.signal)
-  df$limits.signal[x] <- FALSE
+  df                         <- split(df, list(df$g1, df$g2, df$breaks))
+  df                         <- lapply(df, fn, freeze = freeze, prime = prime, sum.n)
+  df                         <- lapply(df, runs.analysis)
+  df                         <- do.call(rbind, df)
+  row.names(df)              <- NULL
+  num.cols                   <- c('n', 'd', 's', 'n.obs', 'cl', 'lcl', 'ucl', 'y')
+  mult.cols                  <- c('cl', 'lcl', 'ucl', 'y')
+  df[num.cols]               <- sapply(df[num.cols], as.numeric)
+  df[mult.cols]              <- sapply(df[mult.cols], function(x) x * multiply)
+  df$limits.signal           <- df$y < df$lcl | df$y > df$ucl
+  x                          <- is.na(df$limits.signal)
+  df$limits.signal[x]        <- FALSE
   df$ucl[!is.finite(df$ucl)] <- NA
   df$lcl[!is.finite(df$lcl)] <- NA
 
