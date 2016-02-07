@@ -4,12 +4,12 @@
 \alias{tcc}
 \title{Trellis Control Charts}
 \usage{
-tcc(n, d, x, g1, g2, breaks, data, chart = c("run", "i", "mr", "xbar", "s",
-  "t", "p", "c", "u", "g"), multiply = 1, freeze = NULL, exclude,
-  sum.n = FALSE, neg.y = TRUE, cex = 1, pex = 1, dec = 2,
-  ylim = NULL, date.format = NULL, prime = TRUE, flip = FALSE,
-  dots.only = FALSE, main, xlab = "Subgroup", ylab = "Indicator",
-  plot = TRUE, print = FALSE, ...)
+tcc(n, d, x, g1, g2, breaks, notes, data, chart = c("run", "i", "mr", "xbar",
+  "s", "t", "p", "c", "u", "g"), multiply = 1, freeze = NULL, exclude,
+  sum.n = FALSE, neg.y = TRUE, cex = 1, pex = 1, dec = 2, xpad = 1,
+  cllab = TRUE, ylim = NULL, date.format = NULL, prime = TRUE,
+  flip = FALSE, dots.only = FALSE, main, xlab = "Subgroup",
+  ylab = "Indicator", plot = TRUE, print = FALSE, ...)
 }
 \arguments{
 \item{n}{Numeric vector of counts or measures to plot. Mandatory.}
@@ -25,6 +25,9 @@ Mandatory for Xbar and S charts.}
 
 \item{breaks}{Numeric vector of break points. Useful for splitting graph in
 two or more sections with separate center line and control limits.}
+
+\item{notes}{Character vector of notes to be added to individual. data
+points.}
 
 \item{data}{Data frame containing variables.}
 
@@ -58,6 +61,11 @@ negative (only relevant for I and Xbar charts).}
 magnified.}
 
 \item{dec}{Number of decimals on center and control line labels.}
+
+\item{xpad}{Number indicating expansion of x axis to make room for center
+line labels.}
+
+\item{cllab}{Logical value, if TRUE (default), plots center line label.}
 
 \item{ylim}{Range of y axis.}
 

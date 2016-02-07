@@ -11,6 +11,8 @@
 #' @param g2 Grouping vector 2 used for trellis layout (facets).
 #' @param breaks Numeric vector of break points. Useful for splitting graph in
 #'   two or more sections with separate center line and control limits.
+#' @param notes Character vector of notes to be added to individual. data
+#'   points.
 #' @param data Data frame containing variables.
 #' @param chart Type of control chart. Possible types are: \itemize{ \item
 #'   "run": run chart (default). \item "i": individuals chart. \item "mr":
@@ -34,6 +36,9 @@
 #' @param pex Number indicating the amount by which plotting symbols should be
 #'   magnified.
 #' @param dec Number of decimals on center and control line labels.
+#' @param xpad Number indicating expansion of x axis to make room for center
+#'   line labels.
+#' @param cllab Logical value, if TRUE (default), plots center line label.
 #' @param ylim Range of y axis.
 #' @param date.format Date format of x axis labels. See \code{?strftime()} for
 #'   possible date formats.
@@ -97,10 +102,10 @@
 #' # P chart with two data points excluded from calculations
 #' tcc(n, d, mo, g1 = g1, g2 = g2, data = d, chart = 'p', exclude = c(12, 18))
 
-tcc <- function(n, d, x, g1, g2, breaks,
+tcc <- function(n, d, x, g1, g2, breaks, notes,
                 data,
-                chart      = c("run", "i", "mr", "xbar", "s",
-                               "t", "p", "c", "u", "g"),
+                chart       = c("run", "i", "mr", "xbar", "s",
+                                "t", "p", "c", "u", "g"),
                 multiply    = 1,
                 freeze      = NULL,
                 exclude,
@@ -109,6 +114,8 @@ tcc <- function(n, d, x, g1, g2, breaks,
                 cex         = 1,
                 pex         = 1,
                 dec         = 2,
+                xpad        = 1,
+                cllab       = TRUE,
                 ylim        = NULL,
                 date.format = NULL,
                 prime       = TRUE,
@@ -147,6 +154,8 @@ tcc <- function(n, d, x, g1, g2, breaks,
       g1 <- data[,deparse(substitute(g1))]
     if(deparse(substitute(g2)) %in% colnames(data))
       g2 <- data[,deparse(substitute(g2))]
+    if(deparse(substitute(notes)) %in% colnames(data))
+      notes <- data[,deparse(substitute(notes))]
   }
 
   # Set missing denominator
@@ -156,11 +165,13 @@ tcc <- function(n, d, x, g1, g2, breaks,
 
   # Set missing subgroups
   if(missing(x))
-    x <- seq_along(n)  #1:length(n)
+    x <- seq_along(n)
   if(missing(g1))
     g1 <- rep(1, length(n))
   if(missing(g2))
     g2 <- rep(1, length(n))
+  if(missing(notes))
+    notes <- rep(NA, length(n))
 
   # Fix missing values
   cases <- complete.cases(n, d)
@@ -174,7 +185,7 @@ tcc <- function(n, d, x, g1, g2, breaks,
   }
 
   # Initialise data frame
-  df <- data.frame(n, d, x, g1, g2, cases)
+  df <- data.frame(n, d, x, g1, g2, cases, notes)
   df <- droplevels(df)
 
   # Build breaks variable
@@ -214,9 +225,22 @@ tcc <- function(n, d, x, g1, g2, breaks,
   d3 <- aggregate(cbind(n.obs = cases) ~ x + g1 + g2 + breaks,
                   data = df,
                   FUN = sum,
-                  na.rm = TRUE)
+                  na.rm = TRUE,
+                  na.action = na.pass)
+  try(d4 <- aggregate(notes ~ x + g1 + g2 + breaks,
+                      data = df,
+                      FUN = paste,
+                      collapse=' | '),
+      silent = TRUE)
   df <- merge(d1, d2)
   df <- merge(df, d3)
+
+  if(exists('d4')) {
+    df <- merge(df, d4, all = T)
+  } else{
+    df$notes <- NA
+  }
+
   df <- df[order(df$x), ]
 
   # Calculate y variable
@@ -270,11 +294,11 @@ tcc <- function(n, d, x, g1, g2, breaks,
 
   # Plot and return
   if(plot) {
-    plot.tcc(tcc, cex = cex, pex = pex, dec = dec, ylim = ylim,
-             date.format = date.format, flip = flip, dots.only = dots.only,
+    plot.tcc(tcc, cex = cex, pex = pex, dec = dec, xpad = xpad, cllab = cllab,
+             ylim = ylim, date.format = date.format, flip = flip,
+             dots.only = dots.only,
              ...)
   }
-
   if(print) {
     return(tcc)
   } else {
@@ -627,16 +651,20 @@ c4 <- function(n) {
 
 #' Plot trellis control chart
 #'
-#' Creates a plot of a tcc object
+#' Plots of a tcc object
 #'
 #' @export
 #' @import ggplot2
+#' @import ggrepel
 #' @param x List object returned from the tcc() function.
 #' @param y Ignored. Included for compatibility with generic plot function.
 #' @param cex Number indicating the amount by which text should be magnified.
 #' @param pex Number indicating the amount by which plotting symbols should be
 #'   magnified.
 #' @param dec Number of decimals on center and control line labels.
+#' @param xpad Number indicating expansion of x axis to make room for center
+#'   line labels.
+#' @param cllab Logical value, if TRUE, plots center line label.
 #' @param ylim Range of y axis.
 #' @param date.format Date format of x axis labels. See \code{?strftime} for
 #'   date formats.
@@ -656,8 +684,10 @@ plot.tcc <- function(x,
                      cex         = 1,
                      pex         = 1,
                      ylim        = NULL,
+                     xpad        = 1,
+                     cllab       = TRUE,
                      dec         = 2,
-                     date.format = '%Y-%m-%d',
+                     date.format = NULL,
                      flip        = FALSE,
                      dots.only   = FALSE,
                      ...) {
@@ -737,39 +767,39 @@ plot.tcc <- function(x,
     p <- p +
       theme(panel.border = element_blank(),
             axis.line = element_line(size = 0.1, colour = col3))
-    # Add centre line label
-    if(length(na.omit(df$cl))) {
-      p <- p +
-        geom_text(aes_string(x = 'tail(x, 1)', y = 'tail(na.omit(cl), 1)',
-                             label = 'sround(tail(cl, 1), dec)'),
-#         geom_text(aes_string(x = 'tail(x, 1)', y = 'mean(cl, na.rm = TRUE)',
-#                              label = 'sround(mean(cl, na.rm = TRUE), dec)'),
-                  hjust = -0.15,
-                  col = 'grey30',
-                  size = 3)
-    }
-    # Add upper control limit label
-    if(length(na.omit(df$ucl))) {
-      p <- p +
-        geom_text(aes_string(x = 'tail(x, 1)', y = 'tail(na.omit(ucl), 1)',
-                             label = 'sround(tail(na.omit(ucl), 1), dec)'),
-#         geom_text(aes_string(x = 'tail(x, 1)', y = 'mean(ucl, na.rm = TRUE)',
-#                              label = 'sround(mean(ucl, na.rm = T), dec)'),
-                  hjust = -0.15,
-                  col = 'grey30',
-                  size = 3)
-    }
-    # Add lower control limit label
-    if(length(na.omit(df$lcl))) {
-      p <- p +
-        geom_text(aes_string(x = 'tail(x, 1)', y = 'tail(na.omit(lcl), 1)',
-                             label = 'sround(tail(na.omit(lcl), 1), dec)'),
-#         geom_text(aes_string(x = 'tail(x, 1)', y = 'mean(lcl, na.rm = TRUE)',
-#                              label = 'sround(mean(lcl, na.rm = TRUE), dec)'),
-                  hjust = -0.15,
-                  col = 'grey30',
-                  size = 3)
-    }
+#     # Add centre line label
+#     if(length(na.omit(df$cl))) {
+#       p <- p +
+#         geom_text(aes_string(x = 'tail(x, 1)', y = 'tail(na.omit(cl), 1)',
+#                              label = 'sround(tail(cl, 1), dec)'),
+# #         geom_text(aes_string(x = 'tail(x, 1)', y = 'mean(cl, na.rm = TRUE)',
+# #                              label = 'sround(mean(cl, na.rm = TRUE), dec)'),
+#                   hjust = -0.15,
+#                   col = 'grey30',
+#                   size = 3)
+#     }
+#     # Add upper control limit label
+#     if(length(na.omit(df$ucl))) {
+#       p <- p +
+#         geom_text(aes_string(x = 'tail(x, 1)', y = 'tail(na.omit(ucl), 1)',
+#                              label = 'sround(tail(na.omit(ucl), 1), dec)'),
+# #         geom_text(aes_string(x = 'tail(x, 1)', y = 'mean(ucl, na.rm = TRUE)',
+# #                              label = 'sround(mean(ucl, na.rm = T), dec)'),
+#                   hjust = -0.15,
+#                   col = 'grey30',
+#                   size = 3)
+#     }
+#     # Add lower control limit label
+#     if(length(na.omit(df$lcl))) {
+#       p <- p +
+#         geom_text(aes_string(x = 'tail(x, 1)', y = 'tail(na.omit(lcl), 1)',
+#                              label = 'sround(tail(na.omit(lcl), 1), dec)'),
+# #         geom_text(aes_string(x = 'tail(x, 1)', y = 'mean(lcl, na.rm = TRUE)',
+# #                              label = 'sround(mean(lcl, na.rm = TRUE), dec)'),
+#                   hjust = -0.15,
+#                   col = 'grey30',
+#                   size = 3)
+#     }
   }
 
   # Add vertical line to mark freeze point
@@ -780,14 +810,13 @@ plot.tcc <- function(x,
   }
 
   # Format data axis
-  if(inherits(df$x, c('Date')) & !is.null(date.format)) {
-    # p <- p + scale_x_date(labels = date_format(date.format))
-    p <- p + scale_x_date(date_labels = date.format)
-  }
-
-  if(inherits(df$x, c('POSIXct')) & !is.null(date.format)) {
-    # p <- p + scale_x_datetime(labels = date_format(date.format))
-    p <- p + scale_x_datetime(date_labels = date.format)
+  if(!is.null(date.format)) {
+    if(inherits(df$x, 'Date')) {
+      p <- p + scale_x_date(date_labels = date.format)
+    }
+    if(inherits(df$x, 'POSIXt')) {
+      p <- p + scale_x_datetime(date_labels = date.format)
+    }
   }
 
   # Add title and axis labels
@@ -798,6 +827,26 @@ plot.tcc <- function(x,
   # Flip chart
   if(flip) {
     p <- p + coord_flip()
+  }
+
+  # Add center line label
+  if(cllab) {
+    p <- p + geom_text(aes_string(x = 'tail(x, 1)', y = 'cl',
+                                  label = 'sround(cl, dec)'),
+                       hjust = -0.5,
+                       check_overlap = TRUE,
+                       col = 'grey30',
+                       size = 3.5)
+    if(inherits(df$x, c('Date', 'POSIXt', 'numeric', 'integer'))) {
+      p <- p + expand_limits(x = max(df$x) + diff(range(df$x)) * 0.08 * xpad)
+    }
+  }
+
+  if(sum(!is.na(df$notes))) {
+    p <- p +
+      geom_label_repel(aes_string(x = 'x', y = 'y',
+                                  label = 'notes'),
+                       na.rm = TRUE)
   }
 
   # Plot chart

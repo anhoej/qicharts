@@ -1,7 +1,10 @@
 qicharts 0.4.3.9000
 =================
+* tcc() gained argument notes.
+* Added (optional) center line label to tcc() plots.
 * No longer needs to import scales
 * Imports ggplot >= 2.0.0
+* Imports ggrepel for adding annotations to tcc() plots.
 
 qicharts 0.4.3
 =================

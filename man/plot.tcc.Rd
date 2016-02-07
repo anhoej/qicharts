@@ -5,8 +5,8 @@
 \title{Plot trellis control chart}
 \usage{
 \method{plot}{tcc}(x, y = NULL, cex = 1, pex = 1, ylim = NULL,
-  dec = 2, date.format = "\%Y-\%m-\%d", flip = FALSE, dots.only = FALSE,
-  ...)
+  xpad = 1, cllab = TRUE, dec = 2, date.format = NULL, flip = FALSE,
+  dots.only = FALSE, ...)
 }
 \arguments{
 \item{x}{List object returned from the tcc() function.}
@@ -19,6 +19,11 @@
 magnified.}
 
 \item{ylim}{Range of y axis.}
+
+\item{xpad}{Number indicating expansion of x axis to make room for center
+line labels.}
+
+\item{cllab}{Logical value, if TRUE, plots center line label.}
 
 \item{dec}{Number of decimals on center and control line labels.}
 
@@ -37,7 +42,7 @@ plots.}
 Creates a tcc plot.
 }
 \description{
-Creates a plot of a tcc object
+Plots of a tcc object
 }
 \examples{
 p <- tcc(rnorm(24))
