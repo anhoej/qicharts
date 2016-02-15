@@ -993,8 +993,9 @@ plot.qic <- function(x, y = NULL, ...) {
   col1            <- rgb(093, 165, 218, maxColorValue = 255) # blue
   col2            <- rgb(140, 140, 140, maxColorValue = 255) # grey
   col3            <- rgb(005, 151, 072, maxColorValue = 255) # green
-  col4            <- rgb(255, 165, 000, maxColorValue = 255) # yellow
-  col5            <- rgb(241, 088, 084, maxColorValue = 255) # red
+  # col4            <- rgb(255, 165, 000, maxColorValue = 255) # yellow
+  col4    <- rgb(241, 088, 084, maxColorValue = 255) # red
+  # col5            <- rgb(241, 088, 084, maxColorValue = 255) # red
   n.obs           <- x$n.obs
   y               <- x$y
   cl              <- x$cl
