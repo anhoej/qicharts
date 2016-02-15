@@ -6,18 +6,20 @@
 \usage{
 tcc(n, d, x, g1, g2, breaks, notes, data, chart = c("run", "i", "mr", "xbar",
   "s", "t", "p", "c", "u", "g"), multiply = 1, freeze = NULL, exclude,
-  sum.n = FALSE, neg.y = TRUE, cex = 1, pex = 1, dec = 2, xpad = 1,
-  cllab = TRUE, ylim = NULL, date.format = NULL, prime = TRUE,
-  flip = FALSE, dots.only = FALSE, main, xlab = "Subgroup",
-  ylab = "Indicator", plot = TRUE, print = FALSE, ...)
+  target = NA, n.sum = FALSE, y.neg = TRUE, y.percent = FALSE,
+  y.expand = NULL, x.pad = 1, x.date.format = NULL, cl.lab = TRUE,
+  cl.decimals = 2, main, xlab = "Subgroup", ylab = "Value", cex = 1,
+  pex = 1, prime = TRUE, flip = FALSE, dots.only = FALSE,
+  print.summary = FALSE, ...)
 }
 \arguments{
-\item{n}{Numeric vector of counts or measures to plot. Mandatory.}
+\item{n}{Numerator, numeric vector of counts or measures to plot. Mandatory.}
 
-\item{d}{Numeric vector of sample sizes. Mandatory for P and U charts.}
+\item{d}{Denominator, numeric vector of subgroup sizes. Mandatory for P and U
+charts.}
 
-\item{x}{Subgrouping vector used for aggregating data and making x-labels.
-Mandatory for Xbar and S charts.}
+\item{x}{Subgrouping vector used for aggregating data by subgroup and making
+x-labels. Mandatory for Xbar and S charts.}
 
 \item{g1}{Grouping vector 1 used for trellis layout (facets).}
 
@@ -39,7 +41,7 @@ proportions chart. \item "c": counts chart. \item "u": rates chart. \item
 "g": cases between events chart. }}
 
 \item{multiply}{Integer indicating a number to multiply y axis by, e.g. 100
-for percents rather than proportions.}
+for percents rather than proportions. See also \code{y.percent} argument.}
 
 \item{freeze}{Number identifying the last data point to include in
 calculations of center and limits (ignored if \code{breaks} argument is
@@ -48,39 +50,30 @@ given).}
 \item{exclude}{Numeric vector of data points to exclude from calculations of
 center and control lines.}
 
-\item{sum.n}{Logical value indicating whether the mean (default) or sum of
-counts or measures should be plotted. Only relevant for run charts and I
-charts with multiple counts or measures per subgroup.}
+\item{target}{Numeric value indicating a target value to be plotted as a
+horizontal line}
 
-\item{neg.y}{Logical value. If TRUE (default), the y axis is allowed to be
+\item{n.sum}{Logical value indicating whether the mean (default) or sum of
+numerator (n argument) per subgroup should be plotted. Only relevant for
+run, C, and I charts with multiple counts per subgroup.}
+
+\item{y.neg}{Logical value. If TRUE (default), the y axis is allowed to be
 negative (only relevant for I and Xbar charts).}
 
-\item{cex}{Number indicating the amount by which text should be magnified.}
+\item{y.percent}{Logical. If TRUE, formats y axis labels as percent.}
 
-\item{pex}{Number indicating the amount by which plotting symbols should be
-magnified.}
+\item{y.expand}{Numeric value to include in y axis. Useful e.g. for beginning
+y axis at zero.}
 
-\item{dec}{Number of decimals on center and control line labels.}
-
-\item{xpad}{Number indicating expansion of x axis to make room for center
+\item{x.pad}{Number indicating expansion of x axis to make room for center
 line labels.}
 
-\item{cllab}{Logical value, if TRUE (default), plots center line label.}
-
-\item{ylim}{Range of y axis.}
-
-\item{date.format}{Date format of x axis labels. See \code{?strftime()} for
+\item{x.date.format}{Date format of x axis labels. See \code{?strftime()} for
 possible date formats.}
 
-\item{prime}{Logical value, If TRUE (default unless dots.only = TRUE),
-control limits incorporate between-subgroup variation as proposed by Laney
-(2002). Only relevant for P and U charts.}
+\item{cl.lab}{Logical value. If TRUE (default), plots center line labels.}
 
-\item{flip}{Logical. If TRUE rotates the plot 90 degrees.}
-
-\item{dots.only}{Logical value. If TRUE, data points are not connected by
-lines, prime is forced to be FALSE and runs analysis is not performed.
-Useful for comparison and funnel plots.}
+\item{cl.decimals}{Number of decimals on center line labels.}
 
 \item{main}{Character string specifying the title of the plot.}
 
@@ -88,15 +81,27 @@ Useful for comparison and funnel plots.}
 
 \item{ylab}{Character string specifying the y axis label.}
 
-\item{plot}{Logical. If TRUE (default), plot chart.}
+\item{cex}{Number indicating the amount by which text should be magnified.}
 
-\item{print}{Logical. if TRUE, prints return value.}
+\item{pex}{Number indicating the amount by which plotting symbols should be
+magnified.}
+
+\item{prime}{Logical value, If TRUE (default unless \code{dots.only = TRUE}),
+control limits incorporate between-subgroup variation as proposed by Laney
+(2002). Only relevant for P and U charts.}
+
+\item{flip}{Logical. If TRUE rotates the plot 90 degrees.}
+
+\item{dots.only}{Logical value. If TRUE, data points are not connected by
+lines, prime is forced to be FALSE, and runs analysis is not performed.
+Useful for comparison and funnel plots.}
+
+\item{print.summary}{Logical. If TRUE, prints summary of tcc object.}
 
 \item{...}{Further arguments to ggplot function.}
 }
 \value{
-A list of of class tcc containing values and parameters of the tcc
-  plot.
+An object of class ggplot.
 }
 \description{
 Run and control charts for multivariate data i trellis (grid) layout.
@@ -112,7 +117,7 @@ tcc(rnorm(24))
 
 # Build data frame for examples
 d <- data.frame(x = rep(1:24, 4),
-                mo = (rep(seq(as.Date('2013-1-1'),
+                mo = (rep(seq(as.Date('2014-1-1'),
                               length.out = 24,
                               by = 'month'),
                           4)),
@@ -121,17 +126,8 @@ d <- data.frame(x = rep(1:24, 4),
                 g1 = rep(c('a', 'b'), each = 48),
                 g2 = rep(c('A', 'B'), each = 24))
 
-# Single, one-dimensional run chart
-tcc(n, d, mo, data = subset(d, g1 == 'a' & g2 == 'A'))
-
-# Run chart with one grouping variable and two groups
-tcc(n, d, mo, g1 = g2, data = subset(d, g1 == 'a'))
-
 # Run chart with two grouping variables
 tcc(n, d, mo, g1 = g1, g2 = g2, data = d)
-
-# I chart
-tcc(n, d, mo, g1 = g1, g2 = g2, data = d, chart = 'i')
 
 # P chart
 tcc(n, d, mo, g1 = g1, g2 = g2, data = d, chart = 'p')
@@ -139,10 +135,28 @@ tcc(n, d, mo, g1 = g1, g2 = g2, data = d, chart = 'p')
 # P chart with baseline fixed to the first 12 data points
 tcc(n, d, mo, g1 = g1, g2 = g2, data = d, chart = 'p', freeze = 12)
 
-# P chart with two breaks
-tcc(n, d, mo, g1 = g1, g2 = g2, data = d, chart = 'p', breaks = c(12, 18))
-
-# P chart with two data points excluded from calculations
-tcc(n, d, mo, g1 = g1, g2 = g2, data = d, chart = 'p', exclude = c(12, 18))
+# P chart with two breaks and summary output
+tcc(n, d, mo, g1 = g1, g2 = g2, data = d, chart = 'p',
+ breaks = c(12, 18), print.summary = TRUE)
+}
+\references{
+Runs analysis: \itemize{ \item Jacob Anhoej, Anne Vingaard Olesen
+  (2014). Run Charts Revisited: A Simulation Study of Run Chart Rules for
+  Detection of Non-Random Variation in Health Care Processes. PLoS ONE 9(11):
+  e113825. doi: 10.1371/journal.pone.0113825 . \item Jacob Anhoej (2015).
+  Diagnostic Value of Run Chart Analysis: Using Likelihood Ratios to Compare
+  Run Chart Rules on Simulated Data Series. PLoS ONE 10(3): e0121349. doi:
+  10.1371/journal.pone.0121349 \item Mark F. Schilling (2012). The Surprising
+  Predictability of Long Runs. Math. Mag. 85, 141-149. \item Zhenmin Chen
+  (2010). A note on the runs test. Model Assisted Statistics and Applications
+  5, 73-77. } Calculation of control limits: \itemize{ \item   Douglas C.
+  Montgomery (2009). Introduction to Statistical Process Control, Sixth
+  Edition, John Wiley & Sons. \item James C. Benneyan (2001). Number-Between
+  g-Type Statistical Quality Control Charts for Monitoring Adverse Events.
+  Health Care Management Science 4, 305-318. \item Lloyd P. Provost, Sandra
+  K. Murray (2011). The Health Care Data Guide: Learning from Data for
+  Improvement. San Francisco: John Wiley & Sons Inc. \item David B. Laney
+  (2002). Improved control charts for attributes. Quality Engineering, 14(4),
+  531-537.}
 }
 

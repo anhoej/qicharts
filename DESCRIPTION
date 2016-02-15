@@ -23,6 +23,7 @@ Imports:
     graphics,
     grDevices,
     stats,
+    scales,
     ggplot2 (>= 2.0.0),
     ggrepel
 Suggests:

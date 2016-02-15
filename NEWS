@@ -1,10 +1,22 @@
 qicharts 0.4.3.9000
 =================
-* tcc() gained argument notes.
-* Added (optional) center line label to tcc() plots.
-* No longer needs to import scales
-* Imports ggplot >= 2.0.0
-* Imports ggrepel for adding annotations to tcc() plots.
+* tcc() now returns a ggplot object, which makes it possible to apply custom themes and functions to plots and extract individual components of the plot object for further study and manipulation.
+* Naming and ordering of tcc() arguments has been modified for consistency. NOTE: This may break your code. See ?tcc() for details.
+* New generic function summary.tcc() for summarising tcc object.
+* tcc() gained argument print.summary for printing summary of tcc() object.)
+* plot and print arguments of tcc() have been deprecated.
+* tcc() imports ggplot >= 2.0.0.
+* tcc() imports ggrepel. Used with the notes argument for annotating tcc() plots.
+* tcc() gained notes argument for adding annotations to individual data points.
+* tcc() gained y.percent argument for formatting y axis as percent.
+* tcc() gained cl.lab argument for adding center line labels to tcc() plots.
+* tcc() gained xpad argument for adjusting the space available for center line labels.
+* tcc() gained target argument for adding a target line to plots.
+* Darker red colour to signal non-random variation in tcc() plots.
+* Reduced base_size (font sizes) in tcc() from 12 to 10. After RStudio 0.99.724 fixed a bug that reduced the font size of grid based graphics, the default seemed to big. Use cex argument to adjust font size.
+* Increased spacing between axes and titles in tcc().
+* Traffic light feature of qic() has been deprecated.
+* Fixed clipping of cumulative curve in paretochart().
 
 qicharts 0.4.3
 =================
