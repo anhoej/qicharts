@@ -4,14 +4,14 @@
 #' @export
 #' @param x Categorical vector to be plotted
 #' @param main Plot title
-#' @param ylab Label on first (left) y axis
+#' @param ylab Label on y axis
 #' @param xlab Label on x axis
 #' @param cumperc.by Grid interval
 #' @param cex Number indicating the amount by which text and symbols should be magnified.
 #' @param ... Further arguments to plot function
 #' @return A table of frequencies and percentages from the pareto analysis
 #' @examples
-#' x <- rep(LETTERS[1:9], c(200, 100, 50, 25, 12, 6, 3, 2, 1))
+#' x <- rep(LETTERS[1:9], c(256, 128, 64, 32, 16, 8, 4, 2, 1))
 #' paretochart(x)
 
 paretochart <- function (x,
@@ -30,12 +30,12 @@ paretochart <- function (x,
   cumperc  <- seq(0, 100, by = cumperc.by)
   q        <- quantile(seq(0, max(cumsum.x, na.rm = TRUE)), cumperc/100)
   ylim     <- range(0, cumsum.x)
-  mai.add  <- c(w - par('mai')[1], 0, -0.4, 0)
+  mai.add  <- c(w - par('mai')[1], 0, -0.5, 0)
   cex      <- par('cex') * cex
   col      <- rgb(093, 165, 218, maxColorValue = 255)
 
   if (missing(main)) {
-    main <- paste('Pareto Chart for', varname)
+    main <- paste('Pareto Chart of', varname)
   }
 
   if(xlab == '') {
@@ -61,7 +61,7 @@ paretochart <- function (x,
   box(lwd = 0.5, col = 'grey86')
   title(main = main, adj = 0, line = 1, cex.main = cex * 1.25, font.main = 1)
   abline(h = q, col = 'grey86', lty = 3)
-  lines(pc, cumsum.x, type = 'o', pch = 20, col = 'grey40', lwd = 2)
+  lines(pc, cumsum.x, type = 'o', pch = 20, col = 'grey40', lwd = 2, xpd = NA)
   axis(2,
        cex.axis = cex,
        lwd = 0.5,
@@ -77,12 +77,17 @@ paretochart <- function (x,
        las = 1,
        tck = -0.01, ...)
   mtext(xlab, 1, line = 0, cex = cex, outer = TRUE)
+
   par(opar)
 
-  tab <- cbind(x, cumsum.x, x/max(cumsum.x, na.rm = TRUE) * 100,
+  tab <- cbind(x,
+               cumsum.x,
+               x/max(cumsum.x, na.rm = TRUE) * 100,
                cumsum.x/max(cumsum.x, na.rm = TRUE) * 100)
-  colnames(tab) <- c('Frequency', 'Cumulative Frequency',
-                     'Percentage', 'Cumulative Percentage')
-  names(dimnames(tab)) <- c('', paste('Pareto analysis for', varname))
+  colnames(tab) <- c('Frequency',
+                     'Cumulative Frequency',
+                     'Percentage',
+                     'Cumulative Percentage')
+  # names(dimnames(tab)) <- c('', paste('Pareto analysis for', varname))
   return(as.data.frame(tab))
 }

@@ -12,7 +12,7 @@ paretochart(x, main, ylab = "Frequency", xlab = "", cumperc.by = 20,
 
 \item{main}{Plot title}
 
-\item{ylab}{Label on first (left) y axis}
+\item{ylab}{Label on y axis}
 
 \item{xlab}{Label on x axis}
 
@@ -29,7 +29,7 @@ A table of frequencies and percentages from the pareto analysis
 Creates a pareto chart from a categorical variable
 }
 \examples{
-x <- rep(LETTERS[1:9], c(200, 100, 50, 25, 12, 6, 3, 2, 1))
+x <- rep(LETTERS[1:9], c(256, 128, 64, 32, 16, 8, 4, 2, 1))
 paretochart(x)
 }
 \author{
