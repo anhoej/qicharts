@@ -5,6 +5,8 @@
 #' @export
 #' @import ggplot2
 #' @import ggrepel
+#' @importFrom utils tail
+#'
 #' @param n Numerator, numeric vector of counts or measures to plot. Mandatory.
 #' @param d Denominator, numeric vector of subgroup sizes. Mandatory for P and U
 #'   charts.
@@ -614,8 +616,6 @@ runs.analysis <- function(df) {
   n.crossings.min <- qbinom(0.05, max(n.useful - 1, 0), 0.5)  # Chen 2010 (7)
   runs.signal     <- longest.run > longest.run.max ||
     n.crossings < n.crossings.min
-#   runs.signal     <- rep(runs.signal, length(y))
-#   df              <- cbind(df, runs.signal)
   df$runs.signal  <- runs.signal
 
   return(df)
@@ -710,7 +710,7 @@ plot.tcc <- function(x,
   df$pcol <- ifelse(df$exclude, 'col4', df$pcol)
   df$lcol <- ifelse(df$runs.signal, 'col2', 'col3')
   p <- ggplot(df) +
-    theme_bw(base_size = 10 * cex) +
+    theme_bw(base_size = 11 * cex) +
     theme(panel.border     = element_rect(colour = 'grey70', size = 0.1),
           panel.grid.major = element_blank(),
           panel.grid.minor = element_blank(),
@@ -802,8 +802,9 @@ plot.tcc <- function(x,
   # Add center line label
   if(cl.lab) {
     p <- p + geom_text(aes_string(x = 'tail(x, 1)', y = 'cl',
-                                  label = 'sround(cl, cl.decimals)'),
-                       hjust = -0.25,
+                                  label = 'paste0("  ", sround(cl, cl.decimals))',
+                                  hjust = 0),
+                       # hjust = -0.25,
                        # nudge_x = 1,
                        check_overlap = TRUE,
                        col = 'grey30',
@@ -839,6 +840,8 @@ plot.tcc <- function(x,
 #'
 #' Summary function for tcc objects.
 #'
+#' @export
+#'
 #' @param object tcc object
 #' @param ... Ignored. Included for compatibility with generic summary function.
 #'
@@ -860,8 +863,7 @@ plot.tcc <- function(x,
 #' p <- tcc(n, d, mo, g1 = g1, g2 = g2, breaks = 12, data = d, chart = 'p')
 #' plot(p)
 #' summary(p)
-#'
-#' @export
+
 summary.tcc <- function(object, ...) {
   d <- object$data
   x1 <- aggregate(n.obs ~ g1 + g2 + breaks,

@@ -12,10 +12,12 @@ qicharts 0.4.3.9000
 * tcc() gained cl.lab argument for adding center line labels to tcc() plots.
 * tcc() gained xpad argument for adjusting the space available for center line labels.
 * tcc() gained target argument for adding a target line to plots.
-* Darker red colour to signal non-random variation in tcc() plots.
-* Reduced base_size (font sizes) in tcc() from 12 to 10. After RStudio 0.99.724 fixed a bug that reduced the font size of grid based graphics, the default seemed to big. Use cex argument to adjust font size.
+* Darker red colour of centre line to signal non-random variation in tcc() plots.
+* Reduced base_size (font sizes) in tcc() from 12 to 11. After RStudio 0.99.724 fixed a bug that reduced the font size of grid based graphics, the default seemed to big. Use cex argument to adjust font size.
 * Increased spacing between axes and titles in tcc().
-* Traffic light feature of qic() has been deprecated.
+* "Traffic light" feature of qic() and trc() has been deprecated.
+* Code cleanup of qic() and trc().
+* Reduced font size in trc() plots.
 * Fixed clipping of cumulative curve in paretochart().
 
 qicharts 0.4.3
