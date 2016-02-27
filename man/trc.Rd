@@ -6,7 +6,7 @@
 \usage{
 trc(x, chart = c("run", "i"), xscale = "same", yscale = "same",
   dec = NULL, xpad = 0.1, pch = 20, cex = 0.7, gap = 0.5,
-  target = NA, direction = NULL, ...)
+  target = NA, ...)
 }
 \arguments{
 \item{x}{Formula object to plot. The formula is of the form y ~ x | g1 + g2 +
@@ -33,9 +33,6 @@ order to make space for the median label.}
 \item{gap}{Number indicating spacing between panels.}
 
 \item{target}{Value specifying a target line to plot.}
-
-\item{direction}{Value indication direction of improvement, 0 (down) or 1
-(up).}
 
 \item{...}{Further arguments to xyplot.}
 }
