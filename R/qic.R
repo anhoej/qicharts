@@ -6,6 +6,8 @@
 #' @import graphics
 #' @import grDevices
 #' @import stats
+#' @importFrom utils tail
+#'
 #' @param y Numeric vector of counts or measures to plot. Mandatory.
 #' @param n Numeric vector of sample sizes. Mandatory for P and U charts.
 #' @param x Subgrouping vector used for aggregating data and making x-labels.
@@ -59,8 +61,6 @@
 #'   significant digits.
 #' @param pre.text Character string labelling pre-freeze period
 #' @param post.text Character string labelling post-freeze period
-#' @param rag.text Character vector with three elements indicating "traffic
-#'   light" labels.
 #' @param llabs Character vector with four elements specifying labels for lower
 #'   control limit, centre line, upper control limit and target line
 #'   respectively
@@ -224,7 +224,6 @@ qic <- function(y,
                 decimals     = NULL,
                 pre.text     = 'Before data',
                 post.text    = 'After data',
-                rag.text     = c('Improve', 'Investigate', 'Control'),
                 llabs        = c('LCL', 'CL', 'UCL', 'TRG'),
                 runvals      = FALSE,
                 linevals     = TRUE,
@@ -246,14 +245,24 @@ qic <- function(y,
   # Prepare chart title
   no_title <- missing(main)
 
-  if(no_title)
+  if(no_title) {
     main <- paste(toupper(type), "Chart of", deparse(substitute(y)))
+    if(!missing(n)) {
+      main <- paste(main, '/', deparse(substitute(n)))
+    }
+    if(multiply != 1) {
+      main <- paste(main, 'x', multiply)
+    }
+    if(prime == TRUE)
+      main <- paste(paste0(toupper(type), "'"), "Chart of", deparse(substitute(y)))
 
-  if(no_title & prime == TRUE)
-    main <- paste(paste0(toupper(type), "'"), "Chart of", deparse(substitute(y)))
+    if(standardised == TRUE)
+      main <- paste("Standardised", main)
+  }
 
-  if(no_title & standardised == TRUE)
-    main <- paste("Standardised", main)
+  # if(no_title)
+  #   main <- paste(toupper(type), "Chart of", deparse(substitute(y)))
+
 
   # Get data, sample sizes, subgroups, and notes
   if(!missing(data)){
@@ -481,7 +490,6 @@ qic <- function(y,
   qic$sub             <- sub
   qic$pre.text        <- pre.text
   qic$post.text       <- post.text
-  qic$rag.text        <- rag.text
   qic$llabs           <- llabs
   qic$ylim            <- ylim
   qic$nint            <- nint
@@ -995,7 +1003,6 @@ plot.qic <- function(x, y = NULL, ...) {
   col3            <- rgb(005, 151, 072, maxColorValue = 255) # green
   # col4            <- rgb(255, 165, 000, maxColorValue = 255) # yellow
   col4    <- rgb(241, 088, 084, maxColorValue = 255) # red
-  # col5            <- rgb(241, 088, 084, maxColorValue = 255) # red
   n.obs           <- x$n.obs
   y               <- x$y
   cl              <- x$cl
@@ -1026,7 +1033,6 @@ plot.qic <- function(x, y = NULL, ...) {
   ylim            <- x$ylim
   pre.text        <- x$pre.text
   post.text       <- x$post.text
-  rag.text        <- x$rag.text
   llabs           <- x$llabs
   nint            <- x$nint
   cex             <- x$cex
@@ -1102,50 +1108,11 @@ plot.qic <- function(x, y = NULL, ...) {
   # colour center line according to runs analysis
   lty <- 1
   col <- col2
-  m <- ifelse(direction, 1, -1)
 
   if(runs.test & !dots.only) {
     col <- col4
     lty <- 5
   }
-
-#   if(runs.test | length(signals) & !all(signals %in% exclude) & !dots.only) {
-#     lty <- 5
-#     col <- col4
-#   } else if(!is.null(target) & !is.null(direction)) {
-#     col <- ifelse((target - tail(cl, 1)) * m > 0, col5, col3)
-#   }
-
-#   # traffic light
-#   if(!is.null(target) & !is.null(direction) & !is.na(col)) {
-#     bg <- c(0, 0, 0)
-#     legend <- c('', '', '')
-#     if(col == col5) {
-#       bg[1] <- col5
-#       legend[1] <- rag.text[1]
-#     }
-#     if(col == col4) {
-#       bg[2] <- col4
-#       legend[2] <- rag.text[2]
-#     }
-#     if(col == col3) {
-#       bg[3] <- col3
-#       legend[3] <- rag.text[3]
-#     }
-
-#     legend(max(x), max(ylim),
-#            legend = legend,
-#            pch = rep(21, 3),
-#            pt.cex = 2.25,
-#            col = c(col5, col4, col3),
-#            pt.bg = bg,
-#            yjust = 0,
-#            xjust = 0.1,
-#            xpd = T,
-#            # y.intersp = 1,
-#            bty = 'n')
-#   }
-
 
   # add lines to plot
   for(p in parts) {
@@ -1175,7 +1142,7 @@ plot.qic <- function(x, y = NULL, ...) {
   }
 
   # colour data points outside sigma limits
-  points(signals, y[signals], col = col4, pch = pch, cex = cex * 2.1)
+  points(signals, y[signals], col = col4, pch = pch, cex = cex * 1.5)
 
   # mark excluded data points
   points(exclude, y[exclude], bg = 0, col = col2, pch = 21, cex = cex * 1.5)
