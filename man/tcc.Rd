@@ -47,11 +47,11 @@ for percents rather than proportions. See also \code{y.percent} argument.}
 calculations of center and limits (ignored if \code{breaks} argument is
 given).}
 
-\item{exclude}{Numeric vector of data points to exclude from calculations of
-center and control lines.}
+\item{exclude}{Numeric vector of data points to exclude from runs analysis
+and calculations of center and control lines (same for each facet).}
 
 \item{target}{Numeric value indicating a target value to be plotted as a
-horizontal line}
+horizontal line (same for each facet).}
 
 \item{n.sum}{Logical value indicating whether the mean (default) or sum of
 numerator (n argument) per subgroup should be plotted. Only relevant for
@@ -107,9 +107,13 @@ An object of class ggplot.
 Run and control charts for multivariate data i trellis (grid) layout.
 }
 \details{
-\code{tcc()} is a wrapper function that uses ggplot2 to create
+\code{tcc()} is a wrapper function for \code{ggplot2()} that makes
   multivariate run and control charts. It takes up to two grouping variables
-  to make one or two dimensional trellis plots.
+  for multidimensional trellis plots.
+
+  Note that, in contrast to the qic() function, the prime argument defaults
+  to TRUE, which means that control limits of P and U charts by default
+  incorporate between-subgroup variation as proposed by Laney (2002).
 }
 \examples{
 # Run chart of 24 random normal variables

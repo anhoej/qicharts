@@ -30,10 +30,10 @@
 #' @param freeze Number identifying the last data point to include in
 #'   calculations of center and limits (ignored if \code{breaks} argument is
 #'   given).
-#' @param exclude Numeric vector of data points to exclude from calculations of
-#'   center and control lines.
+#' @param exclude Numeric vector of data points to exclude from runs analysis
+#'   and calculations of center and control lines (same for each facet).
 #' @param target Numeric value indicating a target value to be plotted as a
-#'   horizontal line
+#'   horizontal line (same for each facet).
 #' @param n.sum Logical value indicating whether the mean (default) or sum of
 #'   numerator (n argument) per subgroup should be plotted. Only relevant for
 #'   run, C, and I charts with multiple counts per subgroup.
@@ -64,9 +64,13 @@
 #' @param print.summary Logical. If TRUE, prints summary of tcc object.
 #' @param ... Further arguments to ggplot function.
 #'
-#' @details \code{tcc()} is a wrapper function that uses ggplot2 to create
+#' @details \code{tcc()} is a wrapper function for \code{ggplot2()} that makes
 #'   multivariate run and control charts. It takes up to two grouping variables
-#'   to make one or two dimensional trellis plots.
+#'   for multidimensional trellis plots.
+#'
+#'   Note that, in contrast to the qic() function, the prime argument defaults
+#'   to TRUE, which means that control limits of P and U charts by default
+#'   incorporate between-subgroup variation as proposed by Laney (2002).
 #'
 #' @return An object of class ggplot.
 #'
@@ -218,7 +222,7 @@ tcc <- function(n, d, x, g1, g2, breaks, notes,
         breaks <- c(0, breaks, nrow(x))
         breaks <- sort(breaks)
         breaks <- diff(breaks)
-        breaks <- rep(seq_along(breaks), breaks) #rep(1:length(breaks), breaks)
+        breaks <- rep(seq_along(breaks), breaks)
         x$breaks <- breaks
       }
       return(x)
@@ -603,20 +607,42 @@ tcc.g <- function(df, freeze, ...){
 }
 
 runs.analysis <- function(df) {
-  y               <- df$y
-  cl              <- df$cl
-  runs            <- sign(y - cl)
-  runs            <- runs[runs != 0 & !is.na(runs)]
-  n.useful        <- length(runs)
-  run.lengths     <- rle(runs)$lengths
-  n.runs          <- length(run.lengths)
-  longest.run     <- max(run.lengths)
-  longest.run.max <- round(log2(n.useful)) + 3                # Schilling 2012
-  n.crossings     <- max(n.runs - 1, 0)
-  n.crossings.min <- qbinom(0.05, max(n.useful - 1, 0), 0.5)  # Chen 2010 (7)
-  runs.signal     <- longest.run > longest.run.max ||
-    n.crossings < n.crossings.min
+  y                  <- df$y[!df$exclude]
+  cl                 <- df$cl[!df$exclude]
+  runs               <- sign(y - cl)
+  runs               <- runs[runs != 0 & !is.na(runs)]
+  n.useful           <- length(runs)
+
+  if(n.useful) {
+    run.lengths      <- rle(runs)$lengths
+    n.runs           <- length(run.lengths)
+    longest.run      <- max(run.lengths)
+    longest.run.max  <- round(log2(n.useful)) + 3                # Schilling 2012
+    n.crossings      <- max(n.runs - 1, 0)
+    n.crossings.min  <- qbinom(0.05, max(n.useful - 1, 0), 0.5)  # Chen 2010 (7)
+    runs.signal      <- longest.run > longest.run.max ||
+      n.crossings < n.crossings.min
+  } else {
+    longest.run      <- NA
+    longest.run.max  <- NA
+    n.crossings      <- NA
+    n.crossings.min  <- NA
+    runs.signal      <- FALSE
+  }
+
+  # run.lengths     <- rle(runs)$lengths
+  # n.runs          <- length(run.lengths)
+  # longest.run     <- max(run.lengths)
+  # longest.run.max <- round(log2(n.useful)) + 3                # Schilling 2012
+  # n.crossings     <- max(n.runs - 1, 0)
+  # n.crossings.min <- qbinom(0.05, max(n.useful - 1, 0), 0.5)  # Chen 2010 (7)
+  # runs.signal     <- longest.run > longest.run.max ||
+  #   n.crossings < n.crossings.min
   df$runs.signal  <- runs.signal
+  df$longest.run <- longest.run
+  df$longest.run.max <- longest.run.max
+  df$n.crossings <- n.crossings
+  df$n.crossings.min <- n.crossings.min
 
   return(df)
 }
@@ -714,7 +740,7 @@ plot.tcc <- function(x,
     theme(panel.border     = element_rect(colour = 'grey70', size = 0.1),
           panel.grid.major = element_blank(),
           panel.grid.minor = element_blank(),
-          axis.line        = element_blank(),
+          # axis.line        = element_blank(),
           axis.ticks       = element_line(colour = col3),
           axis.title.y     = element_text(margin = margin(r = 8)),
           axis.title.x     = element_text(margin = margin(t = 8)),
@@ -772,7 +798,8 @@ plot.tcc <- function(x,
   } else {
     p <- p +
       theme(panel.border = element_blank(),
-            axis.line = element_line(size = 0.1, colour = col3))
+            axis.line.x = element_line(size = 0.1, colour = col3),
+            axis.line.y = element_line(size = 0.1, colour = col3))
   }
 
   # Add vertical line to mark freeze point
@@ -797,12 +824,13 @@ plot.tcc <- function(x,
   p <- p +
     labs(title = main, x = xlab, y = ylab) +
     expand_limits(y = y.expand)
-    # coord_cartesian(ylim = ylim)
+  # coord_cartesian(ylim = ylim)
 
   # Add center line label
   if(cl.lab) {
+    m <- ifelse(y.percent, 100, 1)
     p <- p + geom_text(aes_string(x = 'tail(x, 1)', y = 'cl',
-                                  label = 'paste0("  ", sround(cl, cl.decimals))',
+                                  label = 'paste0("  ", sround(cl * m, cl.decimals))',
                                   hjust = 0),
                        # hjust = -0.25,
                        # nudge_x = 1,
@@ -814,12 +842,14 @@ plot.tcc <- function(x,
     }
   }
 
+  # Add annotations
   if(sum(!is.na(df$notes))) {
     p <- p +
-      geom_label_repel(aes_string(x = 'x', y = 'y', label = 'notes'),
-                       size = 3 * cex,
-                       point.padding = unit(2, 'points'),
-                       na.rm = TRUE)
+      geom_text_repel(aes_string(x = 'x', y = 'y', label = 'notes'),
+                      size = 3 * cex,
+                      # point.padding = unit(2, 'points'),
+                      box.padding = unit(0.5, 'lines'),
+                      na.rm = TRUE)
   }
 
   # Flip chart
@@ -870,22 +900,29 @@ summary.tcc <- function(object, ...) {
                   data = d,
                   length)
   x2 <- aggregate(cbind(n.useful = y != cl) ~ g1 + g2 + breaks,
-                  data = d,
+                  data = d[!d$exclude, ],
                   sum,
-                  na.rm = TRUE)
+                  na.rm = TRUE,
+                  na.action = na.pass)
   x3 <- aggregate(cbind(cl, lcl, ucl) ~ g1 + g2 + breaks,
                   data = d,
                   tail, 1,
                   na.action = na.pass)
-  x4 <- aggregate(cbind(runs.signal, limits.signal) ~ g1 + g2 + breaks,
+  x4 <- aggregate(cbind(limits.signal, runs.signal) ~ g1 + g2 + breaks,
                   data = d,
                   max,
                   na.rm = TRUE)
   x4[4:5] <- apply(x4[4:5], 2, as.logical)
+  x5 <- aggregate(cbind(longest.run, longest.run.max,
+                        n.crossings, n.crossings.min) ~ g1 + g2 + breaks,
+                  data = d,
+                  tail, 1,
+                  na.action = na.pass)
 
   x <- merge(x1, x2)
   x <- merge(x, x3)
   x <- merge(x, x4)
+  x <- merge(x, x5)
 
   return(x)
 }

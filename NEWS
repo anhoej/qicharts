@@ -1,4 +1,12 @@
-qicharts 0.4.3.9000
+qicharts 0.5.1
+=================
+* Included details of runs analysis in summary.tcc().
+* Fixed missing axis lines in tcc() with ggplot 2.1.0: https://github.com/hadley/ggplot2/issues/1567.
+* Centre line labels in tcc() now matches y labels if y.percent = TRUE.
+* Runs analysis now disregards excluded data points in tcc().
+* Fixed warning message from runs analysis in tcc() if all data points are on the median.
+
+qicharts 0.5.0
 =================
 * tcc() now returns a ggplot object, which makes it possible to apply custom themes and functions to plots and extract individual components of the plot object for further study and manipulation.
 * Naming and ordering of tcc() arguments has been modified for consistency. NOTE: This may break your code. See ?tcc() for details.
