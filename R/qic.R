@@ -1055,6 +1055,7 @@ plot.qic <- function(x, y = NULL, ...) {
     mar <- mar + c(1, 0, 0, 0)
 
   op <- par(mar = mar, cex = cex, lwd = lwd)
+  on.exit(par(op))
 
   # setup empty plot area
   plot(x    = x,

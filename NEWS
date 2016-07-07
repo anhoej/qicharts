@@ -1,3 +1,8 @@
+qicharts 0.5.1.999
+=================
+* Added space to top margin in paretochart()
+* Fixed resetting of graphical parameters after plotting in qic() and paretochart()
+
 qicharts 0.5.1
 =================
 * Included details of runs analysis in summary.tcc().

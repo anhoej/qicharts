@@ -39,12 +39,13 @@ paretochart <- function (x,
   }
 
   if(xlab == '') {
-    oma <- c(0.5, 0.3, 0, 1.2)
+    oma <- c(0.5, 0.3, 0.5, 1.2)
   } else {
-    oma <- c(1.5, 0.3, 0, 1.2)
+    oma <- c(1.5, 0.3, 0.5, 1.2)
   }
 
   opar <- par(mai = par('mai') + mai.add, oma = oma)
+  on.exit(par(opar))
 
   pc <- barplot(x,
                 space    = 0.1,
