@@ -255,7 +255,7 @@ tcc <- function(n, d, x, g1, g2, breaks, notes,
   df <- merge(d1, d2)
   df <- merge(df, d3)
 
-  if(exists('d4')) {
+  if(exists('d4', inherits = FALSE)) {
     df <- merge(df, d4, all = T)
   } else{
     df$notes <- NA
