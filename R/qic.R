@@ -396,6 +396,7 @@ qic <- function(y,
                           exclude      = ex,
                           prime        = prime,
                           standardised = standardised))
+
     qic$y   <- c(qic$y, y$y)
     qic$cl  <- c(qic$cl, y$cl)
     qic$lcl <- c(qic$lcl, y$lcl)

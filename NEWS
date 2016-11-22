@@ -2,6 +2,7 @@ qicharts 0.5.1.999
 =================
 * Added space to top margin in paretochart()
 * Fixed resetting of graphical parameters after plotting in qic() and paretochart()
+* Build for R 3.3.2
 
 qicharts 0.5.1
 =================
