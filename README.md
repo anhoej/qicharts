@@ -1,6 +1,6 @@
 # Quality improvement charts
 
-The **qicharts** package contains functions for plotting run charts and basic Shewhart control charts for measure and count data.
+The **qicharts** package contains functions for plotting run charts and Shewhart control charts for measure and count data.
 
 The main function is `qic()`, which in its simplest form takes a vector of values, plots a run chart, and performs tests for non-random variation in the data sequence. Non-random variation may be the result of deliberate process improvement or unintentional, possibly unwanted, changes in process performance.
 
