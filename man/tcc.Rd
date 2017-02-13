@@ -163,4 +163,3 @@ Runs analysis: \itemize{ \item Jacob Anhoej, Anne Vingaard Olesen
   (2002). Improved control charts for attributes. Quality Engineering, 14(4),
   531-537.}
 }
-

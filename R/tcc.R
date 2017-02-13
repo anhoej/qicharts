@@ -333,12 +333,6 @@ tcc <- function(n, d, x, g1, g2, breaks, notes,
     print(summary(p))
 
   return(p)
-
-  # if(print) {
-  #   return(tcc)
-  # } else {
-  #   invisible(tcc)
-  # }
 }
 
 tcc.run <- function(df, freeze, ...) {
@@ -735,21 +729,27 @@ plot.tcc <- function(x,
   df$pcol <- ifelse(df$limits.signal, 'col2', 'col1')
   df$pcol <- ifelse(df$exclude, 'col4', df$pcol)
   df$lcol <- ifelse(df$runs.signal, 'col2', 'col3')
+
   p <- ggplot(df) +
     theme_bw(base_size = 11 * cex) +
     theme(panel.border     = element_rect(colour = 'grey70', size = 0.1),
           panel.grid.major = element_blank(),
           panel.grid.minor = element_blank(),
-          # axis.line        = element_blank(),
+          legend.position  = 'none',
           axis.ticks       = element_line(colour = col3),
           axis.title.y     = element_text(margin = margin(r = 8)),
           axis.title.x     = element_text(margin = margin(t = 8)),
           plot.title       = element_text(hjust = 0, margin = margin(b = 8)),
           strip.background = element_rect(fill = 'grey90', colour = 'grey70'))
   p <- p +
-    geom_line(aes_string(x = 'x', y = 'cl', colour = 'lcol', group = 'breaks'),
+    geom_line(aes_string(x = 'x', y = 'cl', linetype = 'runs.signal',
+                         colour = 'runs.signal', group = 'breaks'),
               lwd = 0.6 * cex,
               na.rm = TRUE) +
+    # Colour and type centre line according to runs analysis
+    scale_linetype_manual(values = c('FALSE' = 'solid', 'TRUE' = 'dashed')) +
+    # scale_colour_manual(values = cols) +
+    scale_colour_manual(values = c('TRUE' = col2, 'FALSE' = col3)) +
     geom_line(aes_string(x = 'x', y = 'lcl', group = 'breaks'),
               colour = col3,
               lwd = 0.3 * cex,
@@ -758,7 +758,7 @@ plot.tcc <- function(x,
               colour = col3,
               lwd = 0.3 * cex,
               na.rm = TRUE) +
-    geom_line(aes_string(x = 'x', y = 'target'),
+    geom_line(aes_string(x = 'x', y = 'target', group = '1'),
               colour = col5,
               lty = 5,
               lwd = 0.3 * cex,
@@ -779,12 +779,10 @@ plot.tcc <- function(x,
                       size = 2 * pex * cex,
                       shape = 21,
                       na.rm = TRUE) +
-    # Colour centre line according to runs analysis
-    scale_colour_manual(values = cols) +
     # Colour data points according to limits analysis
-    scale_fill_manual(values = cols) +
+    scale_fill_manual(values = cols) #+
     # Suppress legend
-    guides(colour = FALSE, fill = FALSE)
+    # guides(colour = FALSE, fill = FALSE)
 
   ng1 <- nlevels(droplevels(as.factor(df$g1))) > 1
   ng2 <- nlevels(droplevels(as.factor(df$g2))) > 1
@@ -819,7 +817,6 @@ plot.tcc <- function(x,
     }
   }
 
-
   # Add title and axis labels
   p <- p +
     labs(title = main, x = xlab, y = ylab) +
@@ -829,11 +826,16 @@ plot.tcc <- function(x,
   # Add center line label
   if(cl.lab) {
     m <- ifelse(y.percent, 100, 1)
-    p <- p + geom_text(aes_string(x = 'tail(x, 1)', y = 'cl',
+    lab.x <- ifelse(is.factor(df$x), 'tail(x, 1)', 'max(x)')
+    lab.just <- ifelse(flip, '0.5', '0')
+    lab.nudge <- ifelse(flip, 0.2, 0)
+
+    # p <- p + geom_text(aes_string(x = 'tail(x, 1)', y = 'cl',
+    p <- p + geom_text(aes_string(x = lab.x, y = 'cl',
                                   label = 'paste0("  ", sround(cl * m, cl.decimals))',
-                                  hjust = 0),
+                                  hjust = lab.just),
                        # hjust = -0.25,
-                       # nudge_x = 1,
+                       nudge_x = lab.nudge,
                        check_overlap = TRUE,
                        col = 'grey30',
                        size = 3 * cex)

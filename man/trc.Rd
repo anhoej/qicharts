@@ -77,4 +77,3 @@ trc(y ~ x | g1 + g2, data = d2, main = 'Trellis run chart', chart = 'i')
 \seealso{
 \code{\link{xyplot}}, \code{\link{qic}}
 }
-

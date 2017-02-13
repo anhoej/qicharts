@@ -1,6 +1,6 @@
 Package: qicharts
-Version: 0.5.2
-Date: 2016-11-28
+Version: 0.5.3.999
+Date: 2017-02-13
 Title: Quality Improvement Charts
 Authors@R: c(person("Jacob", "Anhoej",
     email = "jacob@anhoej.net",
@@ -31,4 +31,4 @@ Suggests:
 VignetteBuilder: knitr
 License: GPL-3
 LazyData: true
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1

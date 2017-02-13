@@ -1,3 +1,13 @@
+qicharts 0.5.3.999
+=================
+* Better placement of center line labels in tcc().
+* Dashed red center lines mark non-random variation in tcc()
+* Fixed the "Each group consist of only one observation" warning for categorical x axis in tcc().
+
+qicharts 0.5.3
+=================
+* Fixed vignette file dates
+
 qicharts 0.5.2
 =================
 * Fixed bug in tcc() that in some situations would read any object named d4 from the parent environment.

@@ -34,4 +34,3 @@ p <- tcc(n, d, mo, g1 = g1, g2 = g2, breaks = 12, data = d, chart = 'p')
 plot(p)
 summary(p)
 }
-

@@ -25,4 +25,3 @@ p <- qic(y, plot.chart = FALSE)
 plot(p)
 
 }
-

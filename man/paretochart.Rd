@@ -35,4 +35,3 @@ paretochart(x)
 \author{
 Jacob Anhoej
 }
-
