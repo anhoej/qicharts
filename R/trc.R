@@ -65,6 +65,7 @@ trc <- function(x,
                 gap    = 0.5,
                 target = NA,
                 ...) {
+  warning('trc() will be deprecated. Use tcc() instead.', call. = FALSE)
   col1     <- rgb(093, 165, 218, maxColorValue = 255) # blue
   col2     <- rgb(140, 140, 140, maxColorValue = 255) # grey
   col3     <- rgb(005, 151, 072, maxColorValue = 255) # green

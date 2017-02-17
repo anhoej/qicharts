@@ -512,7 +512,6 @@ qic <- function(y,
 
 qic.run <- function(d, freeze, cl, agg.fun, exclude, ...){
   # Calcutate indicator to plot
-
   switch(agg.fun,
          mean   = y <- d$y.sum / d$y.n,
          sum    = y <- d$y.sum)
@@ -727,7 +726,9 @@ qic.s <- function(d, freeze = NULL, cl, exclude, ...){
 
   # Calculate center line, Montgomery 6.31
   sbar <- sqrt(sum(s[base]^2 * (n[base] - 1), na.rm = TRUE) /
-                 (sum(n[base], na.rm = TRUE) - y.length))
+                 (sum(n[base], na.rm = TRUE) - freeze))
+  # sbar <- sqrt(sum(s[base]^2 * (n[base] - 1), na.rm = TRUE) /
+  #                (sum(n[base], na.rm = TRUE) - y.length))
   cl <- rep(sbar, y.length)
   B3 <- b3(n)
   B4 <- b4(n)
@@ -1002,7 +1003,6 @@ plot.qic <- function(x, y = NULL, ...) {
   col1            <- rgb(093, 165, 218, maxColorValue = 255) # blue
   col2            <- rgb(140, 140, 140, maxColorValue = 255) # grey
   col3            <- rgb(005, 151, 072, maxColorValue = 255) # green
-  # col4            <- rgb(255, 165, 000, maxColorValue = 255) # yellow
   col4    <- rgb(241, 088, 084, maxColorValue = 255) # red
   n.obs           <- x$n.obs
   y               <- x$y
@@ -1153,7 +1153,6 @@ plot.qic <- function(x, y = NULL, ...) {
   if(linevals) {
     val <- tail(na.omit(cl), 1)
     if(length(val) && !is.na(val)) {
-      # mtext(paste('CL =', sround(val, decimals)),
       mtext(paste(llabs[2], '=', sround(val, decimals)),
             side = 4,
             at = val,

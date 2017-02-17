@@ -25,7 +25,6 @@ Imports:
     stats,
     scales,
     ggplot2 (>= 2.0.0),
-    ggrepel
 Suggests:
     knitr
 VignetteBuilder: knitr
