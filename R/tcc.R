@@ -51,6 +51,7 @@
 #' @param xlab Character string specifying the x axis label.
 #' @param ylab Character string specifying the y axis label.
 #' @param caption Character string specifying the caption.
+#' @param subtitle Character string specifying the subtitle.
 #' @param cex Number indicating the amount by which text should be magnified.
 #' @param pex Number indicating the amount by which plotting symbols should be
 #'   magnified.
@@ -62,8 +63,6 @@
 #'   lines, prime is forced to be FALSE, and runs analysis is not performed.
 #'   Useful for comparison and funnel plots.
 #' @param print.summary Logical. If TRUE, prints summary of tcc object.
-#' @param runvals Logical. If TRUE, prints parameters from runs analysis. Works
-#'   only with single (unfaceted) charts without breaks.
 #' @param ... Further arguments to ggplot function.
 #'
 #' @details \code{tcc()} is a wrapper function for \code{ggplot2()} that makes
@@ -142,7 +141,7 @@ tcc <- function(n, d, x, g1, g2, breaks, notes,
                 main,
                 xlab          = 'Subgroup',
                 ylab          = 'Value',
-                # subtitle      = NULL,
+                subtitle      = NULL,
                 caption       = NULL,
                 cex           = 1,
                 pex           = 1,
@@ -150,7 +149,6 @@ tcc <- function(n, d, x, g1, g2, breaks, notes,
                 flip          = FALSE,
                 dots.only     = FALSE,
                 print.summary = FALSE,
-                runvals       = FALSE,
                 ...) {
   # Get chart type
   type <- match.arg(chart)
@@ -323,7 +321,7 @@ tcc <- function(n, d, x, g1, g2, breaks, notes,
               main     = main,
               xlab     = xlab,
               ylab     = ylab,
-              # subtitle = subtitle,
+              subtitle = subtitle,
               caption  = caption,
               n.sum    = n.sum,
               multiply = multiply,
@@ -335,7 +333,7 @@ tcc <- function(n, d, x, g1, g2, breaks, notes,
   p <- plot.tcc(tcc, cex = cex, pex = pex, cl.decimals = cl.decimals,
                 x.pad = x.pad, cl.lab = cl.lab, y.expand = y.expand,
                 y.percent = y.percent, x.date.format = x.date.format,
-                flip = flip, dots.only = dots.only, runvals = runvals,
+                flip = flip, dots.only = dots.only,
                 ...)
 
   class(p) <- c('tcc', class(p))
@@ -721,7 +719,6 @@ plot.tcc <- function(x,
                      cl.decimals   = 2,
                      flip          = FALSE,
                      dots.only     = FALSE,
-                     runvals       = FALSE,
                      ...) {
   df      <- x$df
   main    <- x$main
@@ -831,21 +828,6 @@ plot.tcc <- function(x,
   }
 
   # Add title and axis labels
-  subtitle <- NULL
-
-  if(runvals & !dots.only){
-    x <- summary.tcc(list(data = df))
-    if(nrow(x) == 1) {
-      subtitle <- paste0('N obs. (useful) = ', x$n.obs,
-                         ' (', x$n.useful, ')\t',
-                         'Longest run (max) = ', x$longest.run,
-                         ' (', x$longest.run.max, ')\t',
-                         'Crossings (min) = ', x$n.crossings,
-                         ' (', x$n.crossings.min,
-                         ')')
-    }
-  }
-
   p <- p +
     labs(title = main, x = xlab, y = ylab, caption = caption, subtitle = subtitle) +
     expand_limits(y = y.expand)

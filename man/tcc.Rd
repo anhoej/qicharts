@@ -9,8 +9,8 @@ tcc(n, d, x, g1, g2, breaks, notes, data, chart = c("run", "i", "mr", "xbar",
   target = NA, n.sum = FALSE, y.neg = TRUE, y.percent = FALSE,
   y.expand = NULL, x.pad = 1, x.date.format = NULL, cl.lab = TRUE,
   cl.decimals = 2, main, xlab = "Subgroup", ylab = "Value",
-  caption = NULL, cex = 1, pex = 1, prime = TRUE, flip = FALSE,
-  dots.only = FALSE, print.summary = FALSE, runvals = FALSE, ...)
+  subtitle = NULL, caption = NULL, cex = 1, pex = 1, prime = TRUE,
+  flip = FALSE, dots.only = FALSE, print.summary = FALSE, ...)
 }
 \arguments{
 \item{n}{Numerator, numeric vector of counts or measures to plot. Mandatory.}
@@ -81,6 +81,8 @@ possible date formats.}
 
 \item{ylab}{Character string specifying the y axis label.}
 
+\item{subtitle}{Character string specifying the subtitle.}
+
 \item{caption}{Character string specifying the caption.}
 
 \item{cex}{Number indicating the amount by which text should be magnified.}
@@ -99,9 +101,6 @@ lines, prime is forced to be FALSE, and runs analysis is not performed.
 Useful for comparison and funnel plots.}
 
 \item{print.summary}{Logical. If TRUE, prints summary of tcc object.}
-
-\item{runvals}{Logical. If TRUE, prints parameters from runs analysis. Works
-only with single (unfaceted) charts without breaks.}
 
 \item{...}{Further arguments to ggplot function.}
 }

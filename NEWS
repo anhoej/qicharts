@@ -1,7 +1,6 @@
 qicharts 0.5.3.999
 =================
-* Added runvals argument to tcc() that will print summary of runs analysis on the chart (similar to qic()).
-* Added caption arguments to tcc().
+* Added caption and subtitle arguments to tcc().
 * Better placement of centre line labels in tcc() charts.
 * Better look of notes in tcc() charts.
 * Dashed red center lines mark non-random variation in tcc() charts.
