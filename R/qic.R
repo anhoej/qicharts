@@ -1251,5 +1251,6 @@ sround <- function(x, dec) {
     n <- nchar(as.character(floor(x)))
     return(signif(x, max(2, n)))
   }
-  return(round(x, dec))
+  return(format(round(x, dec),
+                nsmall = dec, scientific = FALSE))
 }

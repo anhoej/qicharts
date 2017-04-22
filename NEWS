@@ -1,3 +1,11 @@
+qicharts 0.5.5.999
+=================
+
+* Fixed bug in the formatting of labels for control
+  limits and center line when using user-specfied
+  number of decimals. Previously, trailing zeros were
+  not shown. (Karl Ove Hufthammer, @huftis)
+
 qicharts 0.5.4
 =================
 * Added caption and subtitle arguments to tcc().
