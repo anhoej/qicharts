@@ -1,4 +1,4 @@
-qicharts 0.5.5
+qicharts 0.5.5.999
 =================
 
 * Fixed bug in the formatting of labels for control
@@ -10,7 +10,8 @@ qicharts 0.5.4
 =================
 * Added caption and subtitle arguments to tcc().
 * Better placement of centre line labels in tcc() charts.
-* Better look of notes in tcc() charts.
+* Better rounding of centre line labels in tcc() charts.
+* Better looking notes in tcc() charts.
 * Dashed red center lines mark non-random variation in tcc() charts.
 * Fixed the "Each group consist of only one observation" warning for categorical x axis in tcc().
 * Fixed a bug in the calculation of the centre line in S charts when using the freeze argument.
