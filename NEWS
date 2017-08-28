@@ -1,6 +1,7 @@
 qicharts 0.5.5.999
 =================
-
+* This is the last version og qicharts. Instead look to qicharts2.
+* Added "no longer maintained" startup message.
 * Fixed bug in the formatting of labels for control
   limits and center line when using user-specfied
   number of decimals. Previously, trailing zeros were

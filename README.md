@@ -1,3 +1,5 @@
+**qicharts will no longer be maintained.** Please consider moving to qicharts2: https://anhoej.github.io/qicharts2/.
+
 # Quality improvement charts
 
 The **qicharts** package contains functions for plotting run charts and Shewhart control charts for measure and count data.

@@ -1,12 +1,11 @@
 Package: qicharts
 Version: 0.5.4
-Date: 2017-02-26
 Title: Quality Improvement Charts
 Authors@R: c(person("Jacob", "Anhoej",
     email = "jacob@anhoej.net",
     role = c("aut", "cre")),
     person("Timo", "Roeder", role = "ctb"))
-Description: Functions for making run charts and  basic Shewhart control
+Description: Functions for making run charts and basic Shewhart control
     charts for measure and count data.
     The main function, qic(), creates run and control charts and has a
     simple interface with a rich set of options to control data analysis
