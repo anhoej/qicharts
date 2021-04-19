@@ -4,13 +4,41 @@
 \alias{tcc}
 \title{Trellis Control Charts}
 \usage{
-tcc(n, d, x, g1, g2, breaks, notes, data, chart = c("run", "i", "mr", "xbar",
-  "s", "t", "p", "c", "u", "g"), multiply = 1, freeze = NULL, exclude,
-  target = NA, n.sum = FALSE, y.neg = TRUE, y.percent = FALSE,
-  y.expand = NULL, x.pad = 1, x.date.format = NULL, cl.lab = TRUE,
-  cl.decimals = NULL, main, xlab = "Subgroup", ylab = "Value",
-  subtitle = NULL, caption = NULL, cex = 1, pex = 1, prime = TRUE,
-  flip = FALSE, dots.only = FALSE, print.summary = FALSE, ...)
+tcc(
+  n,
+  d,
+  x,
+  g1,
+  g2,
+  breaks,
+  notes,
+  data,
+  chart = c("run", "i", "mr", "xbar", "s", "t", "p", "c", "u", "g"),
+  multiply = 1,
+  freeze = NULL,
+  exclude,
+  target = NA,
+  n.sum = FALSE,
+  y.neg = TRUE,
+  y.percent = FALSE,
+  y.expand = NULL,
+  x.pad = 1,
+  x.date.format = NULL,
+  cl.lab = TRUE,
+  cl.decimals = NULL,
+  main,
+  xlab = "Subgroup",
+  ylab = "Value",
+  subtitle = NULL,
+  caption = NULL,
+  cex = 1,
+  pex = 1,
+  prime = TRUE,
+  flip = FALSE,
+  dots.only = FALSE,
+  print.summary = FALSE,
+  ...
+)
 }
 \arguments{
 \item{n}{Numerator, numeric vector of counts or measures to plot. Mandatory.}

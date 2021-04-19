@@ -4,9 +4,19 @@
 \alias{trc}
 \title{Trellis run charts for multivariate data}
 \usage{
-trc(x, chart = c("run", "i"), xscale = "same", yscale = "same",
-  dec = NULL, xpad = 0.1, pch = 20, cex = 0.7, gap = 0.5,
-  target = NA, ...)
+trc(
+  x,
+  chart = c("run", "i"),
+  xscale = "same",
+  yscale = "same",
+  dec = NULL,
+  xpad = 0.1,
+  pch = 20,
+  cex = 0.7,
+  gap = 0.5,
+  target = NA,
+  ...
+)
 }
 \arguments{
 \item{x}{Formula object to plot. The formula is of the form y ~ x | g1 + g2 +

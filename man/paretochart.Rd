@@ -4,8 +4,15 @@
 \alias{paretochart}
 \title{Pareto chart}
 \usage{
-paretochart(x, main, ylab = "Frequency", xlab = "", cumperc.by = 20,
-  cex = 0.8, ...)
+paretochart(
+  x,
+  main,
+  ylab = "Frequency",
+  xlab = "",
+  cumperc.by = 20,
+  cex = 0.8,
+  ...
+)
 }
 \arguments{
 \item{x}{Categorical vector to be plotted}

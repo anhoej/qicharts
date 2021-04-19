@@ -1,5 +1,5 @@
 Package: qicharts
-Version: 0.5.5
+Version: 0.5.6
 Title: Quality Improvement Charts
 Authors@R: c(person("Jacob", "Anhoej",
     email = "jacob@anhoej.net",
@@ -25,8 +25,9 @@ Imports:
     scales,
     ggplot2 (>= 2.0.0),
 Suggests:
-    knitr
+    knitr,
+    rmarkdown
 VignetteBuilder: knitr
 License: GPL-3
-LazyData: true
-RoxygenNote: 6.0.1
+Encoding: UTF-8
+RoxygenNote: 7.1.1
