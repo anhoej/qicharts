@@ -47,7 +47,7 @@ Similar to the run chart, the control charts is a line graph showing a measure (
 
 The control limits represent the boundaries of the so called common cause variation inherent in the process.
 
-[Walther A. Shewhart](http://en.wikipedia.org/wiki/Walter_A._Shewhart), who invented the control chart, described two types of variation, *chance cause variation* and *assignable cause variation*. These were later renamed to common cause and special cause variation.
+[Walther A. Shewhart](https://en.wikipedia.org/wiki/Walter_A._Shewhart), who invented the control chart, described two types of variation, *chance cause variation* and *assignable cause variation*. These were later renamed to common cause and special cause variation.
 
 **Common cause variation**
 
@@ -337,7 +337,7 @@ qic(n.pat.pu, discharges, week, d,
 
 Figure 13 is a prime P chart of the same data as in figure 5. The control limits are slightly wider.
 
-In an interview [Laney says that there is no reason not always to use prime charts](http://www.minitab.com/en-us/Published-Articles/On-the-Charts--A-Conversation-with-David-Laney/). However, Provost and Murray (Provost 2011) suggest to use prime charts only for very large subgroups (N > 2000) when all other explanations for special cause variation have been examined.
+In an interview [Laney says that there is no reason not always to use prime charts](https://blog.minitab.com/en/on-the-charts-a-conversation-with-david-laney). However, Provost and Murray (Provost 2011) suggest to use prime charts only for very large subgroups (N > 2000) when all other explanations for special cause variation have been examined.
 
 ## Control charts or run charts?
 
@@ -367,8 +367,8 @@ There are many more arguments available for the `qic()` function than I have dem
 
 2. Lloyd P. Provost, Sandra K. Murray (2011). The Health Care Data Guide: Learning from Data for Improvement. San Francisco: John Wiley & Sons Inc.
 
-3. David B. Laney (2002). [Improved control charts for attributes](http://www.tandfonline.com/doi/abs/10.1081/QEN-120003555). Quality Engineering, 14(4), 531-537.
+3. David B. Laney (2002). [Improved control charts for attributes](https://www.tandfonline.com/doi/abs/10.1081/QEN-120003555). Quality Engineering, 14(4), 531-537.
 
-4. Jacob Anhoej (2015). [Diagnostic Value of Run Chart Analysis: Using Likelihood Ratios to Compare Run Chart Rules on Simulated Data Series](http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0121349). PLoS ONE 10(3): e0121349.
+4. Jacob Anhoej (2015). [Diagnostic Value of Run Chart Analysis: Using Likelihood Ratios to Compare Run Chart Rules on Simulated Data Series](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0121349). PLoS ONE 10(3): e0121349.
 
-5. Jacob Anhoej, Anne Vingaard Olesen (2014). [Run Charts Revisited: A Simulation Study of Run Chart Rules for Detection of Non-Random Variation in Health Care Processes](http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0113825). PLoS ONE 9(11): e113825.
+5. Jacob Anhoej, Anne Vingaard Olesen (2014). [Run Charts Revisited: A Simulation Study of Run Chart Rules for Detection of Non-Random Variation in Health Care Processes](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0113825). PLoS ONE 9(11): e113825.

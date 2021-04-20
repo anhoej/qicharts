@@ -1,3 +1,11 @@
+qicharts 0.5.8
+=================
+* Fixed more http -> https in documentation.
+
+qicharts 0.5.7
+=================
+* Fixed http -> https in documentation.
+
 qicharts 0.5.6
 =================
 * As requested by CRAN: Suggest rmarkdown.

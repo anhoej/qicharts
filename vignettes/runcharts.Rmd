@@ -132,9 +132,9 @@ qic(y, n, x = week, data = d)
 
 ## References
 
-1. Jacob Anhoej, Anne Vingaard Olesen (2014). [Run Charts Revisited: A Simulation Study of Run Chart Rules for Detection of Non-Random Variation in Health Care Processes](http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0113825). PLoS ONE 9(11): e113825.
+1. Jacob Anhoej, Anne Vingaard Olesen (2014). [Run Charts Revisited: A Simulation Study of Run Chart Rules for Detection of Non-Random Variation in Health Care Processes](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0113825). PLoS ONE 9(11): e113825.
 
-2. Jacob Anhoej (2015). [Diagnostic Value of Run Chart Analysis: Using Likelihood Ratios to Compare Run Chart Rules on Simulated Data Series](http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0121349). PLoS ONE 10(3): e0121349.
+2. Jacob Anhoej (2015). [Diagnostic Value of Run Chart Analysis: Using Likelihood Ratios to Compare Run Chart Rules on Simulated Data Series](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0121349). PLoS ONE 10(3): e0121349.
 
 3. Mark F. Schilling (2012). The Surprising Predictability of Long Runs. Math. Mag. 85, 141-149
 
