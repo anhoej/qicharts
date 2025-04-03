@@ -55,7 +55,7 @@ Run charts for multivariate data in trellis (grid) layout.
 \details{
 This function is a wrapper for \code{\link{xyplot}} from the
 \code{\link{lattice}} package. Some usefull arguments from
-\code{\link{xyplot}} are \code{main}, \code{ylab}, \code{xlab}, and
+\code{\link[lattice]{xyplot}} are \code{main}, \code{ylab}, \code{xlab}, and
 \code{layout}.
 }
 \examples{
@@ -85,5 +85,5 @@ trc(y ~ x | g1 + g2, data = d2, main = 'Trellis run chart')
 trc(y ~ x | g1 + g2, data = d2, main = 'Trellis run chart', chart = 'i')
 }
 \seealso{
-\code{\link{xyplot}}, \code{\link{qic}}
+\code{\link[lattice]{xyplot}}, \code{\link[qicharts]{qic}}
 }

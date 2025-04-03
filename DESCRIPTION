@@ -1,5 +1,5 @@
 Package: qicharts
-Version: 0.5.8
+Version: 0.5.9
 Title: Quality Improvement Charts
 Authors@R: c(person("Jacob", "Anhoej",
     email = "jacob@anhoej.net",
@@ -32,4 +32,4 @@ Suggests:
 VignetteBuilder: knitr
 License: GPL-3
 Encoding: UTF-8
-RoxygenNote: 7.1.1
+RoxygenNote: 7.3.2

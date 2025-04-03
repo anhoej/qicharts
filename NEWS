@@ -1,3 +1,7 @@
+qicharts 0.5.9
+=================
+* Fixed Rd link targets.
+
 qicharts 0.5.8
 =================
 * Fixed more http -> https in documentation.
